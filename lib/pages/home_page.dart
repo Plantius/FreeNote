@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// (Niels) NOTE: The HomePage should only be used as the example and should be 
+// fully replaced in the final app. 
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
