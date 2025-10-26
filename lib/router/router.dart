@@ -12,13 +12,16 @@ final GoRouter router = GoRouter(
     if (state.matchedLocation == '/') {
       return '/notes';
     }
-    
+
     return null;
   },
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return AppScaffold(child: child);
+        return AppScaffold(
+          currentLocation: state.matchedLocation, 
+          child: child
+        );
       },
       routes: [
         GoRoute(

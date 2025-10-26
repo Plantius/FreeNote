@@ -23,6 +23,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      title: 'FreeNote',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromRGBO(255, 0, 255, 1),
+          brightness: Brightness.dark,
+        )
+      ),
       routerConfig: router,
     );
   }
