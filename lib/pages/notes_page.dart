@@ -3,7 +3,6 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:free_note/event_logger.dart';
-import 'package:free_note/utils/markdown_utils.dart';
 import 'package:free_note/pages/note_detail_page.dart';
 
 class NotesPage extends StatefulWidget {

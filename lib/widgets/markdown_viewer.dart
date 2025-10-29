@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MarkdownViewer extends StatelessWidget {
   final String data;
@@ -14,8 +15,40 @@ class MarkdownViewer extends StatelessWidget {
       child: Markdown(
         data: data,
         selectable: true,
-        styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
-        onTapLink: (text, href, title) {},
+        imageBuilder: (uri, title, alt) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Image.network(
+              uri.toString(),
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Text(
+                  alt ?? 'Image failed to load',
+                  style: const TextStyle(color: Colors.red),
+                );
+              },
+            ),
+          );
+        },
+        styleSheet: MarkdownStyleSheet.fromTheme(
+          Theme.of(context),
+        ).copyWith(p: const TextStyle(fontSize: 16.0)),
+        onTapLink: (text, href, title) async {
+          if (href == null) return;
+
+          final Uri url = Uri.parse(href);
+          final canLaunch = await canLaunchUrl(url);
+
+          if (canLaunch) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          } else {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Could not open link: $href')),
+              );
+            });
+          }
+        },
       ),
     );
   }
