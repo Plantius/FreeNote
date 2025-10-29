@@ -17,13 +17,9 @@ class NotesPageState extends State<NotesPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadNodes();
+      final nodeProvider = Provider.of<NotesProvider>(context, listen: false);
+      nodeProvider.loadNotes();
     });
-  }
-
-  void _loadNodes() {
-    final nodeProvider = Provider.of<NotesProvider>(context, listen: false);
-    nodeProvider.loadNotes();
   }
 
   @override

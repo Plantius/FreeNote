@@ -4,7 +4,7 @@ import 'package:free_note/data/database_service.dart';
 
 class NotesProvider with ChangeNotifier {
   final DatabaseService database;
-  List<Note>? _notes = [];
+  List<Note>? _notes;
   bool _isLoading = false;
   String? _errorMessage;
 
