@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:free_note/router/router.dart';
-
-const supabaseUrl = 'https://qqofogsfiwttdcmpymsh.supabase.co';
-const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
+import 'package:free_note/data/supabase.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseKey,
-  );
-
+  await SupabaseService.init();
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -28,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Color.fromRGBO(255, 0, 255, 1),
           brightness: Brightness.dark,
-        )
+        ),
       ),
       routerConfig: router,
     );
