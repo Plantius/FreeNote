@@ -28,7 +28,21 @@ class NotesPageState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildNotesList(context);
+    return Column(
+      children: [
+        const Text('Selection Menu goes here'),
+
+        SizedBox(
+          height: 8,
+        ),
+
+        Expanded(
+          child: _buildNotesList(context),
+        ),
+
+        const Text('Search bar goes here'),
+      ],
+    );
   }
 
   Widget _buildNotesList(BuildContext context) {
