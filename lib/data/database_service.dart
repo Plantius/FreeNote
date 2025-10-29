@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:free_note/models/note.dart';
+import 'package:free_note/data/supabase.dart';
+
+class DatabaseService {
+  final supabase = SupabaseService.client;
+
+  static final DatabaseService _instance = DatabaseService._();
+
+  DatabaseService._();
+
+  static DatabaseService get instance {
+    return _instance;
+  }
+
+  Future<List<Note>> getUserNotes() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return [];
+
+    final response = await supabase
+        .from('notes')
+        .select('*, user_notes(*)')
+        .eq('user_notes.user_id', userId)
+        .order('updated_at', ascending: false);
+
+    return (response as List).map((note) => Note.fromJson(note)).toList();
+  }
+
+  Future<Note?> createNote(String title, String content) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    final inserted = await supabase
+        .from('notes')
+        .insert({'title': title, 'content': content})
+        .select()
+        .single();
+
+    await supabase.from('user_notes').insert({
+      'user_id': userId,
+      'note_id': inserted['id'],
+    });
+
+    return Note.fromJson(inserted);
+  }
+
+  Future<void> updateNote(int id, String title, String content) async {
+    await supabase
+        .from('notes')
+        .update({'title': title, 'content': content})
+        .eq('id', id);
+  }
+
+  Future<void> deleteNote(int id) async {
+    await supabase.from('notes').delete().eq('id', id);
+  }
+}
