@@ -1,43 +1,118 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/data/database_service.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/providers/notes_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:free_note/event_logger.dart';
 
-class NotesPage extends StatelessWidget {
+class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final dbService = DatabaseService.instance;
+  NotesPageState createState() => NotesPageState();
+}
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('All Notes')),
-      body: FutureBuilder<List<Note>>(
-        future: dbService.getUserNotes(), // fetch all notes
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // While loading
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // If there was an error
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            // If no notes exist
-            return const Center(child: Text('No notes found.'));
-          } else {
-            final notes = snapshot.data!;
-            return ListView.builder(
-              itemCount: notes.length,
+class NotesPageState extends State<NotesPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final nodeProvider = Provider.of<NotesProvider>(context, listen: false);
+      nodeProvider.loadNotes();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('Selection Menu goes here'),
+
+        SizedBox(
+          height: 8,
+        ),
+
+        Expanded(
+          child: _buildNotesList(context),
+        ),
+
+        const Text('Search bar goes here'),
+      ],
+    );
+  }
+
+  Widget _buildNotesList(BuildContext context) {
+    return Consumer<NotesProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(
+            child: CircularProgressIndicator()
+          );
+        } else {
+          return RefreshIndicator(
+            child: ListView.builder(
+              itemCount: provider.notes.length,
               itemBuilder: (context, index) {
-                final note = notes[index];
-                return ListTile(
-                  title: Text(note.title),
-                  subtitle: Text(note.content),
-                );
-              },
-            );
-          }
-        },
+                return _buildNoteEntry(context, provider.notes[index]);
+              }
+            ), 
+            onRefresh: () async {
+              await provider.loadNotes(forceRefresh: true);
+            },
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildNoteEntry(BuildContext context, Note note) {
+    return TextButton(
+      onPressed: () {
+        logger.d('Selected "${note.title}"');
+      }, 
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16, 
+          vertical: 4,
+        ),
+        foregroundColor: Colors.white,
+        alignment: Alignment.centerLeft,
       ),
+      child: Row(
+        children: [
+          SizedBox(
+            child: Icon(
+              Icons.note,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  note.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  note.content,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.purple
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      )
     );
   }
 }
