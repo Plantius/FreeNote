@@ -8,7 +8,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseService.init();
   final supabase = SupabaseService.client;
-  final response = await supabase.auth.signInWithPassword(
+  
+  // Login, replace when login wrapper exists
+  await supabase.auth.signInWithPassword(
     email: 'test@example.com',
     password: 'supersecret',
   );
