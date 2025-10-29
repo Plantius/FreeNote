@@ -28,6 +28,20 @@ class DatabaseService {
     return (response as List).map((note) => Note.fromJson(note)).toList();
   }
 
+  Future<List<Note>> fetchCalendar() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return [];
+
+    final response = await supabase
+        .from('calendar')
+        .select('id, timestamp, notes(*), user_notes!inner(user_id, note_id)')
+        .eq('user_notes.user_id', userId)
+        .order('timestamp', ascending: false);
+
+    logger.i('Successfully fetched calender entries for user $userId');
+    return (response as List).map((note) => Note.fromJson(note)).toList();
+  }
+
   Future<Note?> createNote(String title, String content) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;
@@ -47,7 +61,7 @@ class DatabaseService {
   }
 
   Future<void> updateNote(int id, String title, String content) async {
-    await supabase
+    await supabase 
         .from('notes')
         .update({'title': title, 'content': content})
         .eq('id', id);
