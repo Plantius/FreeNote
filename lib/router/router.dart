@@ -27,7 +27,7 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/notes',
           builder: (context, state) {
-            return const NotesPage();
+            return NotesPage();
           }
         ),
         GoRoute(

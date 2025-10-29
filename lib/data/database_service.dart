@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/data/supabase.dart';
+import 'package:free_note/event_logger.dart';
 
 class DatabaseService {
   final supabase = SupabaseService.client;
@@ -13,7 +13,7 @@ class DatabaseService {
     return _instance;
   }
 
-  Future<List<Note>> getUserNotes() async {
+  Future<List<Note>> fetchNotes() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return [];
 
@@ -22,6 +22,8 @@ class DatabaseService {
         .select('*, user_notes(*)')
         .eq('user_notes.user_id', userId)
         .order('updated_at', ascending: false);
+
+    logger.i('Successfully fetched notes for user $userId');
 
     return (response as List).map((note) => Note.fromJson(note)).toList();
   }
