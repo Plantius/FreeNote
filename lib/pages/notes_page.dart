@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:free_note/event_logger.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -27,14 +28,81 @@ class NotesPageState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
+    return _buildNotesList(context);
+  }
+
+  Widget _buildNotesList(BuildContext context) {
     return Consumer<NotesProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
-          return const Text('loading...');
+          return Center(
+            child: CircularProgressIndicator()
+          );
         } else {
-          return Text(provider.notes.length.toString());
+          return RefreshIndicator(
+            child: ListView.builder(
+              itemCount: provider.notes.length,
+              itemBuilder: (context, index) {
+                return _buildNoteEntry(context, provider.notes[index]);
+              }
+            ), 
+            onRefresh: () async {
+              await provider.loadNotes(forceRefresh: true);
+            },
+          );
         }
       },
+    );
+  }
+
+  Widget _buildNoteEntry(BuildContext context, Note note) {
+    return TextButton(
+      onPressed: () {
+        logger.d('Selected "${note.title}"');
+      }, 
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16, 
+          vertical: 4,
+        ),
+        foregroundColor: Colors.white,
+        alignment: Alignment.centerLeft,
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            child: Icon(
+              Icons.note,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  note.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  note.content,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.purple
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      )
     );
   }
 }
