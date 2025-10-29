@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/data/cache_service.dart';
+import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/data/database_service.dart';
 
@@ -25,8 +27,37 @@ class NotesProvider with ChangeNotifier {
 
     try {
       _notes = await database.fetchNotes();
+      for (var note in _notes!) {
+        final cachedContent = await CacheService.loadNoteIfUpToDate(
+          note.id,
+          note.updatedAt,
+        );
+
+        if (cachedContent != null) {
+          note = Note(
+            id: note.id,
+            title: note.title,
+            content: cachedContent,
+            createdAt: note.createdAt,
+            updatedAt: note.updatedAt,
+          );
+        } else {
+          await CacheService.saveNote(note);
+        }
+      }
     } catch (e) {
       _errorMessage = 'Failed to fetch nodes: $e';
+      try {
+        final cachedNotes = await CacheService.loadAllNotesFromCache();
+        if (cachedNotes.isNotEmpty) {
+          _notes = cachedNotes;
+          logger.i('Loaded ${cachedNotes.length} notes from local cache.');
+        } else {
+          _errorMessage = 'No cached notes available.';
+        }
+      } catch (cacheError) {
+        _errorMessage = 'Failed to load notes: $cacheError';
+      }
     }
 
     _isLoading = false;
