@@ -41,19 +41,19 @@ final GoRouter router = GoRouter(
             return const CalendarPage();
           }
         ),
-        GoRoute(
-          path: '/note/:id',
-          builder: (context, state) {
-            final note = state.extra as Note?;
-            if (note == null) {
-              logger.e('Note parameter unset: ${state.fullPath}');
-              return NotesPage();
-            } else {
-              return NoteDetailPage(note: note);
-            }
-          },
-        )
       ]
+    ),
+    GoRoute(
+      path: '/note/:id',
+      builder: (context, state) {
+        final note = state.extra as Note?;
+        if (note == null) {
+          logger.e('Note parameter unset: ${state.fullPath}');
+          return NotesPage();
+        } else {
+          return NoteDetailPage(note: note);
+        }
+      },
     )
   ],
 );
