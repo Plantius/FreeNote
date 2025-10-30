@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
-
 import 'package:free_note/widgets/markdown_viewer.dart';
 
 class NoteDetailPage extends StatelessWidget {
