@@ -10,6 +10,8 @@ class MarkdownViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colors = Theme.of(context).colorScheme;
+
     return Padding(
       padding: padding ?? const EdgeInsets.all(8.0),
       child: Markdown(
@@ -32,7 +34,17 @@ class MarkdownViewer extends StatelessWidget {
         },
         styleSheet: MarkdownStyleSheet.fromTheme(
           Theme.of(context),
-        ).copyWith(p: const TextStyle(fontSize: 16.0)),
+        ).copyWith(
+          p: const TextStyle(fontSize: 16.0),
+          // TODO: this solves a contrast issue with blockquotes, possibly 
+          //  use different color. Ideally, I think a lighter version of 
+          //  surface, but this is not directly available and has to be 
+          //  computed.
+          blockquoteDecoration: BoxDecoration(
+            color: colors.primary,
+            borderRadius: BorderRadius.circular(2.0),
+          ),
+        ),
         onTapLink: (text, href, title) async {
           if (href == null) return;
 

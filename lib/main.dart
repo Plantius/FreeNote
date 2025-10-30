@@ -44,7 +44,9 @@ class MyApp extends StatelessWidget {
       title: 'FreeNote',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromRGBO(255, 0, 255, 1),
+          seedColor: Color.fromRGBO(109, 33, 134, 1),
+          surface: Color.fromRGBO(40, 43, 48, 1),
+          primary: Color.fromRGBO(109, 33, 134, 1),
           brightness: Brightness.dark,
         ),
       ),

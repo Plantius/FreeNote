@@ -13,10 +13,12 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('FreeNote AppBar'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: colors.primary,
       ),
       body: child,
       bottomNavigationBar: BottomNavigationBar(
@@ -46,9 +48,13 @@ class AppScaffold extends StatelessWidget {
               break;
           }
         },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: colors.primary,
+
+        // TODO: possibly use different colors for highlighting.
+        selectedItemColor: Colors.white, 
+        unselectedItemColor: Colors.white,
       ),
+      backgroundColor: colors.surface,
     );
   }
 

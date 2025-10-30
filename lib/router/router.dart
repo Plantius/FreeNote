@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:free_note/event_logger.dart';
-import 'package:free_note/pages/note_detail_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:free_note/event_logger.dart';
 import 'package:free_note/widgets/app_scaffold.dart';
+import 'package:free_note/pages/note_detail_page.dart';
 import 'package:free_note/pages/notes_page.dart';
 import 'package:free_note/pages/calendar_page.dart';
 
