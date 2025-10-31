@@ -6,9 +6,9 @@ class AppScaffold extends StatelessWidget {
   final String currentLocation;
 
   const AppScaffold({
-    super.key, 
-    required this.child, 
-    required this.currentLocation
+    super.key,
+    required this.child,
+    required this.currentLocation,
   });
 
   @override
@@ -21,13 +21,14 @@ class AppScaffold extends StatelessWidget {
         backgroundColor: colors.primary,
       ),
       body: child,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(currentLocation),
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Notes',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
@@ -51,7 +52,7 @@ class AppScaffold extends StatelessWidget {
         backgroundColor: colors.primary,
 
         // TODO: possibly use different colors for highlighting.
-        selectedItemColor: Colors.white, 
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
       ),
       backgroundColor: colors.surface,
@@ -65,7 +66,7 @@ class AppScaffold extends StatelessWidget {
 
       case '/calendar':
         return 1;
-      
+
       default:
         break;
     }
