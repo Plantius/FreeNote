@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MarkdownViewer extends StatelessWidget {
   final String data;
@@ -18,10 +19,32 @@ class MarkdownViewer extends StatelessWidget {
         data: data,
         selectable: true,
         imageBuilder: (uri, title, alt) {
+          final url = uri.toString();
+
+          if (url.toLowerCase().endsWith('.svg')) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SvgPicture.network(
+                url,
+                placeholderBuilder: (context) =>
+                    const Center(child: CircularProgressIndicator()),
+                fit: BoxFit.contain,
+                height: 200,
+                width: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(
+                    alt ?? 'Image failed to load',
+                    style: const TextStyle(color: Colors.red),
+                  );
+                },
+              ),
+            );
+          }
+
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Image.network(
-              uri.toString(),
+              url,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Text(
@@ -32,13 +55,11 @@ class MarkdownViewer extends StatelessWidget {
             ),
           );
         },
-        styleSheet: MarkdownStyleSheet.fromTheme(
-          Theme.of(context),
-        ).copyWith(
+        styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
           p: const TextStyle(fontSize: 16.0),
-          // TODO: this solves a contrast issue with blockquotes, possibly 
-          //  use different color. Ideally, I think a lighter version of 
-          //  surface, but this is not directly available and has to be 
+          // TODO: this solves a contrast issue with blockquotes, possibly
+          //  use different color. Ideally, I think a lighter version of
+          //  surface, but this is not directly available and has to be
           //  computed.
           blockquoteDecoration: BoxDecoration(
             color: colors.primary,

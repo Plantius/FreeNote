@@ -42,6 +42,7 @@ class NotesProvider with ChangeNotifier {
             updatedAt: note.updatedAt,
           );
         } else {
+          logger.i('Note ${note.id} is behind, saving to cache.');
           await CacheService.saveNote(note);
         }
       }
