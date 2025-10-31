@@ -18,7 +18,12 @@ class AppScaffold extends StatelessWidget {
         title: const Text('FreeNote AppBar'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: child,
+      body: Column(
+        children: 
+        [Expanded(child: child),
+        const Text('put widget here'),
+        ],
+        ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(currentLocation),
         items: [
