@@ -89,11 +89,15 @@ class SearchButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TextButton(
-              onPressed: (){
-                //TODO: Write code here
-              }, 
-              child: Icon(Icons.search))
+            child: SizedBox(
+              height: 45,
+              width: 45,
+              child: TextButton(
+                onPressed: (){
+                  //TODO: Write code here
+                }, 
+                child: Icon(Icons.search)),
+            )
           );
   }
 }
@@ -105,11 +109,15 @@ class AddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TextButton(
-              onPressed: (){
-                //TODO: Write code here
-              }, 
-              child: Icon(Icons.add))
+            child: SizedBox(
+              height: 45,
+              width: 45,
+              child: TextButton(
+                onPressed: (){
+                  //TODO: Write code here
+                }, 
+                child: Icon(Icons.add)),
+            )
           );
   }
 }
