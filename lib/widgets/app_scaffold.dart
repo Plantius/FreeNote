@@ -89,29 +89,27 @@ class SearchButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
             padding: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              onPressed: () {
-                //TODO: Does nothing currently
-              },
-              child: Text('Search'), //TODO: Change to Icon
-            ),
+            child: TextButton(
+              onPressed: (){
+                //TODO: Write code here
+              }, 
+              child: Icon(Icons.search))
           );
   }
 }
 
 class AddButton extends StatelessWidget {
   const AddButton({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
             padding: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              onPressed: () {
-                //TODO: Does nothing currently
-              },
-              child: Text('Add'), //TODO: Change to Icon
-            ),
+            child: TextButton(
+              onPressed: (){
+                //TODO: Write code here
+              }, 
+              child: Icon(Icons.add))
           );
   }
 }
