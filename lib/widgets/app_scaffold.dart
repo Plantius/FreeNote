@@ -18,7 +18,20 @@ class AppScaffold extends StatelessWidget {
         title: const Text('FreeNote AppBar'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: child,
+      body: Column(
+        children: 
+        [Expanded(child: child),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SearchButton(),
+          AddButton(),
+        ],
+      ),
+        
+        ],
+        ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(currentLocation),
         items: [
@@ -66,5 +79,39 @@ class AppScaffold extends StatelessWidget {
 
     debugPrint('Unmapped location specifier: $location');
     return 0;
+  }
+}
+
+class SearchButton extends StatelessWidget {
+  const SearchButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: () {
+                //TODO: Does nothing currently
+              },
+              child: Text('Search'), //TODO: Change to Icon
+            ),
+          );
+  }
+}
+
+class AddButton extends StatelessWidget {
+  const AddButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: () {
+                //TODO: Does nothing currently
+              },
+              child: Text('Add'), //TODO: Change to Icon
+            ),
+          );
   }
 }
