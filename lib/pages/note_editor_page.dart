@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/event_logger.dart';
+import 'package:free_note/providers/notes_provider.dart';
+import 'package:provider/provider.dart';
 
 class NoteEditorPage extends StatefulWidget {
   final Note note;
@@ -12,6 +14,13 @@ class NoteEditorPage extends StatefulWidget {
 
 class NoteEditorPageState extends State<NoteEditorPage> {
   late TextEditingController _controller;
+  NotesProvider? _notesProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _notesProvider ??= context.read<NotesProvider>();
+  }
 
   @override
   void initState() {
@@ -22,6 +31,9 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   @override
   void dispose() {
     logger.d('Saving note ${widget.note.id} [todo]');
+    final updatedNote = widget.note.copyWith(content: _controller.text);
+    _notesProvider?.saveNote(updatedNote);
+    Navigator.of(context).pop(updatedNote);
 
     _controller.dispose();
     super.dispose();

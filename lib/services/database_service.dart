@@ -83,11 +83,11 @@ class DatabaseService {
     return Note.fromJson(inserted);
   }
 
-  Future<void> updateNote(int id, String title, String content) async {
+  Future<void> updateNote(Note note) async {
     await supabase
         .from('notes')
-        .update({'title': title, 'content': content})
-        .eq('id', id);
+        .update({'title': note.title, 'content': note.content})
+        .eq('id', note.id);
   }
 
   Future<void> deleteNote(int id) async {
