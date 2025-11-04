@@ -74,4 +74,8 @@ class NotesProvider with ChangeNotifier {
     }
     
   }
+
+  Future<void> createNote() async {
+    //TODO: Add note creation here
+  }
 }
