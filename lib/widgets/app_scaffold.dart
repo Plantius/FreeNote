@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:popover/popover.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget child;
@@ -112,6 +113,12 @@ class AddButton extends StatelessWidget {
             child: SizedBox(
               height: 45,
               width: 45,
+              /*child: TextButton(
+                onPressed: (){
+                  //TODO: Write code here
+                }, 
+                child: AddNotePopupMenu()),
+                //child: Icon(Icons.search)),*/
               child: AddNotePopupMenu(),
             )
           );
@@ -124,8 +131,52 @@ class AddNotePopupMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () => showPopover(context: context, bodyBuilder: (context) => AddMenuItems(),
+      width: 50,
+      height: 135,
+      backgroundColor: Colors.deepPurple,
+      direction: PopoverDirection.top,
+      ),
       child: Icon(Icons.add),
+    );
+  }
+}
+
+class AddMenuItems extends StatelessWidget {
+  const AddMenuItems({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        //1st Menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.note)),
+
+          //2nd menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.audio_file)),
+
+          //3rd menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.timer)),
+
+          //4th menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.draw)),
+      ],
     );
   }
 }
