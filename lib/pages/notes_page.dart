@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:free_note/event_logger.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -28,13 +28,9 @@ class NotesPageState extends State<NotesPage> {
       children: [
         const Text('Selection Menu goes here'),
 
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox(height: 8),
 
-        Expanded(
-          child: _buildNotesList(context),
-        ),
+        Expanded(child: _buildNotesList(context)),
 
         const Text('Search bar goes here'),
       ],
@@ -45,17 +41,15 @@ class NotesPageState extends State<NotesPage> {
     return Consumer<NotesProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
-          return Center(
-            child: CircularProgressIndicator()
-          );
+          return Center(child: CircularProgressIndicator());
         } else {
           return RefreshIndicator(
             child: ListView.builder(
               itemCount: provider.notes.length,
               itemBuilder: (context, index) {
                 return _buildNoteEntry(context, provider.notes[index]);
-              }
-            ), 
+              },
+            ),
             onRefresh: () async {
               await provider.loadNotes(forceRefresh: true);
             },
@@ -68,24 +62,16 @@ class NotesPageState extends State<NotesPage> {
   Widget _buildNoteEntry(BuildContext context, Note note) {
     return TextButton(
       onPressed: () {
-        logger.d('Selected "${note.title}"');
-      }, 
+        context.push('/note/${note.id}', extra: note);
+      },
       style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16, 
-          vertical: 4,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         foregroundColor: Colors.white,
         alignment: Alignment.centerLeft,
       ),
       child: Row(
         children: [
-          SizedBox(
-            child: Icon(
-              Icons.note,
-              size: 24,
-            ),
-          ),
+          SizedBox(child: Icon(Icons.note, size: 24)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -95,24 +81,19 @@ class NotesPageState extends State<NotesPage> {
                   note.title,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 Text(
                   note.content,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.purple
-                  ),
-                )
+                  style: const TextStyle(fontSize: 16, color: Colors.purple),
+                ),
               ],
             ),
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 }

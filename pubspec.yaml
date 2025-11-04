@@ -1,5 +1,5 @@
 name: free_note
-description: "A new Flutter project."
+description: "A Note Taking and Calendar App."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
@@ -18,6 +18,10 @@ dependencies:
   flutter_dotenv: ^6.0.0
   logger: ^2.6.2
   popover: ^0.2.8+2
+  flutter_markdown_plus: ^1.0.5
+  url_launcher: ^6.3.2
+  path_provider: ^2.1.5
+  flutter_svg: ^2.2.1
 
 dev_dependencies:
   flutter_test:

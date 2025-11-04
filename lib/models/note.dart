@@ -23,5 +23,10 @@ class Note {
     );
   }
 
-  Map<String, dynamic> toJson() => {'title': title, 'content': content};
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'content': content,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
 }

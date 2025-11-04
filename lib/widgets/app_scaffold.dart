@@ -7,17 +7,19 @@ class AppScaffold extends StatelessWidget {
   final String currentLocation;
 
   const AppScaffold({
-    super.key, 
-    required this.child, 
-    required this.currentLocation
+    super.key,
+    required this.child,
+    required this.currentLocation,
   });
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('FreeNote AppBar'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: colors.primary,
       ),
       body: Column(
         children: 
@@ -36,10 +38,7 @@ class AppScaffold extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(currentLocation),
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Notes',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
@@ -60,9 +59,13 @@ class AppScaffold extends StatelessWidget {
               break;
           }
         },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: colors.primary,
+
+        // TODO: possibly use different colors for highlighting.
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
       ),
+      backgroundColor: colors.surface,
     );
   }
 
@@ -73,7 +76,7 @@ class AppScaffold extends StatelessWidget {
 
       case '/calendar':
         return 1;
-      
+
       default:
         break;
     }
