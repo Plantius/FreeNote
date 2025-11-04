@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:popover/popover.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget child;
@@ -20,11 +21,20 @@ class AppScaffold extends StatelessWidget {
         title: const Text('FreeNote AppBar'),
         backgroundColor: colors.primary,
       ),
-      body: child,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {},
+      body: Column(
+        children: 
+        [Expanded(child: child),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SearchButton(),
+          AddButton(),
+        ],
       ),
+        
+        ],
+        ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(currentLocation),
         items: [
@@ -73,5 +83,171 @@ class AppScaffold extends StatelessWidget {
 
     debugPrint('Unmapped location specifier: $location');
     return 0;
+  }
+}
+
+class SearchButton extends StatelessWidget {
+  const SearchButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              height: 45,
+              width: 45,
+              child: IconButton(
+                onPressed: () {
+                  showSearch(context: context, delegate: CustomSearchDelegate(),);
+                }, 
+                icon: const Icon(Icons.search),
+                )
+            )
+          );
+  }
+}
+
+class AddButton extends StatelessWidget {
+  const AddButton({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              height: 45,
+              width: 45,
+              /*child: TextButton(
+                onPressed: (){
+                  //TODO: Write code here
+                }, 
+                child: AddNotePopupMenu()),
+                //child: Icon(Icons.search)),*/
+              child: AddNotePopupMenu(),
+            )
+          );
+  }
+}
+
+class AddNotePopupMenu extends StatelessWidget {
+  const AddNotePopupMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showPopover(context: context, bodyBuilder: (context) => AddMenuItems(),
+      width: 50,
+      height: 135,
+      backgroundColor: Colors.deepPurple,
+      direction: PopoverDirection.top,
+      ),
+      child: Icon(Icons.add),
+    );
+  }
+}
+
+class AddMenuItems extends StatelessWidget {
+  const AddMenuItems({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        //1st Menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.note)),
+
+          //2nd menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.audio_file)),
+
+          //3rd menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.timer)),
+
+          //4th menu option
+          TextButton(
+            onPressed: (){
+                  //TODO: Write code here
+            }, 
+            child: Icon(Icons.draw)),
+      ],
+    );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate{
+  List<String> searchTerms = ['Apple', 'Banana', 'Pear']; //TODO: Replace this list by what you pull from database!
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null); 
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) { //TODO: Fix Search Function / make it more efficient
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())){
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result), //returns the name as fruit as index tile on the found search answers
+            //TODO: Potentially change what it shows, maybe show the context of the note too?
+            //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
+          );
+        },
+      );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result), //returns the name as fruit as index tile on the found search answers
+            //TODO: Potentially change what it shows, maybe show the context of the note too?
+          );
+        },
+      );
   }
 }
