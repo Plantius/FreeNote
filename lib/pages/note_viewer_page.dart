@@ -16,14 +16,12 @@ class NoteViewerPage extends StatelessWidget {
           IconButton(
             onPressed: () {
               context.push('/note/${note.id}/edit', extra: note);
-            }, 
+            },
             icon: Icon(Icons.edit),
-          )
+          ),
         ],
       ),
-      body: MarkdownViewer(
-        data: note.content
-      ),
+      body: MarkdownViewer(data: note.content),
     );
   }
 }

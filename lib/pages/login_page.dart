@@ -15,9 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Log In')
-      ),
+      appBar: AppBar(title: const Text('Log In')),
       body: Column(
         children: [
           const Text('Username...'),
@@ -25,9 +23,9 @@ class _LoginPageState extends State<LoginPage> {
           IconButton(
             onPressed: () async {
               _debugLogin();
-            }, 
-            icon: Icon(Icons.auto_awesome)
-          )
+            },
+            icon: Icon(Icons.auto_awesome),
+          ),
         ],
       ),
     );
@@ -35,9 +33,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void _debugLogin() async {
     final success = await context.read<AuthProvider>().signIn(
-      'test@example.com', 'supersecret'
+      'test@example.com',
+      'supersecret',
     );
-    
+
     if (success) {
       logger.i('Successfully logged into development account');
 

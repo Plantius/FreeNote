@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     }
-    
+
     return false;
   }
 
@@ -41,7 +41,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _authService.signOut();
-    
+
     _user = null;
     notifyListeners();
   }

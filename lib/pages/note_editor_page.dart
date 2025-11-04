@@ -22,6 +22,7 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   @override
   void dispose() {
     logger.d('Saving note ${widget.note.id} [todo]');
+
     _controller.dispose();
     super.dispose();
   }
@@ -29,18 +30,14 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.note.title)
-      ),
+      appBar: AppBar(title: Text(widget.note.title)),
       body: Column(
         children: [
           Expanded(
             child: TextField(
               controller: _controller,
               maxLines: null,
-              decoration: InputDecoration.collapsed(
-                hintText: '...'
-              ),
+              decoration: InputDecoration.collapsed(hintText: '...'),
             ),
           ),
         ],

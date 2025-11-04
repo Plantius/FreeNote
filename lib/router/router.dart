@@ -28,8 +28,8 @@ final GoRouter router = GoRouter(
     ShellRoute(
       builder: (context, state, child) {
         return AppScaffold(
-          currentLocation: state.matchedLocation, 
-          child: child
+          currentLocation: state.matchedLocation,
+          child: child,
         );
       },
       routes: [
@@ -37,21 +37,21 @@ final GoRouter router = GoRouter(
           path: '/notes',
           builder: (context, state) {
             return NotesPage();
-          }
+          },
         ),
         GoRoute(
           path: '/calendar',
           builder: (context, state) {
             return const CalendarPage();
-          }
+          },
         ),
-      ]
+      ],
     ),
     GoRoute(
       path: '/note/:id',
       builder: (context, state) {
         final note = state.extra as Note?;
-        assert( note != null); // TODO: fetch note if unset
+        assert(note != null); // TODO: fetch note if unset
         return NoteViewerPage(note: note!);
       },
     ),
@@ -59,18 +59,18 @@ final GoRouter router = GoRouter(
       path: '/note/:id/edit',
       builder: (context, state) {
         final note = state.extra as Note?;
-        assert( note != null); // TODO: fetch note if unset
+        assert(note != null); // TODO: fetch note if unset
         return NoteEditorPage(note: note!);
-      }
+      },
     ),
     GoRoute(
       path: '/login',
       builder: (context, state) {
         return LoginPage();
-      }
-    )
+      },
+    ),
   ],
   errorBuilder: (context, state) {
     return ErrorPage(error: state.error.toString());
-  }
+  },
 );

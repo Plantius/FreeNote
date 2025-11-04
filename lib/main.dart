@@ -16,7 +16,9 @@ Future<void> main() async {
   AuthService.instance.userStream.listen((state) {
     User? user = AuthService.instance.user;
     String userState = user == null ? '(null)' : user.email!;
-    logger.i('Authentication state change: ${state.event}, user is now $userState');
+    logger.i(
+      'Authentication state change: ${state.event}, user is now $userState',
+    );
   });
 
   await AuthService.instance.signOut();
