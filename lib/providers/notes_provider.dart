@@ -28,16 +28,11 @@ class NotesProvider with ChangeNotifier {
     try {
       _notes = await database.fetchNotes();
       for (var note in _notes!) {
-        final cachedContent = await CacheService.loadNoteIfUpToDate(
-          note.id,
-          note.updatedAt,
-        );
-
-        if (cachedContent != null) {
+        if (await CacheService.isNoteUpToDate(note.id, note.updatedAt)) {
           note = Note(
             id: note.id,
             title: note.title,
-            content: cachedContent,
+            content: note.content,
             createdAt: note.createdAt,
             updatedAt: note.updatedAt,
           );
@@ -72,6 +67,5 @@ class NotesProvider with ChangeNotifier {
       logger.e("No note found with id $id, locally or in the cloud.");
       return null;
     }
-    
   }
 }

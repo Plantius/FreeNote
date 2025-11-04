@@ -41,7 +41,7 @@ class CacheService {
     logger.i('Cached note ${note.id} locally');
   }
 
-  static Future<String?> loadNoteIfUpToDate(int id, DateTime updatedAt) async {
+  static Future<bool> isNoteUpToDate(int id, DateTime updatedAt) async {
     final noteFile = await _noteFile(id);
     final metaFile = await _metaFile(id);
 
@@ -53,14 +53,14 @@ class CacheService {
         if (cachedTimestamp != null &&
             cachedTimestamp.isAtSameMomentAs(updatedAt)) {
           logger.i('Loaded note $id from cache');
-          return await noteFile.readAsString();
+          return true;
         }
       } catch (e) {
         logger.w('Failed to read meta for note $id: $e');
       }
     }
 
-    return null;
+    return false;
   }
 
   static Future<Note?> loadNoteFromCache(int id) async {
@@ -70,7 +70,7 @@ class CacheService {
 
     final content = await File(noteFile.path).readAsString();
 
-    String title = 'Offline Note $id';
+    String title = 'Note $id';
     DateTime createdAt = DateTime.now();
     DateTime updatedAt = DateTime.now();
 

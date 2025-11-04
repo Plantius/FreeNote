@@ -24,7 +24,9 @@ class DatabaseService {
         .eq('user_notes.user_id', userId)
         .order('updated_at', ascending: false);
 
-    logger.i('Successfully fetched notes for user $userId');
+    logger.i(
+      'Successfully fetched notes for user ${supabase.auth.currentUser?.email}',
+    );
 
     return (response as List).map((note) => Note.fromJson(note)).toList();
   }
