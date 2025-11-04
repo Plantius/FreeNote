@@ -222,6 +222,7 @@ class CustomSearchDelegate extends SearchDelegate{
           return ListTile(
             title: Text(result), //returns the name as fruit as index tile on the found search answers
             //TODO: Potentially change what it shows, maybe show the context of the note too?
+            //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
           );
         },
       );
