@@ -66,7 +66,7 @@ class CacheService {
   static Future<Note?> loadNoteFromCache(int id) async {
     final noteFile = await _noteFile(id);
     final metaFile = await _metaFile(id);
-    if (!await metaFile.exists()) return null;
+    if (!await noteFile.exists() | !await metaFile.exists()) return null;
 
     final content = await File(noteFile.path).readAsString();
 
@@ -74,15 +74,13 @@ class CacheService {
     DateTime createdAt = DateTime.now();
     DateTime updatedAt = DateTime.now();
 
-    if (await metaFile.exists()) {
-      try {
-        final metaData = jsonDecode(await metaFile.readAsString());
-        title = metaData['title'] ?? title;
-        createdAt = DateTime.tryParse(metaData['created_at']) ?? createdAt;
-        updatedAt = DateTime.tryParse(metaData['updated_at']) ?? updatedAt;
-      } catch (e) {
-        logger.w('Failed to parse meta for note $id: $e');
-      }
+    try {
+      final metaData = jsonDecode(await metaFile.readAsString());
+      title = metaData['title'] ?? title;
+      createdAt = DateTime.tryParse(metaData['created_at']) ?? createdAt;
+      updatedAt = DateTime.tryParse(metaData['updated_at']) ?? updatedAt;
+    } catch (e) {
+      logger.w('Failed to parse meta for note $id: $e');
     }
 
     return Note(
@@ -106,8 +104,11 @@ class CacheService {
         RegExp(r'note_(\d+)\.md').firstMatch(file.path)?.group(1) ?? '',
       );
       if (id == null) continue;
+      final note = await loadNoteFromCache(id);
 
-      cachedNotes.add(await loadNoteFromCache(id));
+      if (note == null) continue;
+
+      cachedNotes.add(note);
     }
 
     return cachedNotes;
