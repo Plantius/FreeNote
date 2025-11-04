@@ -64,4 +64,14 @@ class NotesProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  Future<Note?> loadNote(int id) async {
+    var note = await CacheService.loadNoteFromCache(id);
+    note ??= await database.fetchNote(id);
+    if (note == null) {
+      logger.e("No note found with id $id, locally or in the cloud.");
+      return null;
+    }
+    
+  }
 }

@@ -33,6 +33,7 @@ class CacheService {
     final metaData = {
       'id': note.id,
       'title': note.title,
+      'created_at': note.createdAt.toIso8601String(),
       'updated_at': note.updatedAt.toIso8601String(),
     };
     await metaFile.writeAsString(jsonEncode(metaData));
@@ -62,6 +63,37 @@ class CacheService {
     return null;
   }
 
+  static Future<Note?> loadNoteFromCache(int id) async {
+    final noteFile = await _noteFile(id);
+    final metaFile = await _metaFile(id);
+    if (!await metaFile.exists()) return null;
+
+    final content = await File(noteFile.path).readAsString();
+
+    String title = 'Offline Note $id';
+    DateTime createdAt = DateTime.now();
+    DateTime updatedAt = DateTime.now();
+
+    if (await metaFile.exists()) {
+      try {
+        final metaData = jsonDecode(await metaFile.readAsString());
+        title = metaData['title'] ?? title;
+        createdAt = DateTime.tryParse(metaData['created_at']) ?? createdAt;
+        updatedAt = DateTime.tryParse(metaData['updated_at']) ?? updatedAt;
+      } catch (e) {
+        logger.w('Failed to parse meta for note $id: $e');
+      }
+    }
+
+    return Note(
+      id: id,
+      title: title,
+      content: content,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   static Future<List<Note>> loadAllNotesFromCache() async {
     final dir = Directory(await _notesDirPath());
     if (!await dir.exists()) return [];
@@ -75,31 +107,7 @@ class CacheService {
       );
       if (id == null) continue;
 
-      final content = await File(file.path).readAsString();
-      final metaFile = await _metaFile(id);
-
-      String title = 'Offline Note $id';
-      DateTime updatedAt = DateTime.now();
-
-      if (await metaFile.exists()) {
-        try {
-          final metaData = jsonDecode(await metaFile.readAsString());
-          title = metaData['title'] ?? title;
-          updatedAt = DateTime.tryParse(metaData['updated_at']) ?? updatedAt;
-        } catch (e) {
-          logger.w('Failed to parse meta for note $id: $e');
-        }
-      }
-
-      cachedNotes.add(
-        Note(
-          id: id,
-          title: title,
-          content: content,
-          createdAt: updatedAt,
-          updatedAt: updatedAt,
-        ),
-      );
+      cachedNotes.add(await loadNoteFromCache(id));
     }
 
     return cachedNotes;

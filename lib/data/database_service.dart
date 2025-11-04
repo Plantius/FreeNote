@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/data/supabase.dart';
 import 'package:free_note/event_logger.dart';
@@ -26,6 +27,26 @@ class DatabaseService {
     logger.i('Successfully fetched notes for user $userId');
 
     return (response as List).map((note) => Note.fromJson(note)).toList();
+  }
+
+  Future<Note?> fetchNote(int id) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    final response = await supabase
+        .from('notes')
+        .select('*, user_notes(*)')
+        .eq('user_notes.user_id', userId)
+        .eq('id', id)
+        .maybeSingle();
+
+    if (response == null) {
+      logger.w('No note found with id $id for user $userId');
+      return null;
+    }
+
+    logger.i('Successfully fetched note with id $id for user $userId');
+    return Note.fromJson(response);
   }
 
   Future<List<Note>> fetchCalendar() async {
@@ -61,7 +82,7 @@ class DatabaseService {
   }
 
   Future<void> updateNote(int id, String title, String content) async {
-    await supabase 
+    await supabase
         .from('notes')
         .update({'title': title, 'content': content})
         .eq('id', id);
