@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:free_note/pages/error_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:free_note/widgets/app_scaffold.dart';
 import 'package:free_note/pages/note_viewer_page.dart';
@@ -59,4 +61,7 @@ final GoRouter router = GoRouter(
       }
     )
   ],
+  errorBuilder: (context, state) {
+    return ErrorPage(error: state.error.toString());
+  }
 );
