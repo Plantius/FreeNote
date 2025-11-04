@@ -93,11 +93,12 @@ class SearchButton extends StatelessWidget {
             child: SizedBox(
               height: 45,
               width: 45,
-              child: TextButton(
-                onPressed: (){
-                  //TODO: Write code here
+              child: IconButton(
+                onPressed: () {
+                  showSearch(context: context, delegate: CustomSearchDelegate(),);
                 }, 
-                child: Icon(Icons.search)),
+                icon: const Icon(Icons.search),
+                )
             )
           );
   }
@@ -178,5 +179,71 @@ class AddMenuItems extends StatelessWidget {
             child: Icon(Icons.draw)),
       ],
     );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate{
+  List<String> searchTerms = ['Apple', 'Banana', 'Pear']; //TODO: Replace this list by what you pull from database!
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null); 
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) { //TODO: Fix Search Function / make it more efficient
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())){
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result), //returns the name as fruit as index tile on the found search answers
+            //TODO: Potentially change what it shows, maybe show the context of the note too?
+          );
+        },
+      );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result), //returns the name as fruit as index tile on the found search answers
+            //TODO: Potentially change what it shows, maybe show the context of the note too?
+          );
+        },
+      );
   }
 }
