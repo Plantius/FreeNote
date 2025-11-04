@@ -1,19 +1,22 @@
-import 'package:flutter/material.dart';
+import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/pages/error_page.dart';
+import 'package:free_note/pages/login_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:free_note/widgets/app_scaffold.dart';
 import 'package:free_note/pages/note_viewer_page.dart';
 import 'package:free_note/pages/note_editor_page.dart';
 import 'package:free_note/pages/notes_page.dart';
 import 'package:free_note/pages/calendar_page.dart';
-
-import '../models/note.dart';
+import 'package:free_note/models/note.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
   redirect: (context, state) {
-    // Authentication checks should go here:
-    // If not logged_in(): return '/login'
+    final supabase = SupabaseService.client;
+
+    if (supabase.auth.currentUser == null) {
+      return '/login';
+    }
 
     if (state.matchedLocation == '/') {
       return '/notes';
@@ -58,6 +61,12 @@ final GoRouter router = GoRouter(
         final note = state.extra as Note?;
         assert( note != null); // TODO: fetch note if unset
         return NoteEditorPage(note: note!);
+      }
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) {
+        return LoginPage();
       }
     )
   ],
