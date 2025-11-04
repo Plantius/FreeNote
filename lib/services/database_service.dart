@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:free_note/models/note.dart';
-import 'package:free_note/data/supabase.dart';
+import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
 
 class DatabaseService {

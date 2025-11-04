@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/data/cache_service.dart';
+import 'package:free_note/services/cache_service.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
-import 'package:free_note/data/database_service.dart';
+import 'package:free_note/services/database_service.dart';
 
 class NotesProvider with ChangeNotifier {
   final DatabaseService database;
