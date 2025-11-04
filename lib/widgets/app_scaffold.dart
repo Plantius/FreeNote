@@ -112,12 +112,20 @@ class AddButton extends StatelessWidget {
             child: SizedBox(
               height: 45,
               width: 45,
-              child: TextButton(
-                onPressed: (){
-                  //TODO: Write code here
-                }, 
-                child: Icon(Icons.add)),
+              child: AddNotePopupMenu(),
             )
           );
+  }
+}
+
+class AddNotePopupMenu extends StatelessWidget {
+  const AddNotePopupMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Icon(Icons.add),
+    );
   }
 }
