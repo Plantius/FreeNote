@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:free_note/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -12,19 +15,29 @@ class AuthService {
   }
 
   Future<User?> signIn(String email, String password) async {
-    final response = await _supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-    return response.user;
+    try {
+      final response = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      return response.user;
+    } catch (e) {
+      logger.e(e.toString());
+      return null;
+    }
   }
 
   Future<User?> signUp(String email, String password) async {
-    final response = await _supabase.auth.signUp(
-      email: email,
-      password: password,
-    );
-    return response.user;
+    try {
+      final response = await _supabase.auth.signUp(
+        email: email,
+        password: password,
+      );
+      return response.user;
+    } catch (e) {
+      logger.e(e.toString());
+      return null;
+    }
   }
 
   Future<void> signOut() async {

@@ -12,23 +12,54 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Log In')),
       body: Column(
         children: [
-          const Text('Username...'),
-          const Text('Password...'),
+          Form(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                ),
+                ElevatedButton(
+                  onPressed: _submitLogin, 
+                  child: const Text('Log In'),
+                )
+              ],
+            )
+          ),
           IconButton(
-            onPressed: () async {
-              _debugLogin();
-            },
-            icon: Icon(Icons.auto_awesome),
+            onPressed: _debugLogin, 
+            icon: const Icon(Icons.auto_awesome)
           ),
         ],
-      ),
+      ) 
     );
+  }
+
+  void _submitLogin() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    bool success = await context.read<AuthProvider>().signIn(email, password);
+    
+    if (success) {
+      if (mounted) {
+        context.go('/');
+      }
+    }
   }
 
   void _debugLogin() async {
