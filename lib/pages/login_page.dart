@@ -16,45 +16,122 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _isSignUp = false;
+
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Log In')),
-      body: Column(
-        children: [
-          Form(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                // Text(
+                //   _isSignUp
+                //     ? 'Sign Up'
+                //     : 'Sign In',
+                //   style: Theme.of(context).textTheme.titleLarge,
+                // ),
+
+                _buildForm(context, auth),
+
+                SizedBox(
+                  height: 20,
                 ),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
+
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isSignUp = !_isSignUp;
+                    });
+                  }, 
+                  child: _isSignUp 
+                    ? const Text('Have an account? Sign in')
+                    : const Text('New here? Sign up')
                 ),
-                ElevatedButton(
-                  onPressed: _submitLogin, 
-                  child: const Text('Log In'),
-                )
+
+                SizedBox(
+                  height: 20,
+                ),
+
+                IconButton(
+                  onPressed: _debugLogin, 
+                  icon: const Icon(Icons.auto_awesome)
+                ),
               ],
-            )
+            ),
           ),
-          IconButton(
-            onPressed: _debugLogin, 
-            icon: const Icon(Icons.auto_awesome)
-          ),
-        ],
+        ),
       ) 
     );
   }
 
+  Widget _buildForm(BuildContext context, AuthProvider auth) {
+    return Form(
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email Address'
+            ),
+          ),
+
+          TextFormField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password'
+            ),
+          ),
+
+          SizedBox(
+            height: 20,
+          ),
+
+          ElevatedButton(
+            onPressed: auth.loading ? null : _submitLogin, 
+            child: auth.loading 
+              ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(),
+              )
+              : Text(
+                _isSignUp
+                  ? 'Register'
+                  : 'Log In'
+                )
+          )
+        ],
+      )
+    );
+  }
+
   void _submitLogin() async {
+    // if (!_formKey.currentState!.validate()) {
+    //   return;
+    // }
+
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    bool success = await context.read<AuthProvider>().signIn(email, password);
-    
+    AuthProvider auth = context.read<AuthProvider>();
+
+    late bool success;
+    if (_isSignUp) {
+      success = await auth.signUp(email, password);
+    } else {
+      success = await auth.signIn(email, password);
+    }
+
+    print('Success? $success Mounted? $mounted');
+
     if (success) {
       if (mounted) {
         context.go('/');

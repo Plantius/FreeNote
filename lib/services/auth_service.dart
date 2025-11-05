@@ -33,6 +33,10 @@ class AuthService {
         email: email,
         password: password,
       );
+
+      logger.i('Session: ${response.session}');
+      logger.i('User: ${response.user}');
+
       return response.user;
     } catch (e) {
       logger.e(e.toString());

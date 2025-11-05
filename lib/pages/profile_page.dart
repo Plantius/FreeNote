@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
-import 'package:free_note/pages/error_page.dart';
 import 'package:free_note/providers/auth_provider.dart';
 import 'package:free_note/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
