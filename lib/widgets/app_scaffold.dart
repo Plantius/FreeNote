@@ -20,6 +20,14 @@ class AppScaffold extends StatelessWidget {
       appBar: AppBar(
         title: const Text('FreeNote AppBar'),
         backgroundColor: colors.primary,
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.push('/profile');
+            },
+            icon: Icon(Icons.person),
+          ),
+        ],
       ),
       body: Column(
         children: [
