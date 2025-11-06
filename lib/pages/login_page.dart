@@ -72,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForm(BuildContext context, AuthProvider auth) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
@@ -80,6 +81,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(
               labelText: 'Email Address'
             ),
+            validator: _emailValidator,
           ),
 
           TextFormField(
@@ -88,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(
               labelText: 'Password'
             ),
+            validator: _passwordValidator,
           ),
 
           SizedBox(
@@ -114,9 +117,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _submitLogin() async {
-    // if (!_formKey.currentState!.validate()) {
-    //   return;
-    // }
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
     String email = _emailController.text;
     String password = _passwordController.text;
@@ -154,5 +157,32 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       logger.e('Logging into development account failed');
     }
+  }
+
+  String? _emailValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your email";
+    }
+
+    final valid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      .hasMatch(value);
+    
+    if (!valid) {
+      return "Please enter a valid email address";
+    }
+
+    return null;
+  }
+
+  String? _passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your password";
+    }
+
+    if (value.length < 8) {
+      return "Password must be at least 8 characters";
+    }
+
+    return null;
   }
 }
