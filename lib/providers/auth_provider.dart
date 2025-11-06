@@ -39,10 +39,8 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       _user = await func(email, password);
-    } on AuthApiException catch (e) {
+    } on AuthException catch (e) {
       _error = e.message;
-    } on AuthRetryableFetchException {
-      _error = "Network error";
     } catch (e) {
       logger.e(e);
     }
