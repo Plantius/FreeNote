@@ -6,11 +6,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService.instance;
   User? _user;
-  bool _error = false;
+  String? _error;
   bool _loading = false;
 
   User? get user => _user;
-  bool get error => _error;
+  String? get error => _error;
   bool get loading => _loading;
 
   AuthProvider() {
@@ -21,38 +21,49 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signIn(String email, String password) async {
-    _loading = true; 
-    _error = false;
-    notifyListeners();
-
-    _user = await _authService.signIn(email, password);
-    _loading = false;
-    _error = _user == null;
-    notifyListeners();
-
-    return _user != null;
+    return _authenticate(email, password, _authService.signIn);
   }
 
   Future<bool> signUp(String email, String password) async {
+    return _authenticate(email, password, _authService.signUp);
+  }
+
+  Future<bool> _authenticate(
+    String email, String password, 
+    Future<User?> Function(String, String) func
+  ) async {
     _loading = true; 
-    _error = false;
+    _error = null;
+    _user = null;
     notifyListeners();
 
-    _user = await _authService.signUp(email, password);
+    try {
+      _user = await func(email, password);
+    } on AuthApiException catch (e) {
+      _error = e.message;
+    } on AuthRetryableFetchException {
+      _error = "Network error";
+    } catch (e) {
+      logger.e(e);
+    }
+
+    if (_user == null && _error == null) {
+      _error = "Unknown error";
+    }
+
     _loading = false;
-    _error = _user == null;
     notifyListeners();
 
-    logger.i('Sign up? $_user $_loading $_error');
-
-    return _user != null;
+    return _error == null;
   }
 
   Future<void> signOut() async { // TODO: should signout have errors?
     _loading = false;
-    _error = false;
+    _error = null;
     _user = null;
+
     await _authService.signOut();
+    
     notifyListeners();
   }
 }

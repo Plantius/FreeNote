@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 IconButton(
-                  onPressed: _debugLogin, 
+                  onPressed: () => _debugLogin(auth),
                   icon: const Icon(Icons.auto_awesome)
                 ),
               ],
@@ -139,11 +139,19 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         context.go('/');
       }
+    } else {
+      if (mounted) {
+        _loginError(
+          _isSignUp
+            ? "Sign up failed: ${auth.error}"
+            : "Login failed: ${auth.error}"
+        );
+      }
     }
   }
 
-  void _debugLogin() async {
-    final success = await context.read<AuthProvider>().signIn(
+  void _debugLogin(AuthProvider auth) async {
+    final success = await auth.signIn(
       'test@example.com',
       'supersecret',
     );
@@ -155,8 +163,22 @@ class _LoginPageState extends State<LoginPage> {
         context.go('/');
       }
     } else {
-      logger.e('Logging into development account failed');
+      logger.e('Debug login failed: ${auth.error}');
     }
+  }
+
+  void _loginError(String error) {
+    final snackBar = SnackBar(
+      content: Text(
+        error,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.black.withValues(alpha: 0.5),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   String? _emailValidator(String? value) {
