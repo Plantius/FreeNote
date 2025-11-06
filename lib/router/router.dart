@@ -1,3 +1,4 @@
+import 'package:free_note/pages/profile_page.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/pages/error_page.dart';
 import 'package:free_note/pages/login_page.dart';
@@ -67,6 +68,12 @@ final GoRouter router = GoRouter(
       path: '/login',
       builder: (context, state) {
         return LoginPage();
+      },
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) {
+        return ProfilePage();
       },
     ),
   ],
