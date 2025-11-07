@@ -37,7 +37,7 @@ class NoteEditorPageState extends State<NoteEditorPage> {
         actions: [
           IconButton(
             onPressed: () {
-              context.watch<NotesProvider>().;
+              // context.watch<NotesProvider>();
             },
             icon: Icon(Icons.person),
           ),
