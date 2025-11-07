@@ -8,10 +8,10 @@ class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
 
   @override
-  NotesPageState createState() => NotesPageState();
+  State<NotesPage> createState() => _NotesPageState();
 }
 
-class NotesPageState extends State<NotesPage> {
+class _NotesPageState extends State<NotesPage> {
   @override
   void initState() {
     super.initState();

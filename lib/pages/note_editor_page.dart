@@ -7,10 +7,10 @@ class NoteEditorPage extends StatefulWidget {
   const NoteEditorPage({super.key, required this.note});
 
   @override
-  NoteEditorPageState createState() => NoteEditorPageState();
+  State<NoteEditorPage> createState() => _NoteEditorPageState();
 }
 
-class NoteEditorPageState extends State<NoteEditorPage> {
+class _NoteEditorPageState extends State<NoteEditorPage> {
   late TextEditingController _controller;
 
   @override

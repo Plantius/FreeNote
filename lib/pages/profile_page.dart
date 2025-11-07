@@ -6,9 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     User? user = AuthService.instance.user;
@@ -22,18 +27,26 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-      body: Column(
-        children: [
-          const Text('Stub for profile page'),
-          TextButton(
-            onPressed: () async {
-              context.read<AuthProvider>().signOut();
-              context.go('/login');
-            }, 
-            child: const Text('Sign Out'),
-          )
-        ],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: _logOutAction,
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _logOutAction() async {
+    await context.read<AuthProvider>().signOut();
+
+    if (mounted) {
+      context.go('/login');
+    }
   }
 }
