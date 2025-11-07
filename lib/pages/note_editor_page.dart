@@ -37,19 +37,24 @@ class NoteEditorPageState extends State<NoteEditorPage> {
         actions: [
           IconButton(
             onPressed: () {
-              // context.watch<NotesProvider>();
+              widget.note.content = _controller.text;
+              context.read<NotesProvider>().saveNote(widget.note);
             },
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.save),
           ),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              maxLines: null,
-              decoration: InputDecoration.collapsed(hintText: '...'),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration.collapsed(hintText: '...'),
+              ),
             ),
           ),
         ],

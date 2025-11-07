@@ -70,13 +70,14 @@ class NotesProvider with ChangeNotifier {
 
   Future<void> saveNote(Note note) async {
     try {
-      final savedNote = await database.saveNote(note);
-      await CacheService.saveNote(savedNote);
-      final index = _notes?.indexWhere((n) => n.id == savedNote.id);
+      await database.updateNote(note);
+      await CacheService.saveNote(note);
+      
+      final index = _notes?.indexWhere((n) => n.id == note.id);
       if (index != null && index >= 0) {
-        _notes![index] = savedNote;
+        _notes![index] = note;
       } else {
-        _notes = [...?_notes, savedNote];
+        _notes = [...?_notes, note];
       }
       notifyListeners();
     } catch (e) {

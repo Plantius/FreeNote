@@ -83,11 +83,16 @@ class DatabaseService {
     return Note.fromJson(inserted);
   }
 
-  Future<void> updateNote(int id, String title, String content) async {
-    await supabase
-        .from('notes')
-        .update({'title': title, 'content': content})
-        .eq('id', id);
+  Future<void> updateNote(Note note) async {
+    try {
+      await supabase
+          .from('notes')
+          .update({'title': note.title, 'content': note.content})
+          .eq('id', note.id);
+    } catch (e) {
+      logger.e('Failed to update note ${note.id}: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteNote(int id) async {
