@@ -63,24 +63,39 @@ class NotesProvider with ChangeNotifier {
     var note = await CacheService.loadNoteFromCache(id);
     note ??= await database.fetchNote(id);
     if (note == null) {
-      logger.e("No note found with id $id, locally or in the cloud.");
+      logger.e('No note found with id $id, locally or in the cloud.');
       return null;
     }
   }
 
   Future<void> saveNote(Note note) async {
     try {
-      final savedNote = await database.saveNote(note);
-      await CacheService.saveNote(savedNote);
-      final index = _notes?.indexWhere((n) => n.id == savedNote.id);
-      if (index != null && index >= 0) {
-        _notes![index] = savedNote;
+      if (note.id == 0) {
+        final createdNote = await database.createNote(note);
+        if (createdNote != null) {
+          note = createdNote;
+        } else {
+          throw Exception('Failed to create note in database.');
+        }
       } else {
-        _notes = [...?_notes, savedNote];
+        note.updatedAt = DateTime.now();
       }
+      await database.updateNote(note);
       notifyListeners();
     } catch (e) {
-      logger.e('Failed to save note ${note.id}: $e');
+      logger.w('Failed to save note ${note.id} to database: $e');
+      try {
+        await CacheService.saveNote(note);
+
+        final index = _notes?.indexWhere((n) => n.id == note.id);
+        if (index != null && index >= 0) {
+          _notes![index] = note;
+        } else {
+          _notes = [...?_notes, note];
+        }
+      } catch (e) {
+        logger.e('Failed to save note ${note.id} to cache: $e');
+      }
       throw Exception('Failed to save note: $e');
     }
   }

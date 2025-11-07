@@ -20,7 +20,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text('Profile', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Column(
         children: [
@@ -29,9 +29,9 @@ class ProfilePage extends StatelessWidget {
             onPressed: () async {
               context.read<AuthProvider>().signOut();
               context.go('/login');
-            }, 
+            },
             child: const Text('Sign Out'),
-          )
+          ),
         ],
       ),
     );

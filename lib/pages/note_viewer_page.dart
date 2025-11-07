@@ -11,7 +11,7 @@ class NoteViewerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(note.title),
+        title: Text(note.title, style: Theme.of(context).textTheme.titleLarge),
         actions: [
           IconButton(
             onPressed: () {
@@ -20,6 +20,7 @@ class NoteViewerPage extends StatelessWidget {
             icon: Icon(Icons.edit),
           ),
         ],
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: MarkdownViewer(data: note.content),
     );
