@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/models/note.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 
@@ -142,8 +143,8 @@ class AddNotePopupMenu extends StatelessWidget {
       onTap: () => showPopover(
         context: context,
         bodyBuilder: (context) => AddMenuItems(),
-        width: 50,
-        height: 135,
+        // width: 50,
+        height: 140,
         backgroundColor: Colors.deepPurple,
         direction: PopoverDirection.top,
       ),
@@ -158,13 +159,21 @@ class AddMenuItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         //1st Menu option
         TextButton(
           onPressed: () {
-            //TODO: Write code here
+            final note = Note(
+              id: 0,
+              title: 'New Note',
+              content: '',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            );
+            context.push('/note/${note.id}/edit', extra: note);
           },
-          child: Icon(Icons.note),
+          child: Icon(Icons.note, size: 30, color: Colors.white),
         ),
 
         //2nd menu option
@@ -172,7 +181,7 @@ class AddMenuItems extends StatelessWidget {
           onPressed: () {
             //TODO: Write code here
           },
-          child: Icon(Icons.audio_file),
+          child: Icon(Icons.audio_file, size: 30, color: Colors.white),
         ),
 
         //3rd menu option
@@ -180,7 +189,7 @@ class AddMenuItems extends StatelessWidget {
           onPressed: () {
             //TODO: Write code here
           },
-          child: Icon(Icons.timer),
+          child: Icon(Icons.timer, size: 30, color: Colors.white),
         ),
 
         //4th menu option
@@ -188,7 +197,7 @@ class AddMenuItems extends StatelessWidget {
           onPressed: () {
             //TODO: Write code here
           },
-          child: Icon(Icons.draw),
+          child: Icon(Icons.draw, size: 30, color: Colors.white),
         ),
       ],
     );

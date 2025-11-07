@@ -65,29 +65,34 @@ class DatabaseService {
     return (response as List).map((note) => Note.fromJson(note)).toList();
   }
 
-  Future<Note?> createNote(String title, String content) async {
+  Future<Note?> createNote(Note note) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;
 
-    final inserted = await supabase
-        .from('notes')
-        .insert({'title': title, 'content': content})
-        .select()
-        .single();
-
-    await supabase.from('user_notes').insert({
-      'user_id': userId,
-      'note_id': inserted['id'],
-    });
-
-    return Note.fromJson(inserted);
+    try {
+      final inserted = await supabase
+          .rpc(
+            'create_note_with_user',
+            params: {'p_title': note.title, 'p_content': note.content},
+          )
+          .select()
+          .single();
+      return Note.fromJson(inserted);
+    } catch (e) {
+      logger.e('Failed to create note for user $userId: $e');
+      rethrow;
+    }
   }
 
   Future<void> updateNote(Note note) async {
     try {
       await supabase
           .from('notes')
-          .update({'title': note.title, 'content': note.content})
+          .update({
+            'title': note.title,
+            'content': note.content,
+            'updated_at': note.updatedAt.toIso8601String(),
+          })
           .eq('id', note.id);
     } catch (e) {
       logger.e('Failed to update note ${note.id}: $e');
