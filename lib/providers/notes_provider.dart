@@ -84,4 +84,9 @@ class NotesProvider with ChangeNotifier {
       throw Exception('Failed to save note: $e');
     }
   }
+
+  Future<void> createNote() async {
+    //TODO: Add note creation here
+    print("Do we reach here?");
+  }
 }
