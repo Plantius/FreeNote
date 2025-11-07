@@ -28,18 +28,17 @@ class NotesProvider with ChangeNotifier {
     try {
       _notes = await database.fetchNotes();
       for (var note in _notes!) {
-        if (await CacheService.isNoteUpToDate(note.id, note.updatedAt)) {
-          note = Note(
-            id: note.id,
-            title: note.title,
-            content: note.content,
-            createdAt: note.createdAt,
-            updatedAt: note.updatedAt,
-          );
-        } else {
+        if (!await CacheService.isNoteUpToDate(note.id, note.updatedAt)) {
           logger.i('Note ${note.id} is behind, saving to cache.');
           await CacheService.saveNote(note);
         }
+        note = Note(
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
+        );
       }
     } catch (e) {
       _errorMessage = 'Failed to fetch nodes: $e';
@@ -66,6 +65,23 @@ class NotesProvider with ChangeNotifier {
     if (note == null) {
       logger.e("No note found with id $id, locally or in the cloud.");
       return null;
+    }
+  }
+
+  Future<void> saveNote(Note note) async {
+    try {
+      final savedNote = await database.saveNote(note);
+      await CacheService.saveNote(savedNote);
+      final index = _notes?.indexWhere((n) => n.id == savedNote.id);
+      if (index != null && index >= 0) {
+        _notes![index] = savedNote;
+      } else {
+        _notes = [...?_notes, savedNote];
+      }
+      notifyListeners();
+    } catch (e) {
+      logger.e('Failed to save note ${note.id}: $e');
+      throw Exception('Failed to save note: $e');
     }
   }
 }
