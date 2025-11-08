@@ -20,7 +20,15 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   bool unsavedchanges = false; //If True unsaved changes are present
 
   void setUnsavedTrue() {
-    unsavedchanges = true;
+    setState((){
+      unsavedchanges = true;
+    });
+  }
+
+  void setUnsavedFalse() {
+    setState((){
+      unsavedchanges = false;
+    });
   }
 
   @override
@@ -89,18 +97,14 @@ class NoteEditorPageState extends State<NoteEditorPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
+            onPressed: unsavedchanges
+            ? ( ) {
               widget.note.content = _contentController.text;
               widget.note.title = _titleController.text;
-              unsavedchanges = false;
-              /*showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Text('test')
-                  ;},
-                );*/ //Alternatively: Have it so the save button is grayed out until changes are saved
+              setUnsavedFalse();
               context.read<NotesProvider>().saveNote(widget.note);
-            },
+            }
+            : null,
             icon: Icon(Icons.save),
           ),
         ],
