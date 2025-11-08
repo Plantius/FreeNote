@@ -4,6 +4,7 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class NoteEditorPage extends StatefulWidget {
   final Note note;
@@ -16,6 +17,11 @@ class NoteEditorPage extends StatefulWidget {
 class NoteEditorPageState extends State<NoteEditorPage> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  bool unsavedchanges = false; //If True unsaved changes are present
+
+  void setUnsavedTrue() {
+    unsavedchanges = true;
+  }
 
   @override
   void initState() {
@@ -37,6 +43,35 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            if(unsavedchanges == true)
+            {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('You have unsaved changes. Discard these?'),
+                    actions: [
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      TextButton(
+                        child: const Text('Yes'),
+                        onPressed: () => context.go('/'), /*Navigator.of(context).popUntil(
+                          ModalRoute.withName('/'),*/
+                        //),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         title: TextField(
           controller: _titleController,
           keyboardType: TextInputType.text,
@@ -45,12 +80,19 @@ class NoteEditorPageState extends State<NoteEditorPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
           ],
+          onChanged: (value) => {
+            if(unsavedchanges == false)
+            {
+              setUnsavedTrue()
+            }
+          },
         ),
         actions: [
           IconButton(
             onPressed: () {
               widget.note.content = _contentController.text;
               widget.note.title = _titleController.text;
+              unsavedchanges = false;
               context.read<NotesProvider>().saveNote(widget.note);
             },
             icon: Icon(Icons.save),
@@ -68,6 +110,12 @@ class NoteEditorPageState extends State<NoteEditorPage> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: const InputDecoration.collapsed(hintText: '...'),
+                onChanged: (value) => {
+                  if(unsavedchanges == false)
+                  {
+                    setUnsavedTrue()
+                  }
+                },
               ),
             ),
           ),
