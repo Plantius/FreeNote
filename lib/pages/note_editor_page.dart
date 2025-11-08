@@ -4,6 +4,7 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class NoteEditorPage extends StatefulWidget {
   final Note note;
@@ -50,17 +51,17 @@ class NoteEditorPageState extends State<NoteEditorPage> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text("You have unsaved changes. Discard these?"),
+                    title: const Text('You have unsaved changes. Discard these?'),
                     actions: [
                       TextButton(
-                        child: const Text("No"),
+                        child: const Text('No'),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                       TextButton(
-                        child: const Text("Yes"),
-                        onPressed: () => Navigator.of(context).popUntil(
-                          ModalRoute.withName('/'),
-                        ),
+                        child: const Text('Yes'),
+                        onPressed: () => context.go('/'), /*Navigator.of(context).popUntil(
+                          ModalRoute.withName('/'),*/
+                        //),
                       ),
                     ],
                   );
