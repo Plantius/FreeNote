@@ -16,6 +16,11 @@ class NoteEditorPage extends StatefulWidget {
 class NoteEditorPageState extends State<NoteEditorPage> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  bool unsavedchanges = false; //If True unsaved changes are present
+
+  void setUnsavedTrue() {
+    unsavedchanges = true;
+  }
 
   @override
   void initState() {
@@ -37,6 +42,35 @@ class NoteEditorPageState extends State<NoteEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            if(unsavedchanges == true)
+            {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("You have unsaved changes. Discard these?"),
+                    actions: [
+                      TextButton(
+                        child: const Text("No"),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      TextButton(
+                        child: const Text("Yes"),
+                        onPressed: () => Navigator.of(context).popUntil(
+                          ModalRoute.withName('/'),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         title: TextField(
           controller: _titleController,
           keyboardType: TextInputType.text,
@@ -45,12 +79,19 @@ class NoteEditorPageState extends State<NoteEditorPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
           ],
+          onChanged: (value) => {
+            if(unsavedchanges == false)
+            {
+              setUnsavedTrue()
+            }
+          },
         ),
         actions: [
           IconButton(
             onPressed: () {
               widget.note.content = _contentController.text;
               widget.note.title = _titleController.text;
+              unsavedchanges = false;
               context.read<NotesProvider>().saveNote(widget.note);
             },
             icon: Icon(Icons.save),
@@ -68,6 +109,12 @@ class NoteEditorPageState extends State<NoteEditorPage> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: const InputDecoration.collapsed(hintText: '...'),
+                onChanged: (value) => {
+                  if(unsavedchanges == false)
+                  {
+                    setUnsavedTrue()
+                  }
+                },
               ),
             ),
           ),
