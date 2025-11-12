@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/providers/notes_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:provider/provider.dart';
 
 class NoteViewerPage extends StatefulWidget {
   final Note note;
@@ -19,51 +22,95 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   bool editing = true;
 
   @override
+  void initState() {
+    try {
+      _controller.document = Document.fromJson(jsonDecode(widget.note.content));
+    } on FormatException {
+      logger.e('Unconverted note: "${widget.note.title}" (#${widget.note.id}), recovering as plaintext...');
+
+      final delta = Delta();      
+      delta.insert('${widget.note.content}\n');
+      _controller.document = Document.fromDelta(delta);
+    }
+
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
+  void _saveDocument() async {
+    logger.i('Saving note #${widget.note.id}');
+    widget.note.content = jsonEncode(_controller.document.toDelta().toJson());
+    context.read<NotesProvider>().saveNote(widget.note);
+  }
+
+  void _onBackNavigation(bool didPop, dynamic result) async {
+    _saveDocument();
+  }
+
   @override
-  Widget build(BuildContext context) {
-    try {
-      _controller.document = Document.fromJson(jsonDecode(widget.note.content));
-    } on FormatException {
-      logger.e('Unconverted note: "${widget.note.title}" (#${widget.note.id})');
-    }
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.note.title, style: Theme.of(context).textTheme.titleLarge),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                editing = !editing;
-              });
-            },
-            icon: Icon(
-              editing 
-              ? Icons.remove_red_eye 
-              : Icons.edit
-            ),
+  Widget build(BuildContext context) {    
+    return PopScope(
+      onPopInvokedWithResult: _onBackNavigation,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.note.title, 
+            style: Theme.of(context).textTheme.titleLarge
           ),
-        ],
-        backgroundColor: Theme.of(context).colorScheme.primary,
+          actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  editing = !editing;
+                  _controller.readOnly = !editing;
+                });
+              },
+              icon: Icon(
+                editing 
+                ? Icons.remove_red_eye 
+                : Icons.edit
+              ),
+            ),
+          ],
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+        body: _buildNote(context),
       ),
-      body: Column(
+    );
+  }
+
+  Widget _buildNote(BuildContext context) {
+    if (editing) {
+      return Column(
         children: [
-          QuillSimpleToolbar(
-            controller: _controller,
-            config: const QuillSimpleToolbarConfig(),
-          ),
+          _buildToolbar(context),
           Expanded(
-            child: QuillEditor.basic(
-              controller: _controller,
-              config: const QuillEditorConfig(),
-            ),
+            child: _buildEditor(context)
           )
         ],
+      );
+    } else {
+      return _buildEditor(context);
+    }
+  }
+
+  Widget _buildToolbar(BuildContext context) {
+    return QuillSimpleToolbar(
+      controller: _controller,
+      config: const QuillSimpleToolbarConfig(),
+    );
+  }
+
+  Widget _buildEditor(BuildContext context) {
+    return QuillEditor.basic(
+      controller: _controller,
+      config: const QuillEditorConfig(
+        checkBoxReadOnly: false,
       ),
     );
   }
