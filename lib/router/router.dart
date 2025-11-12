@@ -51,7 +51,13 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/note/:id',
       builder: (context, state) {
-        return NoteViewerPage(note: state.extra as Note?);
+        final idString = state.pathParameters['id']!;
+        final id = int.tryParse(idString) ?? 0;
+        
+        return NoteViewerPage(
+          note: state.extra as Note?,
+          noteId: id,
+        );
       },
     ),
     GoRoute(

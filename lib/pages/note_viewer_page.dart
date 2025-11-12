@@ -12,7 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NoteViewerPage extends StatefulWidget {
   final Note? note;
-  const NoteViewerPage({super.key, required this.note});
+  final int noteId;
+  const NoteViewerPage({super.key, required this.note, required this.noteId});
 
   @override
   State<NoteViewerPage> createState() => _NoteViewerPageState();
@@ -21,25 +22,13 @@ class NoteViewerPage extends StatefulWidget {
 class _NoteViewerPageState extends State<NoteViewerPage> {
   final QuillController _controller = QuillController.basic();
   final _focusNode = FocusNode();
+  Note? note;
 
-  bool editing = false;
+  bool editing = true;
 
   @override
   void initState() {
-    if (widget.note == null) {
-      // TODO...
-    }
-
-    try {
-      _controller.document = Document.fromJson(jsonDecode(widget.note!.content));
-    } on FormatException {
-      logger.e('Unconverted note: "${widget.note!.title}" (#${widget.note!.id}), recovering as plaintext...');
-
-      final delta = Delta();      
-      delta.insert('${widget.note!.content}\n');
-      _controller.document = Document.fromDelta(delta);
-    }
-
+    _loadDocument();
     super.initState();
   }
 
@@ -49,10 +38,43 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     super.dispose();
   }
 
+  void _loadDocument() async {
+    if (widget.note == null) {
+      final notes = context.read<NotesProvider>();
+      Note? loadedNote = await notes.loadNote(widget.noteId);
+      if (loadedNote != null) {
+        note = loadedNote;
+      } else {
+        if (mounted) {
+          context.go('/notes');
+        }
+      }
+    } else {
+      note = widget.note!;
+    }
+
+    try {
+      setState(() {
+        final json = jsonDecode(note!.content);
+        _controller.document = Document.fromJson(json);      
+      });
+    } on FormatException {
+      logger.e('Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...');
+
+      setState(() {
+        final delta = Delta();      
+        delta.insert('${note!.content}\n');
+        _controller.document = Document.fromDelta(delta);
+      });
+    }
+  }
+
   void _saveDocument() async {
-    logger.i('Saving note #${widget.note!.id}');
-    widget.note!.content = jsonEncode(_controller.document.toDelta().toJson());
-    context.read<NotesProvider>().saveNote(widget.note!);
+    if (note != null) {
+      logger.i('Saving note #${note!.id}');
+      note!.content = jsonEncode(_controller.document.toDelta().toJson());
+      context.read<NotesProvider>().saveNote(note!);
+    }
   }
 
   void _onBackNavigation(bool didPop, dynamic result) async {
@@ -66,7 +88,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.note!.title, 
+            note?.title ?? 'Loading...', 
             style: Theme.of(context).textTheme.titleLarge
           ),
           actions: [
@@ -168,6 +190,8 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   void _onLaunhUrl(BuildContext context, String href) async {
+    logger.i('Attempting to navigate to `$href`...');
+
     final Uri url = Uri.parse(href);
 
     if (url.scheme == 'freenote') {
