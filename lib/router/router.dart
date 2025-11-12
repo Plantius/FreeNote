@@ -5,7 +5,6 @@ import 'package:free_note/pages/login_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:free_note/widgets/app_scaffold.dart';
 import 'package:free_note/pages/note_viewer_page.dart';
-import 'package:free_note/pages/note_editor_page.dart';
 import 'package:free_note/pages/notes_page.dart';
 import 'package:free_note/pages/calendar_page.dart';
 import 'package:free_note/models/note.dart';
@@ -51,17 +50,13 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/note/:id',
       builder: (context, state) {
-        final note = state.extra as Note?;
-        assert(note != null); // TODO: fetch note if unset
-        return NoteViewerPage(note: note!);
-      },
-    ),
-    GoRoute(
-      path: '/note/:id/edit',
-      builder: (context, state) {
-        final note = state.extra as Note?;
-        assert(note != null); // TODO: fetch note if unset
-        return NoteEditorPage(note: note!);
+        final idString = state.pathParameters['id']!;
+        final id = int.tryParse(idString) ?? 0;
+
+        return NoteViewerPage(
+          note: state.extra as Note?,
+          noteId: id,
+        );
       },
     ),
     GoRoute(

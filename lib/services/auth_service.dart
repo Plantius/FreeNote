@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:free_note/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {

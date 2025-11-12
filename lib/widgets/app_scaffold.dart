@@ -171,7 +171,7 @@ class AddMenuItems extends StatelessWidget {
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             );
-            context.push('/note/${note.id}/edit', extra: note);
+            context.push('/note/${note.id}', extra: note);
           },
           child: Icon(Icons.note, size: 30, color: Colors.white),
         ),

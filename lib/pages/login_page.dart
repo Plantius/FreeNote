@@ -133,8 +133,6 @@ class _LoginPageState extends State<LoginPage> {
       success = await auth.signIn(email, password);
     }
 
-    print('Success? $success Mounted? $mounted');
-
     if (success) {
       if (mounted) {
         context.go('/');
@@ -143,8 +141,8 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         _loginError(
           _isSignUp
-            ? "Sign up failed: ${auth.error}"
-            : "Login failed: ${auth.error}"
+            ? 'Sign up failed: ${auth.error}'
+            : 'Login failed: ${auth.error}'
         );
       }
     }
@@ -183,14 +181,14 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _emailValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return "Please enter your email";
+      return 'Please enter your email';
     }
 
     final valid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
       .hasMatch(value);
     
     if (!valid) {
-      return "Please enter a valid email address";
+      return 'Please enter a valid email address';
     }
 
     return null;
@@ -198,11 +196,11 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _passwordValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return "Please enter your password";
+      return 'Please enter your password';
     }
 
     if (value.length < 8) {
-      return "Password must be at least 8 characters";
+      return 'Password must be at least 8 characters';
     }
 
     return null;

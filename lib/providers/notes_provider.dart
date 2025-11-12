@@ -62,10 +62,13 @@ class NotesProvider with ChangeNotifier {
   Future<Note?> loadNote(int id) async {
     var note = await CacheService.loadNoteFromCache(id);
     note ??= await database.fetchNote(id);
+
     if (note == null) {
       logger.e('No note found with id $id, locally or in the cloud.');
       return null;
     }
+
+    return note;
   }
 
   Future<void> saveNote(Note note) async {
@@ -102,6 +105,6 @@ class NotesProvider with ChangeNotifier {
 
   Future<void> createNote() async {
     //TODO: Add note creation here
-    print("Do we reach here?");
+    debugPrint('Do we reach here?');
   }
 }
