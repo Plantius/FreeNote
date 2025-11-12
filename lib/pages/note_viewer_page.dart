@@ -24,6 +24,9 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   final _focusNode = FocusNode();
   Note? note;
 
+  // NOTE: It would be nicer to start in viewing mode, but links don't work
+  // in that case, but do work when switching back from editing mode, for some 
+  // reason. 
   bool editing = true;
 
   @override
