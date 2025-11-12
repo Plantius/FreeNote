@@ -5,7 +5,6 @@ import 'package:flutter_quill/quill_delta.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,6 +19,8 @@ class NoteViewerPage extends StatefulWidget {
 
 class _NoteViewerPageState extends State<NoteViewerPage> {
   final QuillController _controller = QuillController.basic();
+  final _focusNode = FocusNode();
+
   bool editing = false;
 
   @override
@@ -106,6 +107,13 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       config: QuillSimpleToolbarConfig(
         toolbarIconAlignment: WrapAlignment.start,
 
+        customButtons: [
+          QuillToolbarCustomButtonOptions(
+            icon: const Icon(Icons.note_add),
+            onPressed: _insertNoteLink,
+          )
+        ],
+
         // Disabled some options to make the toolbar more concise. 
         // Could maybe be shown in "advanced mode" or something.
         showIndent: false,
@@ -123,11 +131,32 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   Widget _buildEditor(BuildContext context) {
     return QuillEditor.basic(
       controller: _controller,
+      focusNode: _focusNode,
       config: QuillEditorConfig(
         checkBoxReadOnly: false,
-        onLaunchUrl: _onLaunhUrl
+        onLaunchUrl: _onLaunhUrl,
+        autoFocus: true,
       ),
     );
+  }
+
+  void _insertNoteLink() async {
+    final delta = Delta()
+      ..insert('(link)', {'link': 'https://www.google.com/'});  
+
+    final selection = TextSelection(
+      baseOffset: _controller.selection.baseOffset, 
+      extentOffset: _controller.selection.extentOffset
+    );
+
+    _controller.replaceText(
+      selection.baseOffset, 
+      selection.extentOffset - selection.baseOffset, 
+      delta, 
+      selection
+    );
+
+    FocusScope.of(context).requestFocus(_focusNode);
   }
 
   void _onLaunhUrl(String href) async {
