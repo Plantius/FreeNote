@@ -42,13 +42,13 @@ class AuthProvider extends ChangeNotifier {
     } on AuthApiException catch (e) {
       _error = e.message;
     } on AuthRetryableFetchException {
-      _error = "Network error";
+      _error = 'Network error';
     } catch (e) {
       logger.e(e);
     }
 
     if (_user == null && _error == null) {
-      _error = "Unknown error";
+      _error = 'Unknown error';
     }
 
     _loading = false;

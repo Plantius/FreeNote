@@ -105,6 +105,6 @@ class NotesProvider with ChangeNotifier {
 
   Future<void> createNote() async {
     //TODO: Add note creation here
-    print("Do we reach here?");
+    debugPrint('Do we reach here?');
   }
 }
