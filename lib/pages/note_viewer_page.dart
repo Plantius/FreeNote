@@ -6,11 +6,12 @@ import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NoteViewerPage extends StatefulWidget {
-  final Note note;
+  final Note? note;
   const NoteViewerPage({super.key, required this.note});
 
   @override
@@ -25,13 +26,17 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
 
   @override
   void initState() {
+    if (widget.note == null) {
+      // TODO...
+    }
+
     try {
-      _controller.document = Document.fromJson(jsonDecode(widget.note.content));
+      _controller.document = Document.fromJson(jsonDecode(widget.note!.content));
     } on FormatException {
-      logger.e('Unconverted note: "${widget.note.title}" (#${widget.note.id}), recovering as plaintext...');
+      logger.e('Unconverted note: "${widget.note!.title}" (#${widget.note!.id}), recovering as plaintext...');
 
       final delta = Delta();      
-      delta.insert('${widget.note.content}\n');
+      delta.insert('${widget.note!.content}\n');
       _controller.document = Document.fromDelta(delta);
     }
 
@@ -45,9 +50,9 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   void _saveDocument() async {
-    logger.i('Saving note #${widget.note.id}');
-    widget.note.content = jsonEncode(_controller.document.toDelta().toJson());
-    context.read<NotesProvider>().saveNote(widget.note);
+    logger.i('Saving note #${widget.note!.id}');
+    widget.note!.content = jsonEncode(_controller.document.toDelta().toJson());
+    context.read<NotesProvider>().saveNote(widget.note!);
   }
 
   void _onBackNavigation(bool didPop, dynamic result) async {
@@ -61,7 +66,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.note.title, 
+            widget.note!.title, 
             style: Theme.of(context).textTheme.titleLarge
           ),
           actions: [
@@ -134,7 +139,10 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       focusNode: _focusNode,
       config: QuillEditorConfig(
         checkBoxReadOnly: false,
-        onLaunchUrl: _onLaunhUrl,
+        onLaunchUrl: (href) => _onLaunhUrl(context, href),
+        customLinkPrefixes: [
+          'freenote'
+        ],
         autoFocus: true,
       ),
     );
@@ -142,7 +150,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
 
   void _insertNoteLink() async {
     final delta = Delta()
-      ..insert('(link)', {'link': 'https://www.google.com/'});  
+      ..insert('(link)', {'link': 'freenote:///note/34'});  
 
     final selection = TextSelection(
       baseOffset: _controller.selection.baseOffset, 
@@ -159,18 +167,25 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     FocusScope.of(context).requestFocus(_focusNode);
   }
 
-  void _onLaunhUrl(String href) async {
+  void _onLaunhUrl(BuildContext context, String href) async {
     final Uri url = Uri.parse(href);
-    final canLaunch = await canLaunchUrl(url);
 
-    if (canLaunch) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    if (url.scheme == 'freenote') {
+      if (mounted) {
+        context.push(url.path);
+      }
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open link: $href')),
-        );
-      });
+      final canLaunch = await canLaunchUrl(url);
+
+      if (canLaunch) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not open link: $href')),
+          );
+        });
+      }
     }
   }
 }

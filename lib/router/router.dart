@@ -51,9 +51,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/note/:id',
       builder: (context, state) {
-        final note = state.extra as Note?;
-        assert(note != null); // TODO: fetch note if unset
-        return NoteViewerPage(note: note!);
+        return NoteViewerPage(note: state.extra as Note?);
       },
     ),
     GoRoute(
