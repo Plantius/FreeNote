@@ -8,6 +8,7 @@ import 'package:free_note/providers/notes_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NoteViewerPage extends StatefulWidget {
   final Note note;
@@ -19,7 +20,7 @@ class NoteViewerPage extends StatefulWidget {
 
 class _NoteViewerPageState extends State<NoteViewerPage> {
   final QuillController _controller = QuillController.basic();
-  bool editing = true;
+  bool editing = false;
 
   @override
   void initState() {
@@ -102,16 +103,45 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   Widget _buildToolbar(BuildContext context) {
     return QuillSimpleToolbar(
       controller: _controller,
-      config: const QuillSimpleToolbarConfig(),
+      config: QuillSimpleToolbarConfig(
+        toolbarIconAlignment: WrapAlignment.start,
+
+        // Disabled some options to make the toolbar more concise. 
+        // Could maybe be shown in "advanced mode" or something.
+        showIndent: false,
+        showSubscript: false,
+        showSuperscript: false,
+        showFontSize: false,
+        showQuote: false,
+        showInlineCode: false,
+        showCodeBlock: false,
+        showSearchButton: false,
+      ),
     );
   }
 
   Widget _buildEditor(BuildContext context) {
     return QuillEditor.basic(
       controller: _controller,
-      config: const QuillEditorConfig(
+      config: QuillEditorConfig(
         checkBoxReadOnly: false,
+        onLaunchUrl: _onLaunhUrl
       ),
     );
+  }
+
+  void _onLaunhUrl(String href) async {
+    final Uri url = Uri.parse(href);
+    final canLaunch = await canLaunchUrl(url);
+
+    if (canLaunch) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open link: $href')),
+        );
+      });
+    }
   }
 }
