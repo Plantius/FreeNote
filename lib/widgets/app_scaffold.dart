@@ -248,6 +248,15 @@ class AddMenuItems extends StatelessWidget {
 
 class CustomSearchDelegate extends SearchDelegate {
   List<Note> searchTerms;
+  List<String> noteTitles = [];
+
+  void populateTitles() {
+    noteTitles = [];
+    for(var terms in searchTerms) {
+      noteTitles.add(terms.title);
+      print(terms.title); //TODO: Adds nothing to the list? OR: DOES THIS FUNCTION NEVER GET CALLED? / You're calling it wrong
+    }
+  }
 
   CustomSearchDelegate({required this.searchTerms});
 
@@ -275,12 +284,13 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    populateTitles();
     //TODO: Fix Search Function / make it more efficient
-    List<Note> matchQuery = [];
-    for (var fruit in searchTerms) {
-      //if (fruit.toLowerCase().contains(query.toLowerCase())) {
+    List<String> matchQuery = [];
+    for (var fruit in noteTitles) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(fruit);
-      //}
+      }
     }
     return ListView.builder(
       itemCount: matchQuery.length,
@@ -288,8 +298,7 @@ class CustomSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            'Test'
-            //result,
+            result,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
           //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
@@ -300,8 +309,9 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<Note> matchQuery = [];
-    for (var fruit in searchTerms) {
+    populateTitles();
+    List<String> matchQuery = [];
+    for (var fruit in noteTitles) {
       //if (fruit.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(fruit);
       //}
@@ -312,8 +322,7 @@ class CustomSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            'test'
-            //result,
+            result,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
         );
