@@ -21,7 +21,7 @@ class AppScaffold extends StatefulWidget {
 }
 
 class _AppScaffoldState extends State<AppScaffold> {
-  final List<String> searchTerms  = ['Niels', 'Niels2', 'Alette'];
+  List<String> searchTerms  = ['Niels', 'Niels2', 'Alette', 'test', 'this'];
 
   @override
   void initState() {
@@ -122,11 +122,16 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 }
 
-class SearchButton extends StatelessWidget {
-  final List<String> searchTerms;
+class SearchButton extends StatefulWidget {
+  List<String> searchTerms;
   
-  const SearchButton({super.key, required this.searchTerms});
+  SearchButton({super.key, required this.searchTerms});
 
+  @override
+  State<SearchButton> createState() => _SearchButtonState();
+}
+
+class _SearchButtonState extends State<SearchButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -136,7 +141,7 @@ class SearchButton extends StatelessWidget {
         width: 45,
         child: IconButton(
           onPressed: () {
-            showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: searchTerms));
+            showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: widget.searchTerms));
           },
           icon: const Icon(Icons.search),
         ),
@@ -238,7 +243,7 @@ class AddMenuItems extends StatelessWidget {
 }
 
 class CustomSearchDelegate extends SearchDelegate {
-  final List<String> searchTerms;
+  List<String> searchTerms;
 
   CustomSearchDelegate({required this.searchTerms});
 
