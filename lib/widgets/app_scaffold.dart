@@ -21,7 +21,7 @@ class AppScaffold extends StatefulWidget {
 }
 
 class _AppScaffoldState extends State<AppScaffold> {
-  List<String> searchTerms  = ['Niels', 'Niels2', 'Alette', 'test', 'this'];
+  List<Note> searchTerms = [];
 
   @override
   void initState() {
@@ -29,6 +29,10 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<NotesProvider>().loadNotes();
+
+      if (mounted) {
+        searchTerms = context.read<NotesProvider>().notes;
+      }
     });
   }
 
@@ -123,7 +127,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 }
 
 class SearchButton extends StatefulWidget {
-  final List<String> searchTerms;
+  final List<Note> searchTerms;
   
   const SearchButton({super.key, required this.searchTerms});
 
@@ -243,7 +247,7 @@ class AddMenuItems extends StatelessWidget {
 }
 
 class CustomSearchDelegate extends SearchDelegate {
-  List<String> searchTerms;
+  List<Note> searchTerms;
 
   CustomSearchDelegate({required this.searchTerms});
 
@@ -272,11 +276,11 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     //TODO: Fix Search Function / make it more efficient
-    List<String> matchQuery = [];
+    List<Note> matchQuery = [];
     for (var fruit in searchTerms) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+      //if (fruit.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(fruit);
-      }
+      //}
     }
     return ListView.builder(
       itemCount: matchQuery.length,
@@ -284,7 +288,8 @@ class CustomSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            result,
+            'Test'
+            //result,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
           //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
@@ -295,11 +300,11 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
+    List<Note> matchQuery = [];
     for (var fruit in searchTerms) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+      //if (fruit.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(fruit);
-      }
+      //}
     }
     return ListView.builder(
       itemCount: matchQuery.length,
@@ -307,7 +312,8 @@ class CustomSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            result,
+            'test'
+            //result,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
         );
