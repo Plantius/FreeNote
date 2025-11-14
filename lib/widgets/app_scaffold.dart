@@ -255,7 +255,7 @@ class CustomSearchDelegate extends SearchDelegate {
     noteTitles = [];
     for(var terms in searchTerms) {
       noteTitles.add(terms.title);
-      print(terms.title); //Well I mean it prints
+      print(terms.title); //TODO: Functie correct ergens aanroepen, en dan zorgen dat ie goed filtert.
     }
   }
 
@@ -263,7 +263,6 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   List<Widget> buildActions(BuildContext context) {
-    populateTitles();
     return [
       IconButton(
         icon: const Icon(Icons.clear),
@@ -312,9 +311,9 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     List<String> matchQuery = [];
     for (var fruit in noteTitles) {
-      //if (fruit.toLowerCase().contains(query.toLowerCase())) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(fruit);
-      //}
+      }
     }
     return ListView.builder(
       itemCount: matchQuery.length,
