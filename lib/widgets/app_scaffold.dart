@@ -24,7 +24,7 @@ class AppScaffold extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              //context.push('/friends');
+              context.push('/friends');
             },
             icon: Icon(Icons.person),
           ),

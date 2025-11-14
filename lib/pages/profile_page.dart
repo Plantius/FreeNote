@@ -20,10 +20,11 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile', style: Theme.of(context).textTheme.titleLarge),
+        title: Text('Settings', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Column(
         children: [
+          const Text('Test2'),
           const Text('Stub for profile page'),
           TextButton(
             onPressed: () async {

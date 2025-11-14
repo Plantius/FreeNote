@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:free_note/pages/friend_page.dart';
 import 'package:free_note/pages/profile_page.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/pages/error_page.dart';
@@ -70,6 +72,12 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         return ProfilePage();
       },
+    ),
+    GoRoute(
+      path: '/friends',
+      builder: (context, state) {
+        return FriendPage();
+      }
     ),
   ],
   errorBuilder: (context, state) {
