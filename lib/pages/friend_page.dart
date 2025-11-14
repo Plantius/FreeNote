@@ -7,21 +7,25 @@ import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class FriendPage extends StatelessWidget {
+class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
 
   @override
+  State<FriendPage> createState() => _FriendPageState();
+}
+
+class _FriendPageState extends State<FriendPage> {
+  final List<String> friends = ['Niels', 'Niels2'];
+
+  @override
   Widget build(BuildContext context) {
-
-  List<String> friends = ["Niels", "Niels2"];
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Friends', style: Theme.of(context).textTheme.titleLarge),
         actions: [
           IconButton(
             onPressed: () {
-              showSearch(context: context, delegate: FriendSearch());
+              showSearch(context: context, delegate: FriendSearch(searchTerms: friends));
             },
             icon: Icon(Icons.search),
           ),
@@ -53,11 +57,9 @@ class FriendPage extends StatelessWidget {
 
 
 class FriendSearch extends SearchDelegate {
-  List<String> searchTerms = [
-    'Apple',
-    'Banana',
-    'Pear',
-  ]; //TODO: Replace this list by what you pull from database!
+  final List<String> searchTerms;
+
+  FriendSearch({required this.searchTerms});
 
   @override
   List<Widget> buildActions(BuildContext context) {
