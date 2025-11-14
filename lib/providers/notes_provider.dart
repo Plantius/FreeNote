@@ -82,14 +82,14 @@ class NotesProvider with ChangeNotifier {
         }
       } else {
         note.updatedAt = DateTime.now();
+        await CacheService.saveNote(note);
       }
+      logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
       notifyListeners();
     } catch (e) {
       logger.w('Failed to save note ${note.id} to database: $e');
       try {
-        await CacheService.saveNote(note);
-
         final index = _notes?.indexWhere((n) => n.id == note.id);
         if (index != null && index >= 0) {
           _notes![index] = note;
