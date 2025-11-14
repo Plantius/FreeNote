@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
+import 'package:free_note/providers/notes_provider.dart';
+import 'package:provider/provider.dart';
 
-class AppScaffold extends StatelessWidget {
+
+class AppScaffold extends StatefulWidget {
   final Widget child;
   final String currentLocation;
 
@@ -12,6 +15,20 @@ class AppScaffold extends StatelessWidget {
     required this.child,
     required this.currentLocation,
   });
+
+  @override
+  State<AppScaffold> createState() => _AppScaffoldState();
+}
+
+class _AppScaffoldState extends State<AppScaffold> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<NotesProvider>().loadNotes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +61,7 @@ class AppScaffold extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Expanded(child: child),
+          Expanded(child: widget.child),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,7 +70,7 @@ class AppScaffold extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _getLocationIndex(currentLocation),
+        currentIndex: _getLocationIndex(widget.currentLocation),
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
           BottomNavigationBarItem(
