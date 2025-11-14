@@ -123,9 +123,9 @@ class _AppScaffoldState extends State<AppScaffold> {
 }
 
 class SearchButton extends StatefulWidget {
-  List<String> searchTerms;
+  final List<String> searchTerms;
   
-  SearchButton({super.key, required this.searchTerms});
+  const SearchButton({super.key, required this.searchTerms});
 
   @override
   State<SearchButton> createState() => _SearchButtonState();
