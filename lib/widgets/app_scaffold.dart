@@ -251,10 +251,11 @@ class CustomSearchDelegate extends SearchDelegate {
   List<String> noteTitles = [];
 
   void populateTitles() {
+    print('test');
     noteTitles = [];
     for(var terms in searchTerms) {
       noteTitles.add(terms.title);
-      print(terms.title); //TODO: Adds nothing to the list? OR: DOES THIS FUNCTION NEVER GET CALLED? / You're calling it wrong
+      print(terms.title); //Well I mean it prints
     }
   }
 
@@ -262,6 +263,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   List<Widget> buildActions(BuildContext context) {
+    populateTitles();
     return [
       IconButton(
         icon: const Icon(Icons.clear),
@@ -284,7 +286,6 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    populateTitles();
     //TODO: Fix Search Function / make it more efficient
     List<String> matchQuery = [];
     for (var fruit in noteTitles) {
@@ -309,7 +310,6 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    populateTitles();
     List<String> matchQuery = [];
     for (var fruit in noteTitles) {
       //if (fruit.toLowerCase().contains(query.toLowerCase())) {
