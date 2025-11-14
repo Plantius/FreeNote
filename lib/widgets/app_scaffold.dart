@@ -21,6 +21,8 @@ class AppScaffold extends StatefulWidget {
 }
 
 class _AppScaffoldState extends State<AppScaffold> {
+  final List<String> searchTerms  = ['Niels', 'Niels2', 'Alette'];
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +67,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [SearchButton(), AddButton()],
+            children: [SearchButton(searchTerms: searchTerms,), AddButton()],
           ),
         ],
       ),
@@ -121,7 +123,9 @@ class _AppScaffoldState extends State<AppScaffold> {
 }
 
 class SearchButton extends StatelessWidget {
-  const SearchButton({super.key});
+  final List<String> searchTerms;
+  
+  const SearchButton({super.key, required this.searchTerms});
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +136,7 @@ class SearchButton extends StatelessWidget {
         width: 45,
         child: IconButton(
           onPressed: () {
-            showSearch(context: context, delegate: CustomSearchDelegate());
+            showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: searchTerms));
           },
           icon: const Icon(Icons.search),
         ),
@@ -234,11 +238,9 @@ class AddMenuItems extends StatelessWidget {
 }
 
 class CustomSearchDelegate extends SearchDelegate {
-  List<String> searchTerms = [
-    'Apple',
-    'Banana',
-    'Pear',
-  ]; //TODO: Replace this list by what you pull from database!
+  final List<String> searchTerms;
+
+  CustomSearchDelegate({required this.searchTerms});
 
   @override
   List<Widget> buildActions(BuildContext context) {
