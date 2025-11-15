@@ -290,36 +290,8 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    //TODO: Fix Search Function / make it more efficient
     populateTitles();
-    List<String> matchQuery = [];
-    for (var fruit in noteTitles) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
-          title: Text(
-            result,
-          ), //returns the name as fruit as index tile on the found search answers
-          //TODO: Potentially change what it shows, maybe show the context of the note too?
-          //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    populateTitles();
-    List<String> matchQuery = [];
     List<String> bodyBuilding = [];
-    List<int> idBuilding = [];
     List<Note> matchedNote = [];
     for(var fruit in searchTerms) {
       bool addMatch = false;
@@ -330,8 +302,6 @@ class CustomSearchDelegate extends SearchDelegate {
         addMatch = true;
       }
       if(addMatch) {
-        matchQuery.add(fruit.title);
-        idBuilding.add(fruit.id);
         matchedNote.add(fruit);
         //TODO: Ideally grab the part where it matches the query.. and remove newlines?
         if(fruit.content.length > 256)
@@ -345,11 +315,59 @@ class CustomSearchDelegate extends SearchDelegate {
       }
     }
     return ListView.builder(
-      itemCount: matchQuery.length,
+      itemCount: matchedNote.length,
       itemBuilder: (context, index) {
-        var result = matchQuery[index];
+        var result = matchedNote[index].title;
         var resultbody = bodyBuilding[index];
-        var resultid = idBuilding[index];
+        var resultid = matchedNote[index].id;
+        var resultfruit = matchedNote[index];
+        return ListTile(
+          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first 
+          onTap: () {
+            context.push('/note/$resultid', extra: resultfruit);
+          },
+          title: Text(
+            result,
+          ), //returns the name as fruit as index tile on the found search answers
+          //TODO: Potentially change what it shows, maybe show the context of the note too?
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    populateTitles();
+    List<String> bodyBuilding = [];
+    List<Note> matchedNote = [];
+    for(var fruit in searchTerms) {
+      bool addMatch = false;
+      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      if(addMatch) {
+        matchedNote.add(fruit);
+        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
+        if(fruit.content.length > 256)
+        {
+          bodyBuilding.add(fruit.content.substring(0, 256));
+        }
+        else
+        {
+          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        }
+      }
+    }
+    return ListView.builder(
+      itemCount: matchedNote.length,
+      itemBuilder: (context, index) {
+        var result = matchedNote[index].title;
+        var resultbody = bodyBuilding[index];
+        var resultid = matchedNote[index].id;
         var resultfruit = matchedNote[index];
         return ListTile(
           leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
