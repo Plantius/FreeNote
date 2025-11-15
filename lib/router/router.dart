@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:free_note/pages/friend_page.dart';
 import 'package:free_note/pages/profile_page.dart';
 import 'package:free_note/services/supabase_service.dart';

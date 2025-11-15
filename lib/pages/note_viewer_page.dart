@@ -80,13 +80,39 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     }
   }
 
-  void _onBackNavigation(bool didPop, dynamic result) async {
-    _saveDocument();
+  Future<void> _showConfirmUnsavedChangesDialog() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('You have unsaved changes. Discard these?'),
+          actions: [
+            TextButton(
+              onPressed: () {},
+              child: const Text('No'),
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                context.pop();
+              }
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _onBackNavigation(bool didPop, dynamic result) async {
+    if (!didPop) {
+      _showConfirmUnsavedChangesDialog();
+    }
   }
 
   @override
   Widget build(BuildContext context) {    
     return PopScope(
+      canPop: false,
       onPopInvokedWithResult: _onBackNavigation,
       child: Scaffold(
         appBar: AppBar(
@@ -154,6 +180,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         showInlineCode: false,
         showCodeBlock: false,
         showSearchButton: false,
+        showDividers: false,
       ),
     );
   }
