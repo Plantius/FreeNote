@@ -319,6 +319,8 @@ class CustomSearchDelegate extends SearchDelegate {
     populateTitles();
     List<String> matchQuery = [];
     List<String> bodyBuilding = [];
+    List<int> idBuilding = [];
+    List<Note> matchedNote = [];
     for(var fruit in searchTerms) {
       bool addMatch = false;
       if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
@@ -329,10 +331,12 @@ class CustomSearchDelegate extends SearchDelegate {
       }
       if(addMatch) {
         matchQuery.add(fruit.title);
+        idBuilding.add(fruit.id);
+        matchedNote.add(fruit);
         //TODO: Ideally grab the part where it matches the query.. and remove newlines?
-        if(fruit.content.length > 50)
+        if(fruit.content.length > 256)
         {
-          bodyBuilding.add(fruit.content.substring(0, 50));
+          bodyBuilding.add(fruit.content.substring(0, 256));
         }
         else
         {
@@ -345,9 +349,14 @@ class CustomSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         var resultbody = bodyBuilding[index];
+        var resultid = idBuilding[index];
+        var resultfruit = matchedNote[index];
         return ListTile(
           leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
           subtitle: Text(resultbody), //TODO: Text should be the first 
+          onTap: () {
+            context.push('/note/$resultid', extra: resultfruit);
+          },
           title: Text(
             result,
           ), //returns the name as fruit as index tile on the found search answers
