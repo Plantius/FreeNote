@@ -1,4 +1,5 @@
 import 'package:free_note/pages/friend_page.dart';
+import 'package:free_note/pages/note_options_page.dart';
 import 'package:free_note/pages/profile_page.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/pages/error_page.dart';
@@ -57,6 +58,20 @@ final GoRouter router = GoRouter(
         return NoteViewerPage(
           note: state.extra as Note?,
           noteId: id,
+        );
+      },
+    ),
+    GoRoute( // ID is only kept for semantics; only extra is used.
+      path: '/note/:id/options',
+      builder: (context, state) {
+        if (state.extra == null) {
+          return ErrorPage(
+            error: 'Can only navigate to options page from note page!'
+          );
+        }
+
+        return NoteOptionsPage(
+          note: state.extra as Note,
         );
       },
     ),

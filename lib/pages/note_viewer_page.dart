@@ -6,6 +6,7 @@ import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:free_note/widgets/confirm_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -132,7 +133,16 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       if (delta.hashCode == _savedStateHash) {
         context.pop();
       } else {
-        if (await _showConfirmUnsavedChangesDialog()) {
+        bool? pop = await showDialog<bool?>(
+          context: context,
+          builder: (context) {
+            return ConfirmDialog(
+              text: 'You have unsaved changes. Discard these?'
+            );
+          }
+        );
+
+        if (mounted && (pop ?? false)) {
           context.pop();
         }
       }
@@ -169,7 +179,11 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
               icon: const Icon(Icons.save),
             ),
             IconButton(
-              onPressed: null, 
+              onPressed: note == null 
+                ? null 
+                : () {
+                    context.push('/note/${note!.id}/options', extra: note!);
+                  }, 
               icon: const Icon(Icons.menu)
             ),
           ],
