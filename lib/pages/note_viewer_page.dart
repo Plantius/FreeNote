@@ -29,6 +29,8 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   // reason. 
   bool editing = true;
 
+  int _savedStateHash = 0;
+
   @override
   void initState() {
     _loadDocument();
@@ -70,30 +72,46 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         _controller.document = Document.fromDelta(delta);
       });
     }
+
+    _savedStateHash = _controller.document.toDelta().hashCode;
   }
 
   void _saveDocument() async {
     if (note != null) {
       logger.i('Saving note #${note!.id}');
-      note!.content = jsonEncode(_controller.document.toDelta().toJson());
-      context.read<NotesProvider>().saveNote(note!);
+      final delta = _controller.document.toDelta();
+      int hashCode = delta.hashCode;
+
+      if (hashCode == _savedStateHash) {
+        logger.i('Note is already up-to-date');
+      } else {
+        note!.content = jsonEncode(delta.toJson());
+        context.read<NotesProvider>().saveNote(note!);
+        _savedStateHash = hashCode;
+      }
     }
   }
 
-  Future<void> _showConfirmUnsavedChangesDialog() async {
-    showDialog(
+  Future<bool> _showConfirmUnsavedChangesDialog() async {
+    late bool pop;
+
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('You have unsaved changes. Discard these?'),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                pop = false;
+                context.pop();
+              },
               child: const Text('No'),
             ),
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
+                pop = true;
                 context.pop();
               }
             ),
@@ -101,11 +119,23 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         );
       },
     );
+
+    return pop;
   }
 
   Future<void> _onBackNavigation(bool didPop, dynamic result) async {
     if (!didPop) {
-      _showConfirmUnsavedChangesDialog();
+      final delta = _controller.document.toDelta();
+
+      logger.d('${delta.hashCode} =? $_savedStateHash');
+
+      if (delta.hashCode == _savedStateHash) {
+        context.pop();
+      } else {
+        if (await _showConfirmUnsavedChangesDialog()) {
+          context.pop();
+        }
+      }
     }
   }
 
@@ -133,6 +163,14 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
                 ? Icons.remove_red_eye 
                 : Icons.edit
               ),
+            ),
+            IconButton(
+              onPressed: _saveDocument, 
+              icon: const Icon(Icons.save),
+            ),
+            IconButton(
+              onPressed: null, 
+              icon: const Icon(Icons.menu)
             ),
           ],
           backgroundColor: Theme.of(context).colorScheme.primary,
