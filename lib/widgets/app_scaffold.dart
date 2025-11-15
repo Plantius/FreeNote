@@ -286,6 +286,7 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     //TODO: Fix Search Function / make it more efficient
+    populateTitles();
     List<String> matchQuery = [];
     for (var fruit in noteTitles) {
       if (fruit.toLowerCase().contains(query.toLowerCase())) {
@@ -309,6 +310,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    populateTitles();
     List<String> matchQuery = [];
     for (var fruit in noteTitles) {
       if (fruit.toLowerCase().contains(query.toLowerCase())) {
