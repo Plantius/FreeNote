@@ -249,13 +249,18 @@ class AddMenuItems extends StatelessWidget {
 class CustomSearchDelegate extends SearchDelegate {
   List<Note> searchTerms;
   List<String> noteTitles = [];
+  List<String> noteBodies = [];
+
+  bool titlesPopulated = false;
 
   void populateTitles() {
-    print('test');
-    noteTitles = [];
-    for(var terms in searchTerms) {
-      noteTitles.add(terms.title);
-      print(terms.title); //TODO: Functie correct ergens aanroepen, en dan zorgen dat ie goed filtert.
+    if(!titlesPopulated) {
+      titlesPopulated = true;
+      noteTitles = [];
+      for(var terms in searchTerms) {
+        noteTitles.add(terms.title);
+        noteBodies.add(terms.content);
+      }
     }
   }
 
@@ -298,6 +303,7 @@ class CustomSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
+          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
           title: Text(
             result,
           ), //returns the name as fruit as index tile on the found search answers
@@ -312,16 +318,36 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     populateTitles();
     List<String> matchQuery = [];
-    for (var fruit in noteTitles) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
+    List<String> bodyBuilding = [];
+    for(var fruit in searchTerms) {
+      bool addMatch = false;
+      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      if(addMatch) {
+        matchQuery.add(fruit.title);
+        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
+        if(fruit.content.length > 50)
+        {
+          bodyBuilding.add(fruit.content.substring(0, 50));
+        }
+        else
+        {
+          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        }
       }
     }
     return ListView.builder(
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
+        var resultbody = bodyBuilding[index];
         return ListTile(
+          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first 
           title: Text(
             result,
           ), //returns the name as fruit as index tile on the found search answers
