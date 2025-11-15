@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/event_logger.dart';
-import 'package:free_note/providers/auth_provider.dart';
-import 'package:free_note/services/auth_service.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popover/popover.dart';
-import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
