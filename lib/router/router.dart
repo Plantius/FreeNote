@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:free_note/pages/friend_page.dart';
+import 'package:free_note/pages/main_page.dart';
 import 'package:free_note/pages/profile_page.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/pages/error_page.dart';
 import 'package:free_note/pages/login_page.dart';
 import 'package:go_router/go_router.dart';
-import 'package:free_note/widgets/app_scaffold.dart';
 import 'package:free_note/pages/note_viewer_page.dart';
 import 'package:free_note/pages/notes_page.dart';
 import 'package:free_note/pages/calendar_page.dart';
@@ -29,7 +28,7 @@ final GoRouter router = GoRouter(
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return AppScaffold(
+        return MainPage(
           currentLocation: state.matchedLocation,
           child: child,
         );

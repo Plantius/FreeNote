@@ -5,22 +5,21 @@ import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
 
-
-class AppScaffold extends StatefulWidget {
+class MainPage extends StatefulWidget {
   final Widget child;
   final String currentLocation;
 
-  const AppScaffold({
+  const MainPage({
     super.key,
     required this.child,
     required this.currentLocation,
   });
 
   @override
-  State<AppScaffold> createState() => _AppScaffoldState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _AppScaffoldState extends State<AppScaffold> {
+class _MainPageState extends State<MainPage> {
   List<Note> searchTerms = [];
 
   @override
@@ -49,7 +48,7 @@ class _AppScaffoldState extends State<AppScaffold> {
             onPressed: () {
               context.push('/friends');
             },
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.people),
           ),
           IconButton(
             onPressed: () {
