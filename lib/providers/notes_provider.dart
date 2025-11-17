@@ -24,7 +24,7 @@ class NotesProvider with ChangeNotifier {
 
   Future<void> loadNotes({bool forceRefresh = false}) async {
     logger.i('Triggered reload of notes list: reresh = $forceRefresh');
-  
+
     if (_notes != null && !forceRefresh) {
       return;
     }
@@ -89,7 +89,7 @@ class NotesProvider with ChangeNotifier {
           throw Exception('Failed to create note in database.');
         }
       } else {
-        note.updatedAt = DateTime.now();
+        note.updatedAt = DateTime.now().toUtc();
         await CacheService.saveNote(note);
       }
       logger.i('Saving note ${note.id} to database.');
