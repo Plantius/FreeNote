@@ -13,15 +13,6 @@ class NotesPage extends StatefulWidget {
 
 class NotesPageState extends State<NotesPage> {
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotesProvider>().loadNotes();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [

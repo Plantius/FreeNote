@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/services/auth_service.dart';
 import 'package:free_note/services/cache_service.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
@@ -6,17 +7,24 @@ import 'package:free_note/services/database_service.dart';
 
 class NotesProvider with ChangeNotifier {
   final DatabaseService database;
+
   List<Note>? _notes;
   bool _isLoading = false;
   String? _errorMessage;
 
-  NotesProvider(this.database);
+  NotesProvider(this.database) {
+    AuthService.instance.userStream.listen((state) {
+      loadNotes();
+    });
+  }
 
   List<Note> get notes => _notes == null ? [] : _notes!;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   Future<void> loadNotes({bool forceRefresh = false}) async {
+    logger.i('Triggered reload of notes list: reresh = $forceRefresh');
+  
     if (_notes != null && !forceRefresh) {
       return;
     }

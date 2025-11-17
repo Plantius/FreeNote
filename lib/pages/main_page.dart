@@ -20,23 +20,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<Note> searchTerms = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotesProvider>().loadNotes();
-
-      if (mounted) {
-        searchTerms = context.read<NotesProvider>().notes;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final notesProvider = context.watch<NotesProvider>();
+
     ColorScheme colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -70,14 +57,22 @@ class _MainPageState extends State<MainPage> {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [SearchButton(searchTerms: searchTerms,), AddButton()],
+            children: [
+              SearchButton(
+                searchTerms: notesProvider.notes,
+              ), 
+              AddButton()
+            ],
           ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(widget.currentLocation),
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list), 
+            label: 'Notes'
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
