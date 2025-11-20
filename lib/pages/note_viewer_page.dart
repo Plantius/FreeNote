@@ -6,6 +6,7 @@ import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:free_note/widgets/confirm_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,6 +29,8 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   // in that case, but do work when switching back from editing mode, for some 
   // reason. 
   bool editing = true;
+
+  int _savedStateHash = 0;
 
   @override
   void initState() {
@@ -70,23 +73,86 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         _controller.document = Document.fromDelta(delta);
       });
     }
+
+    _savedStateHash = _controller.document.toDelta().hashCode;
   }
 
   void _saveDocument() async {
     if (note != null) {
       logger.i('Saving note #${note!.id}');
-      note!.content = jsonEncode(_controller.document.toDelta().toJson());
-      context.read<NotesProvider>().saveNote(note!);
+      final delta = _controller.document.toDelta();
+      int hashCode = delta.hashCode;
+
+      if (hashCode == _savedStateHash) {
+        logger.i('Note is already up-to-date');
+      } else {
+        note!.content = jsonEncode(delta.toJson());
+        context.read<NotesProvider>().saveNote(note!);
+        _savedStateHash = hashCode;
+      }
     }
   }
 
-  void _onBackNavigation(bool didPop, dynamic result) async {
-    _saveDocument();
+  Future<bool> _showConfirmUnsavedChangesDialog() async {
+    late bool pop;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('You have unsaved changes. Discard these?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                pop = false;
+                context.pop();
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                pop = true;
+                context.pop();
+              }
+            ),
+          ],
+        );
+      },
+    );
+
+    return pop;
+  }
+
+  Future<void> _onBackNavigation(bool didPop, dynamic result) async {
+    if (!didPop) {
+      final delta = _controller.document.toDelta();
+
+      logger.d('${delta.hashCode} =? $_savedStateHash');
+
+      if (delta.hashCode == _savedStateHash) {
+        context.pop();
+      } else {
+        bool? pop = await showDialog<bool?>(
+          context: context,
+          builder: (context) {
+            return ConfirmDialog(
+              text: 'You have unsaved changes. Discard these?'
+            );
+          }
+        );
+
+        if (mounted && (pop ?? false)) {
+          context.pop();
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {    
     return PopScope(
+      canPop: false,
       onPopInvokedWithResult: _onBackNavigation,
       child: Scaffold(
         appBar: AppBar(
@@ -107,6 +173,18 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
                 ? Icons.remove_red_eye 
                 : Icons.edit
               ),
+            ),
+            IconButton(
+              onPressed: _saveDocument, 
+              icon: const Icon(Icons.save),
+            ),
+            IconButton(
+              onPressed: note == null 
+                ? null 
+                : () {
+                    context.push('/note/${note!.id}/options', extra: note!);
+                  }, 
+              icon: const Icon(Icons.menu)
             ),
           ],
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -154,6 +232,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         showInlineCode: false,
         showCodeBlock: false,
         showSearchButton: false,
+        showDividers: false,
       ),
     );
   }
