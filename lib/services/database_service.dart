@@ -1,4 +1,5 @@
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
 
@@ -28,6 +29,10 @@ class DatabaseService {
     );
 
     return (response as List).map((note) => Note.fromJson(note)).toList();
+  }
+
+  Future<Profile?> fetchProfile(int id) async {
+    return null; // TODO: fetch here. Not sure if numerical id is even used here
   }
 
   Future<Note?> fetchNote(int id) async {

@@ -23,7 +23,7 @@ class NotesProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> loadNotes({bool forceRefresh = false}) async {
-    logger.i('Triggered reload of notes list: reresh = $forceRefresh');
+    logger.i('Triggered reload of notes list: refresh = $forceRefresh');
 
     if (_notes != null && !forceRefresh) {
       return;

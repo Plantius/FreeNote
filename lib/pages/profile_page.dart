@@ -71,10 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             OptionButton(
-              action: () async {
-                context.read<AuthProvider>().signOut();
-                context.go('/login');
-              },
+              action: _logOutAction,
               icon: Icons.logout,
               text: 'Log out',
             ),

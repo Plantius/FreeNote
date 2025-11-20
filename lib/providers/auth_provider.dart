@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/auth_service.dart';
+import 'package:free_note/services/database_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService.instance;
   User? _user;
+  Profile? _profile;
   String? _error;
   bool _loading = false;
 
   User? get user => _user;
+  Profile? get profile => _profile;
   String? get error => _error;
   bool get loading => _loading;
 
   AuthProvider() {
-    _authService.userStream.listen((user) {
+    _authService.userStream.listen((user) async {
       _user = _authService.user;
+
+      if (_user == null) {
+        _profile = null;
+      } else {
+        _profile = await DatabaseService.instance.fetchProfile(0);
+      }
+
       notifyListeners();
     });
   }
