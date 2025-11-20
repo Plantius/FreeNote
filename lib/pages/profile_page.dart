@@ -1,65 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/widgets/option_button.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/providers/auth_provider.dart';
 import 'package:free_note/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-class Option extends StatelessWidget {
-  final void Function() action; 
-  final IconData icon;
-  final String text;
-  final bool? danger;
-
-  const Option({super.key, 
-    required this.action, 
-    required this.icon, 
-    required this.text,
-    this.danger
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    Color color = danger ?? false ? Colors.red : Colors.white;
-
-    return TextButton(
-      onPressed: action,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(8),
-          ),
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: Icon(
-                icon,
-                size: 30,
-                color: color,
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Text(
-                text,
-                style: Theme.of(context)
-                  .textTheme
-                  .labelLarge?.copyWith(color: color),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -116,7 +62,7 @@ class ProfilePage extends StatelessWidget {
                 )
               ],
             ),
-            Option(
+            OptionButton(
               action: () async {
                 context.read<AuthProvider>().signOut();
                 context.go('/login');
@@ -127,7 +73,7 @@ class ProfilePage extends StatelessWidget {
             SizedBox(
               height: 8,
             ),
-            Option(
+            OptionButton(
               action: () {
                 logger.w('TODO: implement Delete Account');
               }, 
