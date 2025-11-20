@@ -83,6 +83,7 @@ class NotesProvider with ChangeNotifier {
     try {
       if (note.id == 0) {
         final createdNote = await database.createNote(note);
+        
         if (createdNote != null) {
           note = createdNote;
         } else {
@@ -92,8 +93,10 @@ class NotesProvider with ChangeNotifier {
         note.updatedAt = DateTime.now().toUtc();
         await CacheService.saveNote(note);
       }
+      
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
+
       notifyListeners();
     } catch (e) {
       logger.w('Failed to save note ${note.id} to database: $e');
@@ -107,8 +110,20 @@ class NotesProvider with ChangeNotifier {
       } catch (e) {
         logger.e('Failed to save note ${note.id} to cache: $e');
       }
-      throw Exception('Failed to save note: $e');
     }
+  }
+
+  Future<void> deleteNote(Note note) async {
+    DatabaseService.instance.deleteNote(note.id);
+
+    assert(_notes != null);
+    if (!_notes!.remove(note)) {
+      logger.w('Could not remove notes from list');
+    }
+
+    logger.e('TODO: Delete note from cache?');
+
+    notifyListeners();
   }
 
   Future<void> createNote() async {
