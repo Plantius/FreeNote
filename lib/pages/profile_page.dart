@@ -21,7 +21,10 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: Theme.of(context).textTheme.titleLarge),
+        title: Text(
+          'Settings', 
+          style: Theme.of(context).textTheme.titleLarge
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

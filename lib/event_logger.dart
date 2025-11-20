@@ -19,6 +19,7 @@ class EventPrinter extends LogPrinter {
         color = orange;
         break;
 
+      case Level.error:
       case Level.fatal:
         color = red;
         break;

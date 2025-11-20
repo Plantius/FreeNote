@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
@@ -21,6 +22,7 @@ class NoteViewerPage extends StatefulWidget {
 }
 
 class _NoteViewerPageState extends State<NoteViewerPage> {
+  late TextEditingController _titleController = TextEditingController();
   final QuillController _controller = QuillController.basic();
   final _focusNode = FocusNode();
   Note? note;
@@ -41,6 +43,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   @override
   void dispose() {
     _controller.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
@@ -62,7 +65,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     try {
       setState(() {
         final json = jsonDecode(note!.content);
-        _controller.document = Document.fromJson(json);      
+        _controller.document = Document.fromJson(json); 
       });
     } on FormatException {
       logger.e('Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...');
@@ -74,63 +77,45 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       });
     }
 
+    _titleController.text = note!.title;     
     _savedStateHash = _controller.document.toDelta().hashCode;
   }
 
   void _saveDocument() async {
-    if (note != null) {
-      logger.i('Saving note #${note!.id}');
-      final delta = _controller.document.toDelta();
-      int hashCode = delta.hashCode;
+    if (note == null) {
+      return;
+    }
 
-      if (hashCode == _savedStateHash) {
-        logger.i('Note is already up-to-date');
-      } else {
-        note!.content = jsonEncode(delta.toJson());
-        context.read<NotesProvider>().saveNote(note!);
-        _savedStateHash = hashCode;
-      }
+    logger.i('Saving note #${note!.id}');
+
+    final delta = _controller.document.toDelta();
+    int hashCode = delta.hashCode;
+
+    if (_hasUnsavedChanges(deltaHashCode: hashCode)) {
+      note!.title = _titleController.text;
+      note!.content = jsonEncode(delta.toJson());
+
+      context.read<NotesProvider>().saveNote(note!);
+
+      _savedStateHash = hashCode;
+    } else {
+      logger.i('Note is already up-to-date');
     }
   }
 
-  Future<bool> _showConfirmUnsavedChangesDialog() async {
-    late bool pop;
+  bool _hasUnsavedChanges({int? deltaHashCode}) {
+    deltaHashCode ??= _controller.document.toDelta().hashCode;
 
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('You have unsaved changes. Discard these?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                pop = false;
-                context.pop();
-              },
-              child: const Text('No'),
-            ),
-            TextButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                pop = true;
-                context.pop();
-              }
-            ),
-          ],
-        );
-      },
-    );
+    if (deltaHashCode != _savedStateHash) {
+      return true;
+    }
 
-    return pop;
+    return (note?.title ?? '') != _titleController.text;
   }
 
   Future<void> _onBackNavigation(bool didPop, dynamic result) async {
     if (!didPop) {
-      final delta = _controller.document.toDelta();
-
-      logger.d('${delta.hashCode} =? $_savedStateHash');
-
-      if (delta.hashCode == _savedStateHash) {
+      if (!_hasUnsavedChanges()) {
         context.pop();
       } else {
         bool? pop = await showDialog<bool?>(
@@ -156,10 +141,20 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       onPopInvokedWithResult: _onBackNavigation,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            note?.title ?? 'Loading...', 
-            style: Theme.of(context).textTheme.titleLarge
-          ),
+          title: note == null 
+          ? Text(
+              'Loading...',
+              style: Theme.of(context).textTheme.titleLarge
+            )
+          : TextField(
+              controller: _titleController,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration.collapsed(hintText: 'Title'),
+              style: Theme.of(context).textTheme.titleLarge,
+              inputFormatters: [
+                FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
+              ],
+            ),
           actions: [
             IconButton(
               onPressed: () {

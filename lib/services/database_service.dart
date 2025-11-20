@@ -100,6 +100,11 @@ class DatabaseService {
   }
 
   Future<void> deleteNote(int id) async {
-    await supabase.from('notes').delete().eq('id', id);
+    try {
+      await supabase.from('notes').delete().eq('id', id);
+    } catch (e) {
+      logger.e('Failed to delete note $id: $e');
+      rethrow;
+    }
   }
 }
