@@ -5,39 +5,25 @@ import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
 
-
-class AppScaffold extends StatefulWidget {
+class MainPage extends StatefulWidget {
   final Widget child;
   final String currentLocation;
 
-  const AppScaffold({
+  const MainPage({
     super.key,
     required this.child,
     required this.currentLocation,
   });
 
   @override
-  State<AppScaffold> createState() => _AppScaffoldState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _AppScaffoldState extends State<AppScaffold> {
-  List<Note> searchTerms = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotesProvider>().loadNotes();
-
-      if (mounted) {
-        searchTerms = context.read<NotesProvider>().notes;
-      }
-    });
-  }
-
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
+    final notesProvider = context.watch<NotesProvider>();
+
     ColorScheme colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -49,7 +35,7 @@ class _AppScaffoldState extends State<AppScaffold> {
             onPressed: () {
               context.push('/friends');
             },
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.people),
           ),
           IconButton(
             onPressed: () {
@@ -71,14 +57,22 @@ class _AppScaffoldState extends State<AppScaffold> {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [SearchButton(searchTerms: searchTerms,), AddButton()],
+            children: [
+              SearchButton(
+                searchTerms: notesProvider.notes,
+              ), 
+              AddButton()
+            ],
           ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(widget.currentLocation),
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list), 
+            label: 'Notes'
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
@@ -249,13 +243,18 @@ class AddMenuItems extends StatelessWidget {
 class CustomSearchDelegate extends SearchDelegate {
   List<Note> searchTerms;
   List<String> noteTitles = [];
+  List<String> noteBodies = [];
+
+  bool titlesPopulated = false;
 
   void populateTitles() {
-    print('test');
-    noteTitles = [];
-    for(var terms in searchTerms) {
-      noteTitles.add(terms.title);
-      print(terms.title); //TODO: Functie correct ergens aanroepen, en dan zorgen dat ie goed filtert.
+    if(!titlesPopulated) {
+      titlesPopulated = true;
+      noteTitles = [];
+      for(var terms in searchTerms) {
+        noteTitles.add(terms.title);
+        noteBodies.add(terms.content);
+      }
     }
   }
 
@@ -285,23 +284,47 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    //TODO: Fix Search Function / make it more efficient
-    List<String> matchQuery = [];
-    for (var fruit in noteTitles) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
+    populateTitles();
+    List<String> bodyBuilding = [];
+    List<Note> matchedNote = [];
+    for(var fruit in searchTerms) {
+      bool addMatch = false;
+      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      if(addMatch) {
+        matchedNote.add(fruit);
+        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
+        if(fruit.content.length > 256)
+        {
+          bodyBuilding.add(fruit.content.substring(0, 256));
+        }
+        else
+        {
+          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        }
       }
     }
     return ListView.builder(
-      itemCount: matchQuery.length,
+      itemCount: matchedNote.length,
       itemBuilder: (context, index) {
-        var result = matchQuery[index];
+        var result = matchedNote[index].title;
+        var resultbody = bodyBuilding[index];
+        var resultid = matchedNote[index].id;
+        var resultfruit = matchedNote[index];
         return ListTile(
+          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first 
+          onTap: () {
+            context.push('/note/$resultid', extra: resultfruit);
+          },
           title: Text(
             result,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
-          //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
         );
       },
     );
@@ -309,17 +332,43 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var fruit in noteTitles) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
+    populateTitles();
+    List<String> bodyBuilding = [];
+    List<Note> matchedNote = [];
+    for(var fruit in searchTerms) {
+      bool addMatch = false;
+      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+        addMatch = true;
+      }
+      if(addMatch) {
+        matchedNote.add(fruit);
+        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
+        if(fruit.content.length > 256)
+        {
+          bodyBuilding.add(fruit.content.substring(0, 256));
+        }
+        else
+        {
+          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        }
       }
     }
     return ListView.builder(
-      itemCount: matchQuery.length,
+      itemCount: matchedNote.length,
       itemBuilder: (context, index) {
-        var result = matchQuery[index];
+        var result = matchedNote[index].title;
+        var resultbody = bodyBuilding[index];
+        var resultid = matchedNote[index].id;
+        var resultfruit = matchedNote[index];
         return ListTile(
+          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first 
+          onTap: () {
+            context.push('/note/$resultid', extra: resultfruit);
+          },
           title: Text(
             result,
           ), //returns the name as fruit as index tile on the found search answers
