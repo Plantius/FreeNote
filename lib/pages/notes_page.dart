@@ -13,15 +13,6 @@ class NotesPage extends StatefulWidget {
 
 class _NotesPageState extends State<NotesPage> {
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotesProvider>().loadNotes();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -83,7 +74,45 @@ class _NotesPageState extends State<NotesPage> {
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  note.content,
+                  () {
+                    final dt = note.updatedAt.toLocal();
+                    final now = DateTime.now();
+
+                    final today = DateTime(now.year, now.month, now.day);
+
+                    String two(int n) => n.toString().padLeft(2, '0');
+                    final time = '${two(dt.hour)}:${two(dt.minute)}';
+                    final date = DateTime(dt.year, dt.month, dt.day);
+
+                    const monthNames = [
+                      '',
+                      'January',
+                      'February',
+                      'March',
+                      'April',
+                      'May',
+                      'June',
+                      'July',
+                      'August',
+                      'September',
+                      'October',
+                      'November',
+                      'December',
+                    ];
+                    final monthName = monthNames[dt.month];
+
+                    if (date == today) {
+                      return time;
+                    }
+                    if (date == today.subtract(Duration(days: 1))) {
+                      return 'Yesterday $time';
+                    }
+                    if (date.year == now.year) {
+                      return '$time - ${dt.day} $monthName';
+                    } else {
+                      return '${dt.day} $monthName, ${dt.year}';
+                    }
+                  }(),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 16, color: Colors.purple),

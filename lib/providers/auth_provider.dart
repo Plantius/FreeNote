@@ -46,7 +46,7 @@ class AuthProvider extends ChangeNotifier {
     }
 
     if (_user == null && _error == null) {
-      _error = "Unknown error";
+      _error = 'Unknown error';
     }
 
     _loading = false;
