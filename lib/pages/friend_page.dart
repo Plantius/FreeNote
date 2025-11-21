@@ -8,7 +8,7 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
-  final List<String> friends = ['Niels', 'Niels2'];
+  final List<String> friends = ;
 
   @override
   Widget build(BuildContext context) {

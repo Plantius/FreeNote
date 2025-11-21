@@ -112,4 +112,6 @@ class DatabaseService {
       rethrow;
     }
   }
+
+  Future<List<Friend>> fetchFriends() async {}
 }
