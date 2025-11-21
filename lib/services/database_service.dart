@@ -49,6 +49,26 @@ class DatabaseService {
     }
   }
 
+  Future<List<Profile>?> fetchFriends() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      final response = await supabase
+          .from('user_friends')
+          .select('uid1, uid2, profile1:uid1(*), profile2:uid2(*)')
+          .or('uid1.eq.$userId,uid2.eq.$userId');
+
+      print(response);
+
+      logger.i('Successfully fetched friends for user $userId');
+      return [];
+    } catch (e) {
+      logger.e('Failed to fetch friends for user $userId: $e');
+      return [];
+    }
+  }
+
   Future<Note?> fetchNote(int id) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;

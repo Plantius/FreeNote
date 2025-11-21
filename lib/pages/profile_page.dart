@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        auth.profile?.userName ?? 'No Name',
+                        auth.profile?.userName ?? '',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
