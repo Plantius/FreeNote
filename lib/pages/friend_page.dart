@@ -8,7 +8,7 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
-  final List<String> friends = ;
+  final List<String> friends = [];
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +18,14 @@ class _FriendPageState extends State<FriendPage> {
         actions: [
           IconButton(
             onPressed: () {
-              showSearch(context: context, delegate: FriendSearch(searchTerms: friends));
+              showSearch(
+                context: context,
+                delegate: FriendSearch(searchTerms: friends),
+              );
             },
             icon: Icon(Icons.search),
           ),
-          IconButton(
-            onPressed: () {
-
-            }, 
-            icon: Icon(Icons.person_add)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.person_add)),
         ],
       ),
       body: Container(
@@ -34,20 +33,18 @@ class _FriendPageState extends State<FriendPage> {
           itemCount: friends.length,
           itemBuilder: (context, index) {
             return ListTile(
-              leading: CircleAvatar(child: Text(friends[index][0]),),
+              leading: CircleAvatar(child: Text(friends[index][0])),
               title: Text(friends[index]),
               subtitle: Text(''),
               trailing: Text(''),
-              onLongPress: () {
-
-              }
+              onLongPress: () {},
             );
-          })
-      )
+          },
+        ),
+      ),
     );
   }
 }
-
 
 class FriendSearch extends SearchDelegate {
   final List<String> searchTerms;

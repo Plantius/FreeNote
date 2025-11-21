@@ -31,8 +31,22 @@ class DatabaseService {
     return (response as List).map((note) => Note.fromJson(note)).toList();
   }
 
-  Future<Profile?> fetchProfile(int id) async {
-    return null; // TODO: fetch here. Not sure if numerical id is even used here
+  Future<Profile?> fetchProfile() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      final response = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('uid', userId)
+          .single();
+      logger.i('Successfully fetched profile for user $userId');
+      return Profile.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to fetch profile for user $userId: $e');
+      return null;
+    }
   }
 
   Future<Note?> fetchNote(int id) async {
@@ -112,6 +126,4 @@ class DatabaseService {
       rethrow;
     }
   }
-
-  Future<List<Friend>> fetchFriends() async {}
 }

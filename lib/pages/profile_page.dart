@@ -23,13 +23,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     User user = AuthService.instance.user!;
+    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Settings', 
-          style: Theme.of(context).textTheme.titleLarge
-        ),
+        title: Text('Settings', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -58,16 +56,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Username',
+                        auth.profile?.userName ?? 'No Name',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
                         user.email ?? '',
                         style: Theme.of(context).textTheme.titleSmall,
-                      )
+                      ),
                     ],
-                  )
-                )
+                  ),
+                ),
               ],
             ),
             OptionButton(
@@ -75,14 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.logout,
               text: 'Log out',
             ),
-            SizedBox(
-              height: 8,
-            ),
+            SizedBox(height: 8),
             OptionButton(
               action: () {
                 logger.w('TODO: implement Delete Account');
-              }, 
-              icon: Icons.delete, 
+              },
+              icon: Icons.delete,
               text: 'Delete Account',
               danger: true,
             ),

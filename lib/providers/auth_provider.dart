@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
       if (_user == null) {
         _profile = null;
       } else {
-        _profile = await DatabaseService.instance.fetchProfile(0);
+        _profile = await DatabaseService.instance.fetchProfile();
       }
 
       notifyListeners();
