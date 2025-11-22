@@ -184,16 +184,29 @@ class NotificationPopupMenu extends StatelessWidget {
   }
 }
 
-class AddNotifications extends StatelessWidget {
+class AddNotifications extends StatefulWidget {
   const AddNotifications({super.key});
 
   @override
+  State<AddNotifications> createState() => _AddNotificationsState();
+}
+
+class _AddNotificationsState extends State<AddNotifications> {
+  List<String> notifications = ["Notif1", "Notif2", "Notif3", "Notif4", "Notif5"];
+
+  //TODO: Ideally this should be grabbed from backend
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text("This is a test"),
-      ]
+    //TODO:: Some calculations in here?
+    return ListView.builder(
+      itemCount: notifications.length,
+      itemBuilder: (context, index) {
+        var selectedNotification = notifications[index];
+        return ListTile(
+          title: Text(selectedNotification),
+          subtitle: Text(selectedNotification),
+        );
+      },
     );
   }
 }
