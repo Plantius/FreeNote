@@ -205,6 +205,8 @@ class _AddNotificationsState extends State<AddNotifications> {
         return ListTile(
           title: Text(selectedNotification),
           subtitle: Text(selectedNotification),
+          tileColor: Colors.blueGrey, //TODO: Change to correct colour
+          textColor: Colors.black,
         );
       },
     );
