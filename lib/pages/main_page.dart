@@ -37,12 +37,7 @@ class _MainPageState extends State<MainPage> {
             },
             icon: Icon(Icons.people),
           ),
-          IconButton(
-            onPressed: () {
-              //context.push('/messages');
-            },
-            icon: Icon(Icons.notifications),
-          ),
+          NotificationButton(),
           IconButton(
             onPressed: () {
               context.push('/profile');
@@ -148,6 +143,61 @@ class _SearchButtonState extends State<SearchButton> {
   }
 }
 
+class NotificationButton extends StatelessWidget {
+  const NotificationButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      //TODO: Figure out how to have it highlight on pressed
+      padding: const EdgeInsets.all(1.0),
+      child: SizedBox(
+        height: 45,
+        width: 45,
+        child: NotificationPopupMenu(),
+      ),
+    );
+  }
+}
+
+class NotificationPopupMenu extends StatelessWidget {
+  //TODO: Add a thing that notifications icon changes
+  //Depending on if there are new notifications
+  //Listener to the backend?
+  const NotificationPopupMenu({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showPopover(
+        context: context,
+        bodyBuilder: (context) => AddNotifications(),
+        //determine width and height
+        //determine background colour
+        height: 140,
+        width: 300,
+        backgroundColor: Colors.grey, //TODO: Change colour?
+        direction: PopoverDirection.bottom,
+        //TODO: Somehow make it outline to the left ish
+        ),
+        child: Icon(Icons.notifications)
+    );
+  }
+}
+
+class AddNotifications extends StatelessWidget {
+  const AddNotifications({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text("This is a test"),
+      ]
+    );
+  }
+}
+
 class AddButton extends StatelessWidget {
   const AddButton({super.key});
 
@@ -158,12 +208,6 @@ class AddButton extends StatelessWidget {
       child: SizedBox(
         height: 45,
         width: 45,
-        /*child: TextButton(
-                onPressed: (){
-                  //TODO: Write code here
-                }, 
-                child: AddNotePopupMenu()),
-                //child: Icon(Icons.search)),*/
         child: AddNotePopupMenu(),
       ),
     );
@@ -172,7 +216,6 @@ class AddButton extends StatelessWidget {
 
 class AddNotePopupMenu extends StatelessWidget {
   const AddNotePopupMenu({super.key});
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
