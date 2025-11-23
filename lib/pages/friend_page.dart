@@ -27,7 +27,9 @@ class _FriendPageState extends State<FriendPage> {
             },
             icon: Icon(Icons.search),
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.person_add)),
+          IconButton(onPressed: () {
+            openAddFriends();
+          }, icon: Icon(Icons.person_add)),
         ],
       ),
       body: ListView.builder(
@@ -45,6 +47,42 @@ class _FriendPageState extends State<FriendPage> {
         },
       ),
     );
+  }
+
+  Future openAddFriends() => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: TextField(
+        decoration: InputDecoration(hintText: 'Enter username'),
+      ),
+      actions: [
+          TextButton(
+            autofocus: true,
+            child: Text("SUBMIT"),
+            onPressed: submit,
+          ),
+        ],
+        //TODO: Add a validator
+    ),
+  );
+
+  void submit() {
+    bool addedSuccesfully = false;
+    //TODO: Check with backend, send back a bool
+    if(addedSuccesfully) {
+      Navigator.of(context).pop();
+      //Show Snackbar
+      final snackBar = SnackBar( 
+        content: const Text('Sent friend request!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    else {
+      final snackBar = SnackBar( 
+        content: const Text('Could not find user!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }
 
