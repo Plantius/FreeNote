@@ -173,7 +173,7 @@ class NotificationPopupMenu extends StatelessWidget {
         bodyBuilder: (context) => AddNotifications(),
         //determine width and height
         //determine background colour
-        height: 140,
+        height: 420,
         width: 300,
         backgroundColor: Colors.grey, //TODO: Change colour?
         direction: PopoverDirection.bottom,
@@ -212,24 +212,26 @@ class _AddNotificationsState extends State<AddNotifications> {
       itemBuilder: (context, index) {
         var selectedNotification = notifications[index];
         var notificationType = notificationTypes[index];
-        var title = Text(selectedNotification);
-        var subtitle = Text(selectedNotification);
+        var title = Text('Empty');
+        var concat = selectedNotification;
         var tileColor = Colors.blueGrey;
+        var popupBody = Text('Empty');
+        var newbody = 'Empty body';
         if(notificationRead[index] == false) {
           tileColor = Colors.amber; //TODO: Change colours
         }
         if(notificationType == 0) {
-
+          concat = '$selectedNotification has sent you a friendship request. Confirm?';
         }
         if(notificationType == 1) {
-
+          concat = '$selectedNotification has accepted your friend request.';
         }
         if(notificationType == 2) {
-
+          concat = 'System notification. Click to open!';
         }
+        title = Text(concat);
         return ListTile(
           title: title,
-          subtitle: subtitle,
           tileColor: tileColor, //TODO: Change to correct colour
           textColor: Colors.black,
           //TODO: On tap make sure the tile gets returned to the backend as read
