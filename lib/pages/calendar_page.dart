@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:free_note/event_logger.dart';
 
+class Event extends CalendarEventData {
+  Event({required super.title, required super.date});
+  
+  void f() {
+    logger.d('Test');
+  }
+}
+
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
@@ -12,11 +20,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
-    final event = CalendarEventData(
-      date: DateTime.now(),
-      event: 'Event 1', 
-      title: 'Title?',
-    );
+    final event = Event(title: 'title', date: DateTime.now());
 
     CalendarControllerProvider.of(context).controller.add(event);
 
@@ -26,7 +30,14 @@ class _CalendarPageState extends State<CalendarPage> {
         weekDayBuilder: _weekdayBuilder,
         useAvailableVerticalSpace: true,
         onCellTap: (events, date) {
-          logger.d('Tapped calendar cell: $events, $date');
+          logger.d('Tapped calendar cell:, $date');
+
+          for (CalendarEventData eventData in events) {
+            if (eventData is Event) {
+              Event event = eventData;
+              event.f();
+            }
+          }
         },
         headerStyle: HeaderStyle(
           leftIconConfig: IconDataConfig(
@@ -50,6 +61,8 @@ class _CalendarPageState extends State<CalendarPage> {
     isInMonth,
     hideDaysNotInMonth,
   ) {
+    Color titleColor = isInMonth ? Colors.white : Theme.of(context).colorScheme.primary;
+
     return FilledCell<T>(
       date: date,
       shouldHighlight: isToday,
@@ -61,8 +74,8 @@ class _CalendarPageState extends State<CalendarPage> {
       onTileLongTap: null,
       dateStringBuilder: null,
       hideDaysNotInMonth: hideDaysNotInMonth,
-      titleColor: Colors.white,
-      highlightedTitleColor: Colors.white,
+      titleColor: titleColor,
+      highlightedTitleColor: titleColor,
     );
   }
 
