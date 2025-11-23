@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:free_note/event_logger.dart';
-
-class Event extends CalendarEventData {
-  Event({required super.title, required super.date});
-  
-  void f() {
-    logger.d('Test');
-  }
-}
+import 'package:free_note/models/event.dart';
+import 'package:free_note/providers/events_provider.dart';
+import 'package:provider/provider.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -18,11 +13,18 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  void _rebuildCalendar(List<Event> events) {
+    final controller = CalendarControllerProvider.of(context).controller;
+    controller.removeWhere((element) => true);
+    controller.addAll(
+      events.map((e) => e.toCalendarEvent()
+    ).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final event = Event(title: 'title', date: DateTime.now());
-
-    CalendarControllerProvider.of(context).controller.add(event);
+    final eventsProvider = context.watch<EventsProvider>();
+    _rebuildCalendar(eventsProvider.visibleEvents);
 
     return Scaffold(
       body: MonthView(
@@ -30,14 +32,7 @@ class _CalendarPageState extends State<CalendarPage> {
         weekDayBuilder: _weekdayBuilder,
         useAvailableVerticalSpace: true,
         onCellTap: (events, date) {
-          logger.d('Tapped calendar cell:, $date');
-
-          for (CalendarEventData eventData in events) {
-            if (eventData is Event) {
-              Event event = eventData;
-              event.f();
-            }
-          }
+          eventsProvider.addRandomEvent();
         },
         headerStyle: HeaderStyle(
           leftIconConfig: IconDataConfig(
