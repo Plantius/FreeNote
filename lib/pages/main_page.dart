@@ -193,6 +193,15 @@ class AddNotifications extends StatefulWidget {
 
 class _AddNotificationsState extends State<AddNotifications> {
   List<String> notifications = ["Notif1", "Notif2", "Notif3", "Notif4", "Notif5"];
+  List<int> notificationTypes = [0,1,2,3,4];
+  List<bool> notificationRead = [true, false, false, true, false];
+  //0 = Friend Request (incoming) (popup with accept or deny)
+  ////1 = X has accepted your friend request
+  //2 = Announcement / System Message (Popup)
+  //3 > Above, unimplemented, should default to 1 now.
+
+  //TODO: Add changing icons if new notifications
+  //TODO: Add Mark as read button
 
   //TODO: Ideally this should be grabbed from backend
   @override
@@ -202,11 +211,28 @@ class _AddNotificationsState extends State<AddNotifications> {
       itemCount: notifications.length,
       itemBuilder: (context, index) {
         var selectedNotification = notifications[index];
+        var notificationType = notificationTypes[index];
+        var title = Text(selectedNotification);
+        var subtitle = Text(selectedNotification);
+        var tileColor = Colors.blueGrey;
+        if(notificationRead[index] == false) {
+          tileColor = Colors.amber; //TODO: Change colours
+        }
+        if(notificationType == 0) {
+
+        }
+        if(notificationType == 1) {
+
+        }
+        if(notificationType == 2) {
+
+        }
         return ListTile(
-          title: Text(selectedNotification),
-          subtitle: Text(selectedNotification),
-          tileColor: Colors.blueGrey, //TODO: Change to correct colour
+          title: title,
+          subtitle: subtitle,
+          tileColor: tileColor, //TODO: Change to correct colour
           textColor: Colors.black,
+          //TODO: On tap make sure the tile gets returned to the backend as read
         );
       },
     );
