@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:calendar_view/calendar_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,24 +53,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'FreeNote',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromRGBO(109, 33, 134, 1),
-          surface: Color.fromRGBO(40, 43, 48, 1),
-          primary: Color.fromRGBO(109, 33, 134, 1),
-          brightness: Brightness.dark,
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: MaterialApp.router(
+        title: 'FreeNote',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromRGBO(109, 33, 134, 1),
+            surface: Color.fromRGBO(40, 43, 48, 1),
+            primary: Color.fromRGBO(109, 33, 134, 1),
+            brightness: Brightness.dark,
+          ),
         ),
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          FlutterQuillLocalizations.delegate,
+        ],
       ),
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        FlutterQuillLocalizations.delegate,
-      ],
     );
   }
 }

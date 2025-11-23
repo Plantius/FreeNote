@@ -22,7 +22,7 @@ dependencies:
   url_launcher: ^6.3.2
   path_provider: ^2.1.5
   flutter_svg: ^2.2.1
-  table_calendar: ^3.0.8
+  calendar_view: ^1.4.0
   flutter_quill: ^11.5.0
   flutter_localizations:
     sdk: flutter
