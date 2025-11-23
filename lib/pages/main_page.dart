@@ -252,53 +252,41 @@ class _AddNotificationsState extends State<AddNotifications> {
   Future openConfirmFriend(String popupBody) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      content: TextField(
-        decoration: InputDecoration(hintText: 'Enter username'),
-      ),
+      title: Text('$popupBody has requested to be friends!'),
       actions: [
           TextButton(
-            autofocus: true,
-            child: Text("SUBMIT"),
+            child: Text("ACCEPT"),
+            onPressed: () {},
+          ),
+          TextButton(
+            child: Text("DENY"),
             onPressed: () {},
           ),
         ],
-        //TODO: Add a validator
-    ),
-  );
-
-  Future openSystemMessage(String popupBody) => showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      content: TextField(
-        decoration: InputDecoration(hintText: 'Open system message username'),
-      ),
-      actions: [
-          TextButton(
-            autofocus: true,
-            child: Text("SUBMIT"),
-            onPressed: () {},
-          ),
-        ],
-        //TODO: Add a validator
     ),
   );
 
   Future openAcceptFriend(String popupBody) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      content: TextField(
-        decoration: InputDecoration(hintText: 'Open system message username'),
-      ),
+      title: Text('$popupBody has accepted your friend request!'),
       actions: [
           TextButton(
-            autofocus: true,
-            child: Text("SUBMIT"),
+            child: Text("YAY!"),
             onPressed: () {},
           ),
         ],
-        //TODO: Add a validator
     ),
   );
+
+  Future openSystemMessage(String popupBody) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('System Message!'),
+      content: Text(popupBody),
+    ),
+  );
+
 }
 
 class AddButton extends StatelessWidget {
