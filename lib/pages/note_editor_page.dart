@@ -21,8 +21,6 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
 
   @override
   void dispose() {
-    logger.d('Saving note ${widget.note.id} [todo]');
-
     _controller.dispose();
     super.dispose();
   }
