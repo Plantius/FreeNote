@@ -32,20 +32,37 @@ class _FriendPageState extends State<FriendPage> {
           }, icon: Icon(Icons.person_add)),
         ],
       ),
-      body: ListView.builder(
-        itemCount: friendProvider.friends.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: CircleAvatar(
-              child: Text(friendProvider.friends[index].userName[0]),
+      body: _buildFriendsList(context),
+    );
+  }
+
+  Widget _buildFriendsList(BuildContext context) {
+    return Consumer<FriendsProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          return RefreshIndicator(
+            child: ListView.builder(
+              itemCount: provider.friends.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    child: Text(provider.friends[index].userName[0]),
+                  ),
+                  title: Text(provider.friends[index].userName),
+                  subtitle: Text(provider.friends[index].email),
+                  trailing: Text(''),
+                  onLongPress: () {},
+                );
+              },
             ),
-            title: Text(friendProvider.friends[index].userName),
-            subtitle: Text(''),
-            trailing: Text(''),
-            onLongPress: () {},
+            onRefresh: () async {
+              await provider.loadFriends(forceRefresh: true);
+            },
           );
-        },
-      ),
+        }
+      },
     );
   }
 

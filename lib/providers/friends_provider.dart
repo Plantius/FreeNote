@@ -20,7 +20,11 @@ class FriendsProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   List<Profile> get friends => _friends == null ? [] : _friends!;
 
-  Future<void> loadFriends() async {
+  Future<void> loadFriends({bool forceRefresh = false}) async {
+    if (_friends != null && !forceRefresh) {
+      return;
+    }
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
