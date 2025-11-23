@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/services/database_service.dart';
@@ -5,15 +6,16 @@ import 'dart:math' show Random;
 
 class EventsProvider extends ChangeNotifier {
   final DatabaseService database;
+  final EventController<Event> controller = EventController();
 
   final _events = <Event>[];
-  final _enabledCalendars = <int>{ 0, };
+  final _visibleCalendars = <int>{ 0, };
 
   EventsProvider(this.database);
 
   List<Event> get visibleEvents {
     return _events
-      .where((event) => _enabledCalendars.contains(event.calendarId))
+      .where((event) => _visibleCalendars.contains(event.calendarId))
       .toList();
   }
 
@@ -25,7 +27,7 @@ class EventsProvider extends ChangeNotifier {
     final start = DateTime(
       now.year,
       now.month,
-      now.day + rand.nextInt(60) - 30,
+      now.day - rand.nextInt(7),
       8 + rand.nextInt(10),
     );
 
@@ -42,6 +44,20 @@ class EventsProvider extends ChangeNotifier {
     );
 
     _events.add(event);
+
+    if (_visibleCalendars.contains(event.calendarId)) {
+      controller.add(event.toCalendarEvent());
+    }
+
     notifyListeners();
+  }
+
+  // ignore: unused_element
+  void _repopulateCalendar() {
+    controller.removeWhere((element) => true);
+
+    controller.addAll(
+      visibleEvents.map((event) => event.toCalendarEvent()
+    ).toList());
   }
 }

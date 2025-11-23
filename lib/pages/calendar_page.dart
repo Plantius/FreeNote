@@ -13,26 +13,18 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  void _rebuildCalendar(List<Event> events) {
-    final controller = CalendarControllerProvider.of(context).controller;
-    controller.removeWhere((element) => true);
-    controller.addAll(
-      events.map((e) => e.toCalendarEvent()
-    ).toList());
-  }
-
   @override
   Widget build(BuildContext context) {
-    final eventsProvider = context.watch<EventsProvider>();
-    _rebuildCalendar(eventsProvider.visibleEvents);
+    final provider = context.watch<EventsProvider>();
 
     return Scaffold(
       body: MonthView(
+        controller: provider.controller,
         cellBuilder: _cellBuilder,
         weekDayBuilder: _weekdayBuilder,
         useAvailableVerticalSpace: true,
         onCellTap: (events, date) {
-          eventsProvider.addRandomEvent();
+          provider.addRandomEvent();
         },
         headerStyle: HeaderStyle(
           leftIconConfig: IconDataConfig(
