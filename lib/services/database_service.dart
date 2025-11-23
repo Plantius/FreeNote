@@ -54,15 +54,27 @@ class DatabaseService {
     if (userId == null) return null;
 
     try {
-      final response = await supabase
+      final friendIds = await supabase
           .from('user_friends')
-          .select('uid1, uid2, profile1:uid1(*), profile2:uid2(*)')
+          .select('uid1, uid2')
           .or('uid1.eq.$userId,uid2.eq.$userId');
 
-      print(response);
+      final friends = await Future.wait(
+        friendIds.map((friend) async {
+          final friendId = friend['uid1'] == userId
+              ? friend['uid2']
+              : friend['uid1'];
+          final profileResponse = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('uid', friendId)
+              .single();
+          return Profile.fromJson(profileResponse);
+        }),
+      );
 
       logger.i('Successfully fetched friends for user $userId');
-      return [];
+      return friends;
     } catch (e) {
       logger.e('Failed to fetch friends for user $userId: $e');
       return [];
