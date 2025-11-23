@@ -215,8 +215,6 @@ class _AddNotificationsState extends State<AddNotifications> {
         var title = Text('Empty');
         var concat = selectedNotification;
         var tileColor = Colors.blueGrey;
-        var popupBody = Text('Empty');
-        var newbody = 'Empty body';
         if(notificationRead[index] == false) {
           tileColor = Colors.amber; //TODO: Change colours
         }
@@ -234,11 +232,73 @@ class _AddNotificationsState extends State<AddNotifications> {
           title: title,
           tileColor: tileColor, //TODO: Change to correct colour
           textColor: Colors.black,
+          onTap: () {
+            if(notificationType == 0) {
+              openConfirmFriend(selectedNotification);
+            }
+            else if(notificationType == 1) {
+              openAcceptFriend(selectedNotification);
+            }
+            else if(notificationType == 2) {
+              openSystemMessage(selectedNotification);
+            }
+          },
           //TODO: On tap make sure the tile gets returned to the backend as read
         );
       },
     );
   }
+
+  Future openConfirmFriend(String popupBody) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: TextField(
+        decoration: InputDecoration(hintText: 'Enter username'),
+      ),
+      actions: [
+          TextButton(
+            autofocus: true,
+            child: Text("SUBMIT"),
+            onPressed: () {},
+          ),
+        ],
+        //TODO: Add a validator
+    ),
+  );
+
+  Future openSystemMessage(String popupBody) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: TextField(
+        decoration: InputDecoration(hintText: 'Open system message username'),
+      ),
+      actions: [
+          TextButton(
+            autofocus: true,
+            child: Text("SUBMIT"),
+            onPressed: () {},
+          ),
+        ],
+        //TODO: Add a validator
+    ),
+  );
+
+  Future openAcceptFriend(String popupBody) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: TextField(
+        decoration: InputDecoration(hintText: 'Open system message username'),
+      ),
+      actions: [
+          TextButton(
+            autofocus: true,
+            child: Text("SUBMIT"),
+            onPressed: () {},
+          ),
+        ],
+        //TODO: Add a validator
+    ),
+  );
 }
 
 class AddButton extends StatelessWidget {
