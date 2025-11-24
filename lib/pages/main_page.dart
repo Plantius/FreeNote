@@ -53,10 +53,8 @@ class _MainPageState extends State<MainPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SearchButton(
-                searchTerms: notesProvider.notes,
-              ), 
-              AddButton()
+              SearchButton(searchTerms: notesProvider.notes),
+              AddButton(),
             ],
           ),
         ],
@@ -64,10 +62,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getLocationIndex(widget.currentLocation),
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list), 
-            label: 'Notes'
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Notes'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
@@ -117,7 +112,7 @@ class _MainPageState extends State<MainPage> {
 
 class SearchButton extends StatefulWidget {
   final List<Note> searchTerms;
-  
+
   const SearchButton({super.key, required this.searchTerms});
 
   @override
@@ -134,7 +129,10 @@ class _SearchButtonState extends State<SearchButton> {
         width: 45,
         child: IconButton(
           onPressed: () {
-            showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: widget.searchTerms));
+            showSearch(
+              context: context,
+              delegate: CustomSearchDelegate(searchTerms: widget.searchTerms),
+            );
           },
           icon: const Icon(Icons.search),
         ),
@@ -151,11 +149,7 @@ class NotificationButton extends StatelessWidget {
     return Padding(
       //TODO: Figure out how to have it highlight on pressed
       padding: const EdgeInsets.all(1.0),
-      child: SizedBox(
-        height: 45,
-        width: 45,
-        child: NotificationPopupMenu(),
-      ),
+      child: SizedBox(height: 45, width: 45, child: NotificationPopupMenu()),
     );
   }
 }
@@ -178,8 +172,8 @@ class NotificationPopupMenu extends StatelessWidget {
         backgroundColor: Colors.grey, //TODO: Change colour?
         direction: PopoverDirection.bottom,
         //TODO: Somehow make it outline to the left ish
-        ),
-        child: Icon(Icons.notifications)
+      ),
+      child: Icon(Icons.notifications),
     );
   }
 }
@@ -192,8 +186,14 @@ class AddNotifications extends StatefulWidget {
 }
 
 class _AddNotificationsState extends State<AddNotifications> {
-  List<String> notifications = ["Notif1", "Notif2", "Notif3", "Notif4", "Notif5"];
-  List<int> notificationTypes = [0,1,2,3,4];
+  List<String> notifications = [
+    "Notif1",
+    "Notif2",
+    "Notif3",
+    "Notif4",
+    "Notif5",
+  ];
+  List<int> notificationTypes = [0, 1, 2, 3, 4];
   List<bool> notificationRead = [true, false, false, true, false];
   //0 = Friend Request (incoming) (popup with accept or deny)
   ////1 = X has accepted your friend request
@@ -215,16 +215,17 @@ class _AddNotificationsState extends State<AddNotifications> {
         var title = Text('Empty');
         var concat = selectedNotification;
         var tileColor = Colors.blueGrey;
-        if(notificationRead[index] == false) {
+        if (notificationRead[index] == false) {
           tileColor = Colors.amber; //TODO: Change colours
         }
-        if(notificationType == 0) {
-          concat = '$selectedNotification has sent you a friendship request. Confirm?';
+        if (notificationType == 0) {
+          concat =
+              '$selectedNotification has sent you a friendship request. Confirm?';
         }
-        if(notificationType == 1) {
+        if (notificationType == 1) {
           concat = '$selectedNotification has accepted your friend request.';
         }
-        if(notificationType == 2) {
+        if (notificationType == 2) {
           concat = 'System notification. Click to open!';
         }
         title = Text(concat);
@@ -233,13 +234,11 @@ class _AddNotificationsState extends State<AddNotifications> {
           tileColor: tileColor, //TODO: Change to correct colour
           textColor: Colors.black,
           onTap: () {
-            if(notificationType == 0) {
+            if (notificationType == 0) {
               openConfirmFriend(selectedNotification);
-            }
-            else if(notificationType == 1) {
+            } else if (notificationType == 1) {
               openAcceptFriend(selectedNotification);
-            }
-            else if(notificationType == 2) {
+            } else if (notificationType == 2) {
               openSystemMessage(selectedNotification);
             }
           },
@@ -254,15 +253,9 @@ class _AddNotificationsState extends State<AddNotifications> {
     builder: (context) => AlertDialog(
       title: Text('$popupBody has requested to be friends!'),
       actions: [
-          TextButton(
-            child: Text("ACCEPT"),
-            onPressed: () {},
-          ),
-          TextButton(
-            child: Text("DENY"),
-            onPressed: () {},
-          ),
-        ],
+        TextButton(child: Text("ACCEPT"), onPressed: () {}),
+        TextButton(child: Text("DENY"), onPressed: () {}),
+      ],
     ),
   );
 
@@ -270,23 +263,15 @@ class _AddNotificationsState extends State<AddNotifications> {
     context: context,
     builder: (context) => AlertDialog(
       title: Text('$popupBody has accepted your friend request!'),
-      actions: [
-          TextButton(
-            child: Text("YAY!"),
-            onPressed: () {},
-          ),
-        ],
+      actions: [TextButton(child: Text("YAY!"), onPressed: () {})],
     ),
   );
 
   Future openSystemMessage(String popupBody) => showDialog(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text('System Message!'),
-      content: Text(popupBody),
-    ),
+    builder: (context) =>
+        AlertDialog(title: Text('System Message!'), content: Text(popupBody)),
   );
-
 }
 
 class AddButton extends StatelessWidget {
@@ -296,11 +281,7 @@ class AddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: SizedBox(
-        height: 45,
-        width: 45,
-        child: AddNotePopupMenu(),
-      ),
+      child: SizedBox(height: 45, width: 45, child: AddNotePopupMenu()),
     );
   }
 }
@@ -382,10 +363,10 @@ class CustomSearchDelegate extends SearchDelegate {
   bool titlesPopulated = false;
 
   void populateTitles() {
-    if(!titlesPopulated) {
+    if (!titlesPopulated) {
       titlesPopulated = true;
       noteTitles = [];
-      for(var terms in searchTerms) {
+      for (var terms in searchTerms) {
         noteTitles.add(terms.title);
         noteBodies.add(terms.content);
       }
@@ -421,24 +402,22 @@ class CustomSearchDelegate extends SearchDelegate {
     populateTitles();
     List<String> bodyBuilding = [];
     List<Note> matchedNote = [];
-    for(var fruit in searchTerms) {
+    for (var fruit in searchTerms) {
       bool addMatch = false;
       if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
         addMatch = true;
-      }
-      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+      } else if (fruit.content.toLowerCase().contains(query.toLowerCase())) {
         addMatch = true;
       }
-      if(addMatch) {
+      if (addMatch) {
         matchedNote.add(fruit);
         //TODO: Ideally grab the part where it matches the query.. and remove newlines?
-        if(fruit.content.length > 256)
-        {
+        if (fruit.content.length > 256) {
           bodyBuilding.add(fruit.content.substring(0, 256));
-        }
-        else
-        {
-          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        } else {
+          bodyBuilding.add(
+            fruit.content,
+          ); //TODO: Test case where body is empty string? does it still get added?
         }
       }
     }
@@ -450,8 +429,10 @@ class CustomSearchDelegate extends SearchDelegate {
         var resultid = matchedNote[index].id;
         var resultfruit = matchedNote[index];
         return ListTile(
-          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
-          subtitle: Text(resultbody), //TODO: Text should be the first 
+          leading: Icon(
+            Icons.note,
+          ), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first
           onTap: () {
             context.push('/note/$resultid', extra: resultfruit);
           },
@@ -469,24 +450,22 @@ class CustomSearchDelegate extends SearchDelegate {
     populateTitles();
     List<String> bodyBuilding = [];
     List<Note> matchedNote = [];
-    for(var fruit in searchTerms) {
+    for (var fruit in searchTerms) {
       bool addMatch = false;
       if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
         addMatch = true;
-      }
-      else if(fruit.content.toLowerCase().contains(query.toLowerCase())) {
+      } else if (fruit.content.toLowerCase().contains(query.toLowerCase())) {
         addMatch = true;
       }
-      if(addMatch) {
+      if (addMatch) {
         matchedNote.add(fruit);
         //TODO: Ideally grab the part where it matches the query.. and remove newlines?
-        if(fruit.content.length > 256)
-        {
+        if (fruit.content.length > 256) {
           bodyBuilding.add(fruit.content.substring(0, 256));
-        }
-        else
-        {
-          bodyBuilding.add(fruit.content); //TODO: Test case where body is empty string? does it still get added?
+        } else {
+          bodyBuilding.add(
+            fruit.content,
+          ); //TODO: Test case where body is empty string? does it still get added?
         }
       }
     }
@@ -498,8 +477,10 @@ class CustomSearchDelegate extends SearchDelegate {
         var resultid = matchedNote[index].id;
         var resultfruit = matchedNote[index];
         return ListTile(
-          leading: Icon(Icons.note), //TODO: Should be corresponding to the note type
-          subtitle: Text(resultbody), //TODO: Text should be the first 
+          leading: Icon(
+            Icons.note,
+          ), //TODO: Should be corresponding to the note type
+          subtitle: Text(resultbody), //TODO: Text should be the first
           onTap: () {
             context.push('/note/$resultid', extra: resultfruit);
           },
