@@ -49,6 +49,25 @@ class DatabaseService {
     }
   }
 
+  Future<Profile?> userExists(String userName) async {
+    try {
+      final response = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_name', userName)
+          .maybeSingle();
+
+      if (response == null) {
+        logger.w('No profile found for user $userName');
+        return null;
+      }
+      return Profile.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to fetch profile for user $userName: $e');
+      return null;
+    }
+  }
+
   Future<List<Profile>?> fetchFriends() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;
@@ -157,5 +176,22 @@ class DatabaseService {
       logger.e('Failed to delete note $id: $e');
       rethrow;
     }
+  }
+
+  Future<bool> sendFriendRequest(String uid) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return false;
+
+    try {
+      await supabase.from('friend_requests').insert({
+        'from_uid': userId,
+        'to_uid': uid,
+      });
+      logger.i('Succesfully send friend request to user $uid');
+      return true;
+    } catch (e) {
+      logger.e('Failed to send friend request to user $uid');
+    }
+    return false;
   }
 }

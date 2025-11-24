@@ -12,7 +12,7 @@ class FriendsProvider with ChangeNotifier {
 
   FriendsProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      loadFriends();
+      loadFriends(forceRefresh: true);
     });
   }
 
@@ -43,5 +43,12 @@ class FriendsProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<bool> sendFriendRequest(String username) async {
+    final profile = await database.userExists(username);
+    if (profile == null) return false;
+
+    return await database.sendFriendRequest(profile.uid);
   }
 }

@@ -11,6 +11,14 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
+  final TextEditingController _usernameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final friendProvider = context.watch<FriendsProvider>();
@@ -27,9 +35,12 @@ class _FriendPageState extends State<FriendPage> {
             },
             icon: Icon(Icons.search),
           ),
-          IconButton(onPressed: () {
-            openAddFriends();
-          }, icon: Icon(Icons.person_add)),
+          IconButton(
+            onPressed: () {
+              openAddFriends();
+            },
+            icon: Icon(Icons.person_add),
+          ),
         ],
       ),
       body: _buildFriendsList(context),
@@ -70,35 +81,35 @@ class _FriendPageState extends State<FriendPage> {
     context: context,
     builder: (context) => AlertDialog(
       content: TextField(
+        controller: _usernameController,
         decoration: InputDecoration(hintText: 'Enter username'),
       ),
       actions: [
-          TextButton(
-            autofocus: true,
-            child: Text("SUBMIT"),
-            onPressed: submit,
-          ),
-        ],
-        //TODO: Add a validator
+        TextButton(
+          autofocus: true,
+          onPressed: submitFriendRequest,
+          child: Text('Send Request'),
+        ),
+      ],
     ),
   );
 
-  void submit() {
-    bool addedSuccesfully = false;
-    //TODO: Check with backend, send back a bool
-    if(addedSuccesfully) {
+  Future<void> submitFriendRequest() async {
+    final friendProvider = context.read<FriendsProvider>();
+    final username = _usernameController.text.trim();
+
+    final success = await friendProvider.sendFriendRequest(username);
+    if (!mounted) return;
+
+    if (success) {
       Navigator.of(context).pop();
-      //Show Snackbar
-      final snackBar = SnackBar( 
-        content: const Text('Sent friend request!'),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sent friend request to $username!')),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-    else {
-      final snackBar = SnackBar( 
-        content: const Text('Could not find user!'),
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not find user with name $username')),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

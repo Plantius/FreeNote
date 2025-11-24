@@ -40,10 +40,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> _authenticate(
-    String email, String password, 
-    Future<User?> Function(String, String) func
+    String email,
+    String password,
+    Future<User?> Function(String, String) func,
   ) async {
-    _loading = true; 
+    _loading = true;
     _error = null;
     _user = null;
     notifyListeners();
@@ -66,13 +67,13 @@ class AuthProvider extends ChangeNotifier {
     return _error == null;
   }
 
-  Future<void> signOut() async { // TODO: should signout have errors?
+  Future<void> signOut() async {
     _loading = false;
     _error = null;
     _user = null;
 
     await _authService.signOut();
-    
+
     notifyListeners();
   }
 }

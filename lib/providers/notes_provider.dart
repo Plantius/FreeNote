@@ -83,7 +83,7 @@ class NotesProvider with ChangeNotifier {
     try {
       if (note.id == 0) {
         final createdNote = await database.createNote(note);
-        
+
         if (createdNote != null) {
           note = createdNote;
         } else {
@@ -93,7 +93,7 @@ class NotesProvider with ChangeNotifier {
         note.updatedAt = DateTime.now().toUtc();
         await CacheService.saveNote(note);
       }
-      
+
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
 
