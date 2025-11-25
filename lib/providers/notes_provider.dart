@@ -14,7 +14,7 @@ class NotesProvider with ChangeNotifier {
 
   NotesProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      loadNotes();
+      loadNotes(forceRefresh: true);
     });
   }
 
@@ -23,7 +23,7 @@ class NotesProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> loadNotes({bool forceRefresh = false}) async {
-    logger.i('Triggered reload of notes list: reresh = $forceRefresh');
+    logger.i('Triggered reload of notes list: refresh = $forceRefresh');
 
     if (_notes != null && !forceRefresh) {
       return;
@@ -83,7 +83,7 @@ class NotesProvider with ChangeNotifier {
     try {
       if (note.id == 0) {
         final createdNote = await database.createNote(note);
-        
+
         if (createdNote != null) {
           note = createdNote;
         } else {
@@ -93,7 +93,7 @@ class NotesProvider with ChangeNotifier {
         note.updatedAt = DateTime.now().toUtc();
         await CacheService.saveNote(note);
       }
-      
+
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
 

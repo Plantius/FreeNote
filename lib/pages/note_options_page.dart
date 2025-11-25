@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:free_note/widgets/option_button.dart';
@@ -21,10 +20,7 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Options',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        title: Text('Options', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -32,10 +28,10 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
           children: [
             OptionButton(
               action: _onDeleteNote,
-              icon: Icons.delete, 
+              icon: Icons.delete,
               text: 'Delete Note',
               danger: true,
-            )
+            ),
           ],
         ),
       ),
@@ -47,9 +43,9 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
       context: context,
       builder: (context) {
         return ConfirmDialog(
-          text: 'Are you sure that you want to delete this note?'
+          text: 'Are you sure that you want to delete this note?',
         );
-      }
+      },
     );
 
     if ((delete ?? false) && mounted) {

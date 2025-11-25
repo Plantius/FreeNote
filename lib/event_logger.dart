@@ -31,7 +31,7 @@ class EventPrinter extends LogPrinter {
       default:
         break;
     }
-    
+
     return ['$color[${event.level.name}]$reset ${event.message}'];
   }
 }

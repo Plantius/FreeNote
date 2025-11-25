@@ -1,0 +1,41 @@
+import 'package:free_note/models/profile.dart';
+
+enum NotificationType { fRequest, fAccept, systemMessage }
+
+class CustomNotification {
+  final int id;
+  String content;
+  Profile? sender;
+  final DateTime createdAt;
+  bool read;
+  final NotificationType type;
+
+  CustomNotification({
+    required this.id,
+    required this.content,
+    this.sender,
+    required this.createdAt,
+    required this.read,
+    required this.type,
+  });
+
+  factory CustomNotification.fromJson(Map<String, dynamic> json) {
+    return CustomNotification(
+      id: json['id'] as int,
+      content: json['content'] ?? '',
+      sender: json['sender'] != null ? Profile.fromJson(json['sender']) : null,
+      createdAt: DateTime.parse(json['created_at']),
+      type: json['type'] as NotificationType,
+      read: json['read'] as bool,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'content': content,
+    'sender': sender?.toJson(),
+    'created_at': createdAt.toIso8601String(),
+    'type': type.toString(),
+    'read': read,
+  };
+}

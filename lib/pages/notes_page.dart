@@ -3,27 +3,21 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
 
   @override
-  NotesPageState createState() => NotesPageState();
+  State<NotesPage> createState() => _NotesPageState();
 }
 
-class NotesPageState extends State<NotesPage> {
+class _NotesPageState extends State<NotesPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Selection Menu goes here'),
-
-        SizedBox(height: 8),
-
-        Expanded(child: _buildNotesList(context)),
-
-        const Text('Search bar goes here'),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(children: [Expanded(child: _buildNotesList(context))]),
     );
   }
 
@@ -74,45 +68,7 @@ class NotesPageState extends State<NotesPage> {
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  () {
-                    final dt = note.updatedAt.toLocal();
-                    final now = DateTime.now();
-
-                    final today = DateTime(now.year, now.month, now.day);
-
-                    String two(int n) => n.toString().padLeft(2, '0');
-                    final time = '${two(dt.hour)}:${two(dt.minute)}';
-                    final date = DateTime(dt.year, dt.month, dt.day);
-
-                    const monthNames = [
-                      '',
-                      'January',
-                      'February',
-                      'March',
-                      'April',
-                      'May',
-                      'June',
-                      'July',
-                      'August',
-                      'September',
-                      'October',
-                      'November',
-                      'December',
-                    ];
-                    final monthName = monthNames[dt.month];
-
-                    if (date == today) {
-                      return time;
-                    }
-                    if (date == today.subtract(Duration(days: 1))) {
-                      return 'Yesterday $time';
-                    }
-                    if (date.year == now.year) {
-                      return '$time - ${dt.day} $monthName';
-                    } else {
-                      return '${dt.day} $monthName, ${dt.year}';
-                    }
-                  }(),
+                  _formatTimeStamp(note.updatedAt.toLocal()),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 16, color: Colors.purple),
@@ -123,5 +79,32 @@ class NotesPageState extends State<NotesPage> {
         ],
       ),
     );
+  }
+
+  String _formatTimeStamp(DateTime t) {
+    final now = DateTime.now();
+
+    final today = DateTime(now.year, now.month, now.day);
+
+    String two(int n) => n.toString().padLeft(2, '0');
+
+    final time = '${two(t.hour)}:${two(t.minute)}';
+    final date = DateTime(t.year, t.month, t.day);
+
+    final month = DateFormat.MMMM().format(date);
+
+    if (date == today) {
+      return time;
+    }
+
+    if (date == today.subtract(Duration(days: 1))) {
+      return 'Yesterday $time';
+    }
+
+    if (date.year == now.year) {
+      return '$time - ${t.day} $month';
+    } else {
+      return '${t.day} $month, ${t.year}';
+    }
   }
 }

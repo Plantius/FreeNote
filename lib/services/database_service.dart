@@ -1,4 +1,5 @@
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
 
@@ -28,6 +29,75 @@ class DatabaseService {
     );
 
     return (response as List).map((note) => Note.fromJson(note)).toList();
+  }
+
+  Future<Profile?> fetchProfile() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      final response = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('uid', userId)
+          .single();
+      logger.i('Successfully fetched profile for user $userId');
+      return Profile.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to fetch profile for user $userId: $e');
+      return null;
+    }
+  }
+
+  Future<Profile?> userExists(String username) async {
+    try {
+      final response = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_name', username)
+          .maybeSingle();
+
+      if (response == null) {
+        logger.w('No profile found for user $username');
+        return null;
+      }
+      return Profile.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to fetch profile for user $username: $e');
+      return null;
+    }
+  }
+
+  Future<List<Profile>?> fetchFriends() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      final friendIds = await supabase
+          .from('user_friends')
+          .select('uid1, uid2')
+          .or('uid1.eq.$userId,uid2.eq.$userId');
+
+      final friends = await Future.wait(
+        friendIds.map((friend) async {
+          final friendId = friend['uid1'] == userId
+              ? friend['uid2']
+              : friend['uid1'];
+          final profileResponse = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('uid', friendId)
+              .single();
+          return Profile.fromJson(profileResponse);
+        }),
+      );
+
+      logger.i('Successfully fetched friends for user $userId');
+      return friends;
+    } catch (e) {
+      logger.e('Failed to fetch friends for user $userId: $e');
+      return [];
+    }
   }
 
   Future<Note?> fetchNote(int id) async {
@@ -104,6 +174,58 @@ class DatabaseService {
       await supabase.from('notes').delete().eq('id', id);
     } catch (e) {
       logger.e('Failed to delete note $id: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> sendFriendRequest(String uid) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return false;
+
+    try {
+      await supabase.from('friend_requests').insert({
+        'from_uid': userId,
+        'to_uid': uid,
+      });
+      logger.i('Succesfully send friend request to user $uid');
+      return true;
+    } catch (e) {
+      logger.e('Failed to send friend request to user $uid');
+    }
+    return false;
+  }
+
+  Future<void> acceptFriendRequest(Profile user) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      final request = await supabase
+          .from('friend_requests')
+          .select('*')
+          .eq('to_uid', userId)
+          .eq('from_uid', user.uid)
+          .maybeSingle();
+
+      if (request == null) {
+        logger.w('No friend request found from user ${user.uid} to accept');
+        return;
+      }
+
+      await supabase.from('user_friends').insert({
+        'uid1': userId,
+        'uid2': user.uid,
+      });
+
+      await supabase
+          .from('friend_requests')
+          .delete()
+          .eq('to_uid', userId)
+          .eq('from_uid', user.uid);
+
+      logger.i('Successfully accepted friend request from user ${user.uid}');
+    } catch (e) {
+      logger.e('Failed to accept friend request from user ${user.uid}: $e');
       rethrow;
     }
   }

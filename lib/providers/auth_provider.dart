@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/auth_service.dart';
+import 'package:free_note/services/database_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService.instance;
   User? _user;
+  Profile? _profile;
   String? _error;
   bool _loading = false;
 
   User? get user => _user;
+  Profile? get profile => _profile;
   String? get error => _error;
   bool get loading => _loading;
 
   AuthProvider() {
-    _authService.userStream.listen((user) {
+    _authService.userStream.listen((user) async {
       _user = _authService.user;
+
+      if (_user == null) {
+        _profile = null;
+      } else {
+        _profile = await DatabaseService.instance.fetchProfile();
+      }
+
       notifyListeners();
     });
   }
@@ -24,25 +35,28 @@ class AuthProvider extends ChangeNotifier {
     return _authenticate(email, password, _authService.signIn);
   }
 
-  Future<bool> signUp(String email, String password) async {
-    return _authenticate(email, password, _authService.signUp);
+  Future<bool> signUp(String email, String username, String password) async {
+    return _authenticate(
+      email,
+      password,
+      (email, password) => _authService.signUp(email, username, password),
+    );
   }
 
   Future<bool> _authenticate(
-    String email, String password, 
-    Future<User?> Function(String, String) func
+    String email,
+    String password,
+    Future<User?> Function(String, String) func,
   ) async {
-    _loading = true; 
+    _loading = true;
     _error = null;
     _user = null;
     notifyListeners();
 
     try {
       _user = await func(email, password);
-    } on AuthApiException catch (e) {
+    } on AuthException catch (e) {
       _error = e.message;
-    } on AuthRetryableFetchException {
-      _error = 'Network error';
     } catch (e) {
       logger.e(e);
     }
@@ -57,13 +71,13 @@ class AuthProvider extends ChangeNotifier {
     return _error == null;
   }
 
-  Future<void> signOut() async { // TODO: should signout have errors?
+  Future<void> signOut() async {
     _loading = false;
     _error = null;
     _user = null;
 
     await _authService.signOut();
-    
+
     notifyListeners();
   }
 }

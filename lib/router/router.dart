@@ -31,10 +31,7 @@ final GoRouter router = GoRouter(
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return MainPage(
-          currentLocation: state.matchedLocation,
-          child: child,
-        );
+        return MainPage(currentLocation: state.matchedLocation, child: child);
       },
       routes: [
         GoRoute(
@@ -57,24 +54,20 @@ final GoRouter router = GoRouter(
         final idString = state.pathParameters['id']!;
         final id = int.tryParse(idString) ?? 0;
 
-        return NoteViewerPage(
-          note: state.extra as Note?,
-          noteId: id,
-        );
+        return NoteViewerPage(note: state.extra as Note?, noteId: id);
       },
     ),
-    GoRoute( // ID is only kept for semantics; only extra is used.
+    GoRoute(
+      // ID is only kept for semantics; only extra is used.
       path: '/note/:id/options',
       builder: (context, state) {
         if (state.extra == null) {
           return ErrorPage(
-            error: 'Can only navigate to options page from note page!'
+            error: 'Can only navigate to options page from note page!',
           );
         }
 
-        return NoteOptionsPage(
-          note: state.extra as Note,
-        );
+        return NoteOptionsPage(note: state.extra as Note);
       },
     ),
     GoRoute(
@@ -105,7 +98,7 @@ final GoRouter router = GoRouter(
       path: '/friends',
       builder: (context, state) {
         return FriendPage();
-      }
+      },
     ),
   ],
   errorBuilder: (context, state) {
