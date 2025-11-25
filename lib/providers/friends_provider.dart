@@ -51,4 +51,14 @@ class FriendsProvider with ChangeNotifier {
 
     return await database.sendFriendRequest(profile.uid);
   }
+
+  Future<void> acceptFriendRequest(String popupBody) async {
+    try {
+      await database.acceptFriendRequest(popupBody);
+      await loadFriends(forceRefresh: true);
+    } catch (e) {
+      _errorMessage = 'Failed to accept friend request: $e';
+      notifyListeners();
+    }
+  }
 }

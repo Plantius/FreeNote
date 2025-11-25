@@ -194,4 +194,39 @@ class DatabaseService {
     }
     return false;
   }
+
+  Future<void> acceptFriendRequest(String popupBody) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      final request = await supabase
+          .from('friend_requests')
+          .select('*')
+          .eq('to_uid', userId)
+          .eq('from_uid', popupBody)
+          .maybeSingle();
+
+      if (request == null) {
+        logger.w('No friend request found from user $popupBody to accept');
+        return;
+      }
+
+      await supabase.from('user_friends').insert({
+        'uid1': userId,
+        'uid2': popupBody,
+      });
+
+      await supabase
+          .from('friend_requests')
+          .delete()
+          .eq('to_uid', userId)
+          .eq('from_uid', popupBody);
+
+      logger.i('Successfully accepted friend request from user $popupBody');
+    } catch (e) {
+      logger.e('Failed to accept friend request from user $popupBody: $e');
+      rethrow;
+    }
+  }
 }

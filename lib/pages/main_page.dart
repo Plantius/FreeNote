@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/models/notification.dart';
+import 'package:free_note/models/profile.dart';
+import 'package:free_note/providers/friends_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -171,7 +173,7 @@ class NotificationPopupMenu extends StatelessWidget {
         height: 420,
         width: 300,
         backgroundColor: Colors.grey, //TODO: Change colour?
-        direction: PopoverDirection.bottom,
+        direction: PopoverDirection.left,
         //TODO: Somehow make it outline to the left ish
       ),
       child: Icon(Icons.notifications),
@@ -188,9 +190,27 @@ class AddNotifications extends StatefulWidget {
 
 class _AddNotificationsState extends State<AddNotifications> {
   final List<CustomNotification> notifications = [
-    CustomNotification(id: 1, content: 'Alette', createdAt: DateTime(2025), type: NotificationType.fRequest, read: false),
-    CustomNotification(id: 2, content: 'Alette', createdAt: DateTime(2024), type: NotificationType.fAccept, read: true),
-    CustomNotification(id: 3, content: 'Alette says hi this is the best system message ever', createdAt: DateTime(2025), type: NotificationType.systemMessage, read: false),
+    CustomNotification(
+      id: 1,
+      content: 'Alette',
+      createdAt: DateTime(2025),
+      type: NotificationType.fRequest,
+      read: false,
+    ),
+    CustomNotification(
+      id: 2,
+      content: 'Alette',
+      createdAt: DateTime(2024),
+      type: NotificationType.fAccept,
+      read: true,
+    ),
+    CustomNotification(
+      id: 3,
+      content: 'Alette says hi this is the best system message ever',
+      createdAt: DateTime(2025),
+      type: NotificationType.systemMessage,
+      read: false,
+    ),
   ];
 
   //TODO: Add changing icons if new notifications
@@ -246,7 +266,13 @@ class _AddNotificationsState extends State<AddNotifications> {
     builder: (context) => AlertDialog(
       title: Text('$popupBody has requested to be friends!'),
       actions: [
-        TextButton(child: Text('ACCEPT'), onPressed: () {}),
+        TextButton(
+          child: Text('ACCEPT'),
+          onPressed: () {
+            context.read<FriendsProvider>().acceptFriendRequest(popupBody);
+            Navigator.of(context).pop();
+          },
+        ),
         TextButton(child: Text('DENY'), onPressed: () {}),
       ],
     ),
@@ -256,17 +282,31 @@ class _AddNotificationsState extends State<AddNotifications> {
     context: context,
     builder: (context) => AlertDialog(
       title: Text('$popupBody has accepted your friend request!'),
-      actions: [TextButton(child: Text('YAY!'), onPressed: () {Navigator.of(context).pop();})],
+      actions: [
+        TextButton(
+          child: Text('YAY!'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     ),
   );
 
   Future openSystemMessage(String popupBody) => showDialog(
     context: context,
-    builder: (context) =>
-        AlertDialog(title: Text('System Message!'), content: Text(popupBody), 
-        actions: [
-          TextButton(onPressed: () {Navigator.of(context).pop();}, child: Text('CLOSE'))
-          ],),
+    builder: (context) => AlertDialog(
+      title: Text('System Message!'),
+      content: Text(popupBody),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('CLOSE'),
+        ),
+      ],
+    ),
   );
 }
 
