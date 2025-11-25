@@ -263,14 +263,17 @@ class _AddNotificationsState extends State<AddNotifications> {
     context: context,
     builder: (context) => AlertDialog(
       title: Text('$popupBody has accepted your friend request!'),
-      actions: [TextButton(child: Text('YAY!'), onPressed: () {})],
+      actions: [TextButton(child: Text('YAY!'), onPressed: () {Navigator.of(context).pop();})],
     ),
   );
 
   Future openSystemMessage(String popupBody) => showDialog(
     context: context,
     builder: (context) =>
-        AlertDialog(title: Text('System Message!'), content: Text(popupBody)),
+        AlertDialog(title: Text('System Message!'), content: Text(popupBody), 
+        actions: [
+          TextButton(onPressed: () {Navigator.of(context).pop();}, child: Text('CLOSE'))
+          ],),
   );
 }
 
