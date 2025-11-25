@@ -36,37 +36,32 @@ class _LoginPageState extends State<LoginPage> {
                 //     : 'Sign In',
                 //   style: Theme.of(context).textTheme.titleLarge,
                 // ),
-
                 _buildForm(context, auth),
 
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
 
                 TextButton(
                   onPressed: () {
                     setState(() {
                       _isSignUp = !_isSignUp;
                     });
-                  }, 
-                  child: _isSignUp 
-                    ? const Text('Have an account? Sign in')
-                    : const Text('New here? Sign up')
+                  },
+                  child: _isSignUp
+                      ? const Text('Have an account? Sign in')
+                      : const Text('New here? Sign up'),
                 ),
 
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
 
                 IconButton(
                   onPressed: () => _debugLogin(auth),
-                  icon: const Icon(Icons.auto_awesome)
+                  icon: const Icon(Icons.auto_awesome),
                 ),
               ],
             ),
           ),
         ),
-      ) 
+      ),
     );
   }
 
@@ -78,41 +73,31 @@ class _LoginPageState extends State<LoginPage> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email Address'
-            ),
+            decoration: InputDecoration(labelText: 'Email Address'),
             validator: _emailValidator,
           ),
 
           TextFormField(
             controller: _passwordController,
             obscureText: true,
-            decoration: InputDecoration(
-              labelText: 'Password'
-            ),
+            decoration: InputDecoration(labelText: 'Password'),
             validator: _passwordValidator,
           ),
 
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
 
           ElevatedButton(
-            onPressed: auth.loading ? null : _submitLogin, 
-            child: auth.loading 
-              ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(),
-              )
-              : Text(
-                _isSignUp
-                  ? 'Register'
-                  : 'Log In'
-                )
-          )
+            onPressed: auth.loading ? null : _submitLogin,
+            child: auth.loading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(_isSignUp ? 'Register' : 'Log In'),
+          ),
         ],
-      )
+      ),
     );
   }
 
@@ -141,18 +126,15 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         _loginError(
           _isSignUp
-            ? 'Sign up failed: ${auth.error}'
-            : 'Login failed: ${auth.error}'
+              ? 'Sign up failed: ${auth.error}'
+              : 'Login failed: ${auth.error}',
         );
       }
     }
   }
 
   void _debugLogin(AuthProvider auth) async {
-    final success = await auth.signIn(
-      'test@example.com',
-      'supersecret',
-    );
+    final success = await auth.signIn('test@example.com', 'supersecret');
 
     if (success) {
       logger.i('Successfully logged into development account');
@@ -167,12 +149,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _loginError(String error) {
     final snackBar = SnackBar(
-      content: Text(
-        error,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
+      content: Text(error, style: TextStyle(color: Colors.white)),
       backgroundColor: Colors.black.withValues(alpha: 0.5),
     );
 
@@ -184,9 +161,10 @@ class _LoginPageState extends State<LoginPage> {
       return 'Please enter your email';
     }
 
-    final valid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-      .hasMatch(value);
-    
+    final valid = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    ).hasMatch(value);
+
     if (!valid) {
       return 'Please enter a valid email address';
     }

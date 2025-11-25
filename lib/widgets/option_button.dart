@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class OptionButton extends StatelessWidget {
-  final void Function() action; 
+  final void Function() action;
   final IconData icon;
   final String text;
   final bool? danger;
 
-  const OptionButton({super.key, 
-    required this.action, 
-    required this.icon, 
+  const OptionButton({
+    super.key,
+    required this.action,
+    required this.icon,
     required this.text,
-    this.danger
+    this.danger,
   });
 
   @override
@@ -21,9 +22,7 @@ class OptionButton extends StatelessWidget {
       onPressed: action,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(8),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           color: Theme.of(context).colorScheme.onPrimary,
         ),
         child: Row(
@@ -31,23 +30,17 @@ class OptionButton extends StatelessWidget {
             SizedBox(
               width: 40,
               height: 40,
-              child: Icon(
-                icon,
-                size: 30,
-                color: color,
-              ),
+              child: Icon(icon, size: 30, color: color),
             ),
-            const SizedBox(
-              width: 10,
-            ),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 text,
-                style: Theme.of(context)
-                  .textTheme
-                  .labelLarge?.copyWith(color: color),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: color),
               ),
-            )
+            ),
           ],
         ),
       ),

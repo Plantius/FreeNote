@@ -17,11 +17,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Expanded(child: _buildNotesList(context)),
-        ],
-      ),
+      child: Column(children: [Expanded(child: _buildNotesList(context))]),
     );
   }
 

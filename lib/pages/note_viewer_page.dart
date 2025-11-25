@@ -28,8 +28,8 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   Note? note;
 
   // NOTE: It would be nicer to start in viewing mode, but links don't work
-  // in that case, but do work when switching back from editing mode, for some 
-  // reason. 
+  // in that case, but do work when switching back from editing mode, for some
+  // reason.
   bool editing = true;
 
   int _savedStateHash = 0;
@@ -65,19 +65,21 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     try {
       setState(() {
         final json = jsonDecode(note!.content);
-        _controller.document = Document.fromJson(json); 
+        _controller.document = Document.fromJson(json);
       });
     } on FormatException {
-      logger.e('Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...');
+      logger.e(
+        'Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...',
+      );
 
       setState(() {
-        final delta = Delta();      
+        final delta = Delta();
         delta.insert('${note!.content}\n');
         _controller.document = Document.fromDelta(delta);
       });
     }
 
-    _titleController.text = note!.title;     
+    _titleController.text = note!.title;
     _savedStateHash = _controller.document.toDelta().hashCode;
   }
 
@@ -122,9 +124,9 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
           context: context,
           builder: (context) {
             return ConfirmDialog(
-              text: 'You have unsaved changes. Discard these?'
+              text: 'You have unsaved changes. Discard these?',
             );
-          }
+          },
         );
 
         if (mounted && (pop ?? false)) {
@@ -135,26 +137,28 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: _onBackNavigation,
       child: Scaffold(
         appBar: AppBar(
-          title: note == null 
-          ? Text(
-              'Loading...',
-              style: Theme.of(context).textTheme.titleLarge
-            )
-          : TextField(
-              controller: _titleController,
-              keyboardType: TextInputType.text,
-              decoration: const InputDecoration.collapsed(hintText: 'Title'),
-              style: Theme.of(context).textTheme.titleLarge,
-              inputFormatters: [
-                FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
-              ],
-            ),
+          title: note == null
+              ? Text(
+                  'Loading...',
+                  style: Theme.of(context).textTheme.titleLarge,
+                )
+              : TextField(
+                  controller: _titleController,
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration.collapsed(
+                    hintText: 'Title',
+                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
+                  ],
+                ),
           actions: [
             IconButton(
               onPressed: () {
@@ -163,23 +167,16 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
                   _controller.readOnly = !editing;
                 });
               },
-              icon: Icon(
-                editing 
-                ? Icons.remove_red_eye 
-                : Icons.edit
-              ),
+              icon: Icon(editing ? Icons.remove_red_eye : Icons.edit),
             ),
+            IconButton(onPressed: _saveDocument, icon: const Icon(Icons.save)),
             IconButton(
-              onPressed: _saveDocument, 
-              icon: const Icon(Icons.save),
-            ),
-            IconButton(
-              onPressed: note == null 
-                ? null 
-                : () {
-                    context.push('/note/${note!.id}/options', extra: note!);
-                  }, 
-              icon: const Icon(Icons.menu)
+              onPressed: note == null
+                  ? null
+                  : () {
+                      context.push('/note/${note!.id}/options', extra: note!);
+                    },
+              icon: const Icon(Icons.menu),
             ),
           ],
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -194,9 +191,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       return Column(
         children: [
           _buildToolbar(context),
-          Expanded(
-            child: _buildEditor(context)
-          )
+          Expanded(child: _buildEditor(context)),
         ],
       );
     } else {
@@ -214,10 +209,10 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
           QuillToolbarCustomButtonOptions(
             icon: const Icon(Icons.note_add),
             onPressed: _insertNoteLink,
-          )
+          ),
         ],
 
-        // Disabled some options to make the toolbar more concise. 
+        // Disabled some options to make the toolbar more concise.
         // Could maybe be shown in "advanced mode" or something.
         showIndent: false,
         showSubscript: false,
@@ -239,28 +234,25 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       config: QuillEditorConfig(
         checkBoxReadOnly: false,
         onLaunchUrl: (href) => _onLaunhUrl(context, href),
-        customLinkPrefixes: [
-          'freenote'
-        ],
+        customLinkPrefixes: ['freenote'],
         autoFocus: true,
       ),
     );
   }
 
   void _insertNoteLink() async {
-    final delta = Delta()
-      ..insert('(link)', {'link': 'freenote:///note/34'});  
+    final delta = Delta()..insert('(link)', {'link': 'freenote:///note/34'});
 
     final selection = TextSelection(
-      baseOffset: _controller.selection.baseOffset, 
-      extentOffset: _controller.selection.extentOffset
+      baseOffset: _controller.selection.baseOffset,
+      extentOffset: _controller.selection.extentOffset,
     );
 
     _controller.replaceText(
-      selection.baseOffset, 
-      selection.extentOffset - selection.baseOffset, 
-      delta, 
-      selection
+      selection.baseOffset,
+      selection.extentOffset - selection.baseOffset,
+      delta,
+      selection,
     );
 
     FocusScope.of(context).requestFocus(_focusNode);
@@ -282,9 +274,9 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not open link: $href')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Could not open link: $href')));
         });
       }
     }

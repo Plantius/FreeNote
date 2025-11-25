@@ -187,11 +187,11 @@ class AddNotifications extends StatefulWidget {
 
 class _AddNotificationsState extends State<AddNotifications> {
   List<String> notifications = [
-    "Notif1",
-    "Notif2",
-    "Notif3",
-    "Notif4",
-    "Notif5",
+    'Notif1',
+    'Notif2',
+    'Notif3',
+    'Notif4',
+    'Notif5',
   ];
   List<int> notificationTypes = [0, 1, 2, 3, 4];
   List<bool> notificationRead = [true, false, false, true, false];
@@ -253,8 +253,8 @@ class _AddNotificationsState extends State<AddNotifications> {
     builder: (context) => AlertDialog(
       title: Text('$popupBody has requested to be friends!'),
       actions: [
-        TextButton(child: Text("ACCEPT"), onPressed: () {}),
-        TextButton(child: Text("DENY"), onPressed: () {}),
+        TextButton(child: Text('ACCEPT'), onPressed: () {}),
+        TextButton(child: Text('DENY'), onPressed: () {}),
       ],
     ),
   );
@@ -263,7 +263,7 @@ class _AddNotificationsState extends State<AddNotifications> {
     context: context,
     builder: (context) => AlertDialog(
       title: Text('$popupBody has accepted your friend request!'),
-      actions: [TextButton(child: Text("YAY!"), onPressed: () {})],
+      actions: [TextButton(child: Text('YAY!'), onPressed: () {})],
     ),
   );
 

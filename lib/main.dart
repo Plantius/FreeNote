@@ -36,15 +36,9 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => AuthProvider()
-        ),
-        ChangeNotifierProvider(
-          create: (context) => NotesProvider(database)
-        ),
-        ChangeNotifierProvider(
-          create: (context) => FriendsProvider(database)
-        ),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => NotesProvider(database)),
+        ChangeNotifierProvider(create: (context) => FriendsProvider(database)),
       ],
       child: const MyApp(),
     ),

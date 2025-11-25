@@ -9,9 +9,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        text,
-      ),
+      title: Text(text),
       actions: [
         TextButton(
           onPressed: () {
@@ -23,7 +21,7 @@ class ConfirmDialog extends StatelessWidget {
           child: const Text('Yes'),
           onPressed: () {
             context.pop(true);
-          }
+          },
         ),
       ],
     );

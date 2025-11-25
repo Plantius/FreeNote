@@ -20,10 +20,7 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Options',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        title: Text('Options', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -31,10 +28,10 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
           children: [
             OptionButton(
               action: _onDeleteNote,
-              icon: Icons.delete, 
+              icon: Icons.delete,
               text: 'Delete Note',
               danger: true,
-            )
+            ),
           ],
         ),
       ),
@@ -46,9 +43,9 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
       context: context,
       builder: (context) {
         return ConfirmDialog(
-          text: 'Are you sure that you want to delete this note?'
+          text: 'Are you sure that you want to delete this note?',
         );
-      }
+      },
     );
 
     if ((delete ?? false) && mounted) {
