@@ -35,8 +35,12 @@ class AuthProvider extends ChangeNotifier {
     return _authenticate(email, password, _authService.signIn);
   }
 
-  Future<bool> signUp(String email, String password) async {
-    return _authenticate(email, password, _authService.signUp);
+  Future<bool> signUp(String email, String username, String password) async {
+    return _authenticate(
+      email,
+      password,
+      (email, password) => _authService.signUp(email, username, password),
+    );
   }
 
   Future<bool> _authenticate(

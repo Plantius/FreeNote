@@ -1,13 +1,13 @@
 class Profile {
   final int id;
   final String uid;
-  final String userName;
+  final String username;
   final String email;
 
   Profile({
     required this.id,
     required this.uid,
-    required this.userName,
+    required this.username,
     required this.email,
   });
 
@@ -15,7 +15,7 @@ class Profile {
     return Profile(
       id: json['id'] as int,
       uid: json['uid'] as String,
-      userName: json['user_name'] as String,
+      username: json['user_name'] as String,
       email: json['email'] as String,
     );
   }
@@ -23,7 +23,7 @@ class Profile {
   Map<String, dynamic> toJson() => {
     'id': id,
     'uid': uid,
-    'user_name': userName,
+    'user_name': username,
     'email': email,
   };
 }

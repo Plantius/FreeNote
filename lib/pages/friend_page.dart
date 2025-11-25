@@ -59,9 +59,13 @@ class _FriendPageState extends State<FriendPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
-                    child: Text(provider.friends[index].userName[0]),
+                    child: Text(
+                      provider.friends[index].username
+                          .substring(0, 1)
+                          .toUpperCase(),
+                    ),
                   ),
-                  title: Text(provider.friends[index].userName),
+                  title: Text(provider.friends[index].username),
                   subtitle: Text(provider.friends[index].email),
                   trailing: Text(''),
                   onLongPress: () {},
@@ -146,7 +150,7 @@ class FriendSearch extends SearchDelegate {
     //TODO: Fix Search Function / make it more efficient
     List<Profile> matchQuery = [];
     for (var fruit in searchTerms) {
-      if (fruit.userName.contains(query.toLowerCase())) {
+      if (fruit.username.contains(query.toLowerCase())) {
         matchQuery.add(fruit);
       }
     }
@@ -156,7 +160,7 @@ class FriendSearch extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            result.userName,
+            result.username,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
           //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note
@@ -169,7 +173,7 @@ class FriendSearch extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     List<Profile> matchQuery = [];
     for (var fruit in searchTerms) {
-      if (fruit.userName.contains(query.toLowerCase())) {
+      if (fruit.username.contains(query.toLowerCase())) {
         matchQuery.add(fruit);
       }
     }
@@ -179,7 +183,7 @@ class FriendSearch extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(
-            result.userName,
+            result.username,
           ), //returns the name as fruit as index tile on the found search answers
           //TODO: Potentially change what it shows, maybe show the context of the note too?
           //TODO: And then instead of "Text" it should probably be a textbutton that shows part of the thing and that as function opens the editor on that note

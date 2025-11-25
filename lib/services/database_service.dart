@@ -49,21 +49,21 @@ class DatabaseService {
     }
   }
 
-  Future<Profile?> userExists(String userName) async {
+  Future<Profile?> userExists(String username) async {
     try {
       final response = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_name', userName)
+          .eq('user_name', username)
           .maybeSingle();
 
       if (response == null) {
-        logger.w('No profile found for user $userName');
+        logger.w('No profile found for user $username');
         return null;
       }
       return Profile.fromJson(response);
     } catch (e) {
-      logger.e('Failed to fetch profile for user $userName: $e');
+      logger.e('Failed to fetch profile for user $username: $e');
       return null;
     }
   }

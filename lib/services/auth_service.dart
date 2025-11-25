@@ -25,12 +25,18 @@ class AuthService {
     }
   }
 
-  Future<User?> signUp(String email, String password) async {
+  Future<User?> signUp(String email, String username, String password) async {
     try {
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
       );
+
+      await _supabase.from('profiles').insert({
+        'uid': response.user!.id,
+        'email': email,
+        'user_name': username,
+      });
 
       return response.user;
     } catch (e) {

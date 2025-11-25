@@ -44,7 +44,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 80,
                     child: CircleAvatar(
                       child: Text(
-                        'X',
+                        auth.profile?.username.substring(0, 1).toUpperCase() ??
+                            'X',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
                     ),
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        auth.profile?.userName ?? '',
+                        auth.profile?.username ?? '',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(

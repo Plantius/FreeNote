@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isSignUp = false;
@@ -77,6 +78,14 @@ class _LoginPageState extends State<LoginPage> {
             validator: _emailValidator,
           ),
 
+          if (_isSignUp)
+            TextFormField(
+              controller: _usernameController,
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(labelText: 'User Name'),
+              validator: _usernameValidator,
+            ),
+
           TextFormField(
             controller: _passwordController,
             obscureText: true,
@@ -113,7 +122,8 @@ class _LoginPageState extends State<LoginPage> {
 
     late bool success;
     if (_isSignUp) {
-      success = await auth.signUp(email, password);
+      String username = _usernameController.text;
+      success = await auth.signUp(email, username, password);
     } else {
       success = await auth.signIn(email, password);
     }
@@ -167,6 +177,18 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!valid) {
       return 'Please enter a valid email address';
+    }
+
+    return null;
+  }
+
+  String? _usernameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your username';
+    }
+
+    if (value.length < 3) {
+      return 'Username must be at least 3 characters';
     }
 
     return null;
