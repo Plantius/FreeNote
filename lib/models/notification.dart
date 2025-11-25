@@ -1,13 +1,13 @@
 enum NotificationType {fRequest, fAccept, systemMessage}
 
-class Notification {
+class CustomNotification {
   final int id;
   String content;
   final DateTime createdAt;
   bool read;
-  NotificationType type;
+  final NotificationType type;
 
-  Notification({
+  CustomNotification({
     required this.id,
     required this.content,
     required this.createdAt,
@@ -15,8 +15,8 @@ class Notification {
     required this.read,
   });
 
-  factory Notification.fromJson(Map<String, dynamic> json) {
-    return Notification(
+  factory CustomNotification.fromJson(Map<String, dynamic> json) {
+    return CustomNotification(
       id: json['id'] as int,
       content: json['content'] ?? '',
       createdAt: DateTime.parse(json['created_at']),

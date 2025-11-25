@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/notification.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -186,19 +187,11 @@ class AddNotifications extends StatefulWidget {
 }
 
 class _AddNotificationsState extends State<AddNotifications> {
-  List<String> notifications = [
-    'Notif1',
-    'Notif2',
-    'Notif3',
-    'Notif4',
-    'Notif5',
+  final List<CustomNotification> notifications = [
+    CustomNotification(id: 1, content: 'Alette', createdAt: DateTime(2025), type: NotificationType.fRequest, read: false),
+    CustomNotification(id: 2, content: 'Alette', createdAt: DateTime(2024), type: NotificationType.fAccept, read: true),
+    CustomNotification(id: 3, content: 'Alette says hi this is the best system message ever', createdAt: DateTime(2025), type: NotificationType.systemMessage, read: false),
   ];
-  List<int> notificationTypes = [0, 1, 2, 3, 4];
-  List<bool> notificationRead = [true, false, false, true, false];
-  //0 = Friend Request (incoming) (popup with accept or deny)
-  ////1 = X has accepted your friend request
-  //2 = Announcement / System Message (Popup)
-  //3 > Above, unimplemented, should default to 1 now.
 
   //TODO: Add changing icons if new notifications
   //TODO: Add Mark as read button
@@ -210,22 +203,22 @@ class _AddNotificationsState extends State<AddNotifications> {
     return ListView.builder(
       itemCount: notifications.length,
       itemBuilder: (context, index) {
-        var selectedNotification = notifications[index];
-        var notificationType = notificationTypes[index];
+        var selectedNotification = notifications[index].content;
+        var notificationType = notifications[index].type;
         var title = Text('Empty');
         var concat = selectedNotification;
         var tileColor = Colors.blueGrey;
-        if (notificationRead[index] == false) {
+        if (notifications[index].read == false) {
           tileColor = Colors.amber; //TODO: Change colours
         }
-        if (notificationType == 0) {
+        if (notificationType == NotificationType.fRequest) {
           concat =
               '$selectedNotification has sent you a friendship request. Confirm?';
         }
-        if (notificationType == 1) {
+        if (notificationType == NotificationType.fAccept) {
           concat = '$selectedNotification has accepted your friend request.';
         }
-        if (notificationType == 2) {
+        if (notificationType == NotificationType.systemMessage) {
           concat = 'System notification. Click to open!';
         }
         title = Text(concat);
@@ -234,11 +227,11 @@ class _AddNotificationsState extends State<AddNotifications> {
           tileColor: tileColor, //TODO: Change to correct colour
           textColor: Colors.black,
           onTap: () {
-            if (notificationType == 0) {
+            if (notificationType == NotificationType.fRequest) {
               openConfirmFriend(selectedNotification);
-            } else if (notificationType == 1) {
+            } else if (notificationType == NotificationType.fAccept) {
               openAcceptFriend(selectedNotification);
-            } else if (notificationType == 2) {
+            } else if (notificationType == NotificationType.systemMessage) {
               openSystemMessage(selectedNotification);
             }
           },
