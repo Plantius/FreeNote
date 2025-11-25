@@ -14,7 +14,7 @@ class NotesProvider with ChangeNotifier {
 
   NotesProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      loadNotes();
+      loadNotes(forceRefresh: true);
     });
   }
 
