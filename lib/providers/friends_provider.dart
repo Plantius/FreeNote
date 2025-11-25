@@ -52,9 +52,9 @@ class FriendsProvider with ChangeNotifier {
     return await database.sendFriendRequest(profile.uid);
   }
 
-  Future<void> acceptFriendRequest(String popupBody) async {
+  Future<void> acceptFriendRequest(Profile user) async {
     try {
-      await database.acceptFriendRequest(popupBody);
+      await database.acceptFriendRequest(user);
       await loadFriends(forceRefresh: true);
     } catch (e) {
       _errorMessage = 'Failed to accept friend request: $e';

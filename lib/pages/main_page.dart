@@ -248,9 +248,9 @@ class _AddNotificationsState extends State<AddNotifications> {
           textColor: Colors.black,
           onTap: () {
             if (notificationType == NotificationType.fRequest) {
-              openConfirmFriend(selectedNotification);
+              openConfirmFriend(notifications[index].sender!);
             } else if (notificationType == NotificationType.fAccept) {
-              openAcceptFriend(selectedNotification);
+              openAcceptFriend(notifications[index].sender!);
             } else if (notificationType == NotificationType.systemMessage) {
               openSystemMessage(selectedNotification);
             }
@@ -261,15 +261,15 @@ class _AddNotificationsState extends State<AddNotifications> {
     );
   }
 
-  Future openConfirmFriend(String popupBody) => showDialog(
+  Future openConfirmFriend(Profile user) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text('$popupBody has requested to be friends!'),
+      title: Text('${user.username} has requested to be friends!'),
       actions: [
         TextButton(
           child: Text('ACCEPT'),
           onPressed: () {
-            context.read<FriendsProvider>().acceptFriendRequest(popupBody);
+            context.read<FriendsProvider>().acceptFriendRequest(user);
             Navigator.of(context).pop();
           },
         ),
@@ -278,13 +278,13 @@ class _AddNotificationsState extends State<AddNotifications> {
     ),
   );
 
-  Future openAcceptFriend(String popupBody) => showDialog(
+  Future openAcceptFriend(Profile user) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text('$popupBody has accepted your friend request!'),
+      title: Text('${user.username} has accepted your friend request!'),
       actions: [
         TextButton(
-          child: Text('YAY!'),
+          child: Text('Close'),
           onPressed: () {
             Navigator.of(context).pop();
           },
