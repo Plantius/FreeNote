@@ -1,3 +1,5 @@
+import 'package:free_note/models/event.dart';
+import 'package:free_note/pages/event_viewer_page.dart';
 import 'package:free_note/pages/friend_page.dart';
 import 'package:free_note/pages/note_options_page.dart';
 import 'package:free_note/pages/main_page.dart';
@@ -72,6 +74,18 @@ final GoRouter router = GoRouter(
 
         return NoteOptionsPage(
           note: state.extra as Note,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/event/:id',
+      builder: (context, state) {
+        final idString = state.pathParameters['id']!;
+        final id = int.tryParse(idString) ?? 0;
+
+        return EventViewerPage(
+          event: state.extra as Event?,
+          eventId: id,
         );
       },
     ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/event.dart';
 import 'package:free_note/providers/events_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CalendarMonthPage extends StatefulWidget {
@@ -54,7 +57,7 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
       backgroundColor: Theme.of(context).primaryColor,
       events: events,
       isInMonth: isInMonth,
-      onTileTap: null,
+      onTileTap: _onEventTap,
       onTileDoubleTap: null,
       onTileLongTap: null,
       dateStringBuilder: null,
@@ -74,5 +77,14 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
         color: Colors.white,
       ),
     );
+  }
+
+  void _onEventTap<T>(CalendarEventData<T> eventData, DateTime date) {
+    final event = eventData.event as Event?;
+    if (event == null) {
+      logger.e('No event attached to EventData');
+    }
+    logger.i('Clicked event "${event!.title}"');
+    context.push('/event/${event.id}', extra: event);
   }
 }
