@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/providers/events_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -255,7 +257,6 @@ class AddMenuItems extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //1st Menu option
         TextButton(
           onPressed: () {
             final note = Note(
@@ -270,28 +271,27 @@ class AddMenuItems extends StatelessWidget {
           child: Icon(Icons.note, size: 30, color: Colors.white),
         ),
 
-        //2nd menu option
         TextButton(
           onPressed: () {
-            //TODO: Write code here
+            final Event event = Event.random(); // FIXME: replace me
+            context.read<EventsProvider>().addEvent(event);
+            context.pop();
           },
-          child: Icon(Icons.audio_file, size: 30, color: Colors.white),
+          child: Icon(Icons.event, size: 30, color: Colors.white),
         ),
 
-        //3rd menu option
         TextButton(
           onPressed: () {
             //TODO: Write code here
           },
-          child: Icon(Icons.timer, size: 30, color: Colors.white),
+          child: Icon(Icons.music_note, size: 30, color: Colors.white),
         ),
 
-        //4th menu option
         TextButton(
           onPressed: () {
             //TODO: Write code here
           },
-          child: Icon(Icons.draw, size: 30, color: Colors.white),
+          child: Icon(Icons.image, size: 30, color: Colors.white),
         ),
       ],
     );

@@ -19,30 +19,7 @@ class EventsProvider extends ChangeNotifier {
       .toList();
   }
 
-  void addRandomEvent() {
-    final rand = Random();
-
-    final now = DateTime.now();
-    
-    final start = DateTime(
-      now.year,
-      now.month,
-      now.day - rand.nextInt(7),
-      8 + rand.nextInt(10),
-    );
-
-    final end = start.add(Duration(
-      minutes: 30,
-    ));
-
-    final event = Event(
-      id: 0,
-      calendarId: 0,
-      title: 'Event Title',
-      start: start, 
-      end: end,
-    );
-
+  void addEvent(Event event) {
     _events.add(event);
 
     if (_visibleCalendars.contains(event.calendarId)) {

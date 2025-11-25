@@ -25,7 +25,7 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
         weekDayBuilder: _weekdayBuilder,
         useAvailableVerticalSpace: true,
         onCellTap: (events, date) {
-          provider.addRandomEvent();
+          logger.d('TODO: navigate to day_view for $date');
         },
         headerStyle: HeaderStyle(
           leftIconConfig: IconDataConfig(
