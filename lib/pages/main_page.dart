@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
-<<<<<<< HEAD
 import 'package:free_note/providers/events_provider.dart';
-=======
 import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
->>>>>>> faa17fd2a4b0d6324346b3f22257d5a76687f02c
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';

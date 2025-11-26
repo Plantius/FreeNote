@@ -2,7 +2,6 @@ import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/services/database_service.dart';
-import 'dart:math' show Random;
 
 class EventsProvider extends ChangeNotifier {
   final DatabaseService database;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
-import 'package:free_note/event_logger.dart';
 
 class NoteEditorPage extends StatefulWidget {
   final Note note;
