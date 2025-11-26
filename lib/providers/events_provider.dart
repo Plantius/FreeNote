@@ -1,5 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/services/database_service.dart';
 
@@ -8,25 +10,46 @@ class EventsProvider extends ChangeNotifier {
   final EventController<Event> controller = EventController();
 
   final _events = <Event>[];
-  final _visibleCalendars = <int>{0};
+  final _calendars = <Calendar>[
+    Calendar(id: 0, name: 'Work', visible: true),
+    Calendar(id: 1, name: 'Private', visible: false),
+  ];
 
   EventsProvider(this.database);
 
   List<Event> get visibleEvents {
     return _events
-        .where((event) => _visibleCalendars.contains(event.calendarId))
-        .toList();
+      .where(eventIsVisible)
+      .toList();
   }
 
   void addEvent(Event event) {
-    print('Adding event: $event');
+    logger.i('Adding event: $event');
     _events.add(event);
 
-    if (_visibleCalendars.contains(event.calendarId)) {
+    if (eventIsVisible(event)) {
       controller.add(event.toCalendarEvent());
     }
 
     notifyListeners();
+  }
+
+  bool eventIsVisible(Event event) {
+    return _calendars.any(
+      (calendar) => event.calendarId == calendar.id && calendar.visible
+    );
+  }
+
+  Event? getEvent(int id) { // TODO: maybe improve
+    return _events
+      .where((event) => event.id == id)
+      .singleOrNull;
+  }
+
+  Calendar? getCalendar(int id) {
+    return _calendars
+      .where((calendar) => calendar.id == id)
+      .singleOrNull;
   }
 
   // ignore: unused_element
