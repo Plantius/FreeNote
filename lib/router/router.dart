@@ -68,12 +68,6 @@ final GoRouter router = GoRouter(
       // ID is only kept for semantics; only extra is used.
       path: '/note/:id/options',
       builder: (context, state) {
-        if (state.extra == null) {
-          return ErrorPage(
-            error: 'Can only navigate to options page from note page!',
-          );
-        }
-
         return NoteOptionsPage(note: state.extra as Note);
       },
     ),

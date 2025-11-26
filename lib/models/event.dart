@@ -28,7 +28,7 @@ class Event {
       8 + rand.nextInt(10),
     );
 
-    final end = start.add(Duration(minutes: 30));
+    final end = start.add(Duration(minutes: 120));
 
     final event = Event(
       id: 0,
@@ -47,7 +47,7 @@ class Event {
       startTime: start,
       endTime: end,
       title: title,
-      description: '<empty description>',
+      description: null, // Do not use description: instead use Notes.
       event: this,
     );
   }
