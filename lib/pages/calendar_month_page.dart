@@ -25,18 +25,12 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
         weekDayBuilder: _weekdayBuilder,
         useAvailableVerticalSpace: true,
         onCellTap: (events, date) {
-          logger.d('TODO: navigate to day_view for $date');
+          context.push('/calendar/day', extra: date);
         },
         headerStyle: HeaderStyle(
-          leftIconConfig: IconDataConfig(
-            color: Colors.white,
-          ),
-          rightIconConfig: IconDataConfig(
-            color: Colors.white,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-          )
+          leftIconConfig: IconDataConfig(color: Colors.white),
+          rightIconConfig: IconDataConfig(color: Colors.white),
+          decoration: BoxDecoration(color: Theme.of(context).primaryColor),
         ),
       ),
     );
@@ -49,7 +43,9 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
     isInMonth,
     hideDaysNotInMonth,
   ) {
-    Color titleColor = isInMonth ? Colors.white : Theme.of(context).colorScheme.primary;
+    Color titleColor = isInMonth
+        ? Colors.white
+        : Theme.of(context).colorScheme.primary;
 
     return FilledCell<T>(
       date: date,
@@ -73,9 +69,7 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
       weekDayStringBuilder: null,
       displayBorder: true,
       backgroundColor: Theme.of(context).primaryColor,
-      textStyle: TextStyle(
-        color: Colors.white,
-      ),
+      textStyle: TextStyle(color: Colors.white),
     );
   }
 

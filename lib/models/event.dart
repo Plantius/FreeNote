@@ -20,7 +20,7 @@ class Event {
     final rand = Random();
 
     final now = DateTime.now();
-    
+
     final start = DateTime(
       now.year,
       now.month,
@@ -28,15 +28,13 @@ class Event {
       8 + rand.nextInt(10),
     );
 
-    final end = start.add(Duration(
-      minutes: 30,
-    ));
+    final end = start.add(Duration(minutes: 30));
 
     final event = Event(
       id: 0,
       calendarId: 0,
       title: 'Event Title',
-      start: start, 
+      start: start,
       end: end,
     );
 

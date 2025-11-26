@@ -19,6 +19,7 @@ class EventsProvider extends ChangeNotifier {
   }
 
   void addEvent(Event event) {
+    print('Adding event: $event');
     _events.add(event);
 
     if (_visibleCalendars.contains(event.calendarId)) {
