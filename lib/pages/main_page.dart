@@ -167,18 +167,20 @@ class NotificationPopupMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => showPopover(
-        context: context,
-        bodyBuilder: (context) => AddNotifications(),
-        //determine width and height
-        //determine background colour
-        height: 420,
-        width: 300,
-        backgroundColor: Colors.grey, //TODO: Change colour?
-        direction: PopoverDirection.left,
-        //TODO: Somehow make it outline to the left ish
+      child: IconButton(
+        icon: Icon(Icons.notifications),
+        onPressed: () => showPopover(
+          context: context,
+          bodyBuilder: (context) => AddNotifications(),
+          //determine width and height
+          //determine background colour
+          height: 420,
+          width: 300,
+          backgroundColor: Colors.grey, //TODO: Change colour?
+          direction: PopoverDirection.left,
+          //TODO: Somehow make it outline to the left ish
+        ),
       ),
-      child: Icon(Icons.notifications),
     );
   }
 }
