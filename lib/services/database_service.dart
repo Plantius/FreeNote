@@ -200,14 +200,14 @@ class DatabaseService {
     if (userId == null) return;
 
     try {
-      final request = await supabase
+      final response = await supabase
           .from('friend_requests')
           .select('*')
           .eq('to_uid', userId)
           .eq('from_uid', user.uid)
           .maybeSingle();
 
-      if (request == null) {
+      if (response == null) {
         logger.w('No friend request found from user ${user.uid} to accept');
         return;
       }
