@@ -8,14 +8,14 @@ class EventsProvider extends ChangeNotifier {
   final EventController<Event> controller = EventController();
 
   final _events = <Event>[];
-  final _visibleCalendars = <int>{ 0, };
+  final _visibleCalendars = <int>{0};
 
   EventsProvider(this.database);
 
   List<Event> get visibleEvents {
     return _events
-      .where((event) => _visibleCalendars.contains(event.calendarId))
-      .toList();
+        .where((event) => _visibleCalendars.contains(event.calendarId))
+        .toList();
   }
 
   void addEvent(Event event) {
@@ -34,7 +34,7 @@ class EventsProvider extends ChangeNotifier {
     controller.removeWhere((element) => true);
 
     controller.addAll(
-      visibleEvents.map((event) => event.toCalendarEvent()
-    ).toList());
+      visibleEvents.map((event) => event.toCalendarEvent()).toList(),
+    );
   }
 }

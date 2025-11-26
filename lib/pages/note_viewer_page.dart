@@ -15,7 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 class NoteViewerPage extends StatefulWidget {
   final Note? note;
   final int noteId;
-  
+
   const NoteViewerPage({super.key, required this.note, required this.noteId});
 
   @override

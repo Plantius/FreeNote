@@ -38,9 +38,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(event!.title),
-      ),
+      appBar: AppBar(title: Text(event!.title)),
       body: Column(
         children: [
           Text(event!.start.toIso8601String()),
