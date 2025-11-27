@@ -379,9 +379,10 @@ class AddMenuItems extends StatelessWidget {
         ),
 
         TextButton(
-          onPressed: () {
-            final Event event = Event.random(); // FIXME: replace me
-            context.read<EventsProvider>().addEvent(event);
+          onPressed: () { // FIXME: replace me
+            final provider = context.read<EventsProvider>();
+            final Event event = Event.random(provider.calendars);
+            provider.addEvent(event);
             context.pop();
           },
           child: Icon(Icons.event, size: 30, color: Colors.white),

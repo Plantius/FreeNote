@@ -1,5 +1,8 @@
 import 'dart:math' show Random;
 import 'package:calendar_view/calendar_view.dart';
+import 'package:flutter/material.dart';
+import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/calendar.dart';
 
 class Event {
   final int id;
@@ -16,7 +19,7 @@ class Event {
     required this.end,
   });
 
-  factory Event.random() {
+  factory Event.random(List<Calendar> calendars) {
     final rand = Random();
 
     final now = DateTime.now();
@@ -32,7 +35,7 @@ class Event {
 
     final event = Event(
       id: 0,
-      calendarId: 0,
+      calendarId: calendars[rand.nextInt(calendars.length)].id,
       title: 'Event Title',
       start: start,
       end: end,
@@ -41,13 +44,17 @@ class Event {
     return event;
   }
 
-  CalendarEventData<Event> toCalendarEvent() {
+  CalendarEventData<Event> toCalendarEvent(Calendar calendar) {
+    final color = Color(calendar.color);
+    logger.d('With $color [=${calendar.color}] in $calendar');
+
     return CalendarEventData<Event>(
       date: start,
       startTime: start,
       endTime: end,
       title: title,
       description: '<empty description>',
+      color: color,
       event: this,
     );
   }

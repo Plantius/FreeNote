@@ -4,8 +4,14 @@ class Calendar {
   final int id;
   final String name;
   bool visible;
+  final int color;
 
-  Calendar({required this.id, required this.name, required this.visible});
+  Calendar({
+    required this.id, 
+    required this.name, 
+    required this.visible, 
+    required this.color
+  });
 
   @override
   String toString() {

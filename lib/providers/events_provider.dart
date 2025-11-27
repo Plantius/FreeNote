@@ -11,8 +11,8 @@ class EventsProvider extends ChangeNotifier {
 
   final _events = <Event>[];
   final _calendars = <Calendar>[
-    Calendar(id: 0, name: 'Work', visible: true),
-    Calendar(id: 1, name: 'Private', visible: false),
+    Calendar(id: 0, name: 'Work', visible: true, color: 0xFFFF00FF),
+    Calendar(id: 1, name: 'Private', visible: false, color: 0xFFFF0000),
   ];
 
   EventsProvider(this.database);
@@ -29,8 +29,9 @@ class EventsProvider extends ChangeNotifier {
     logger.i('Adding event: $event');
     _events.add(event);
 
-    if (eventIsVisible(event)) {
-      controller.add(event.toCalendarEvent());
+    Calendar calendar = getCalendar(event.calendarId)!;
+    if (calendar.visible) {
+      controller.add(event.toCalendarEvent(calendar));
     }
 
     notifyListeners();
@@ -69,7 +70,11 @@ class EventsProvider extends ChangeNotifier {
     controller.removeWhere((element) => true);
 
     controller.addAll(
-      visibleEvents.map((event) => event.toCalendarEvent()).toList(),
+      visibleEvents.map(
+        (event) => event.toCalendarEvent(
+          getCalendar(event.calendarId)!
+        )
+      ).toList(),
     );
   }
 }
