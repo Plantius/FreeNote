@@ -23,6 +23,8 @@ class EventsProvider extends ChangeNotifier {
       .toList();
   }
 
+  List<Calendar> get calendars => _calendars;
+
   void addEvent(Event event) {
     logger.i('Adding event: $event');
     _events.add(event);
@@ -50,6 +52,16 @@ class EventsProvider extends ChangeNotifier {
     return _calendars
       .where((calendar) => calendar.id == id)
       .singleOrNull;
+  }
+
+  void updateCalendarVisibility(Calendar calendar, bool visible) {
+    if (calendar.visible == visible) {
+      return;
+    }
+
+    calendar.visible = visible;
+    _repopulateCalendar(); // TODO: More granular repopulation
+    notifyListeners();
   }
 
   // ignore: unused_element
