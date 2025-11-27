@@ -78,7 +78,6 @@ class _CalendarMonthPageState extends State<CalendarMonthPage> {
     if (event == null) {
       logger.e('No event attached to EventData');
     }
-    logger.i('Clicked event "${event!.title}"');
-    context.push('/event/${event.id}', extra: event);
+    context.push('/event/${event!.id}', extra: event);
   }
 }
