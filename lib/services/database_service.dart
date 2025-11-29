@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
@@ -151,6 +154,16 @@ class DatabaseService {
       logger.e('Failed to create note for user $userId: $e');
       rethrow;
     }
+  }
+
+  // FIXME: implement
+  Future<Calendar?> createCalendar(Calendar calendar) async {
+    return Calendar(
+      id: Random().nextInt(1_000_000_000), // This is nice and secure
+      name: calendar.name, 
+      visible: calendar.visible, 
+      color: calendar.color
+    );
   }
 
   Future<void> updateNote(Note note) async {

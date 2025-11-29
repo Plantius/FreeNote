@@ -5,6 +5,7 @@ import 'package:free_note/providers/events_provider.dart';
 import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
+import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -49,6 +50,17 @@ class _MainPageState extends State<MainPage> {
             },
             icon: Icon(Icons.settings),
           ),
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context, 
+                builder: (context) => CalendarListOverlay(),
+              );
+            }, 
+            icon: Icon(
+              Icons.calendar_view_month
+            ) // This is not ideal, but I don't know where else to put the button
+          )
         ],
       ),
       body: Column(
@@ -367,9 +379,10 @@ class AddMenuItems extends StatelessWidget {
         ),
 
         TextButton(
-          onPressed: () {
-            final Event event = Event.random(); // FIXME: replace me
-            context.read<EventsProvider>().addEvent(event);
+          onPressed: () { // FIXME: replace me
+            final provider = context.read<EventsProvider>();
+            final Event event = Event.random(provider.calendars);
+            provider.addEvent(event);
             context.pop();
           },
           child: Icon(Icons.event, size: 30, color: Colors.white),
