@@ -19,9 +19,7 @@ class FriendsOverlay extends StatelessWidget {
           return ListTile(
             leading: CircleAvatar(
               child: Text(
-                provider.friends[index].username
-                  .substring(0, 1)
-                  .toUpperCase(),
+                provider.friends[index].username.substring(0, 1).toUpperCase(),
               ),
             ),
             title: Text(provider.friends[index].username),

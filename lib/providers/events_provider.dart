@@ -21,10 +21,9 @@ class EventsProvider extends ChangeNotifier {
   }
 
   List<Event> get visibleEvents {
-    return _events
-      .where(eventIsVisible)
-      .toList();
+    return _events.where(eventIsVisible).toList();
   }
+
   List<Calendar> get calendars => _calendars;
 
   Future<void> loadEventsAndCalendars() async {
@@ -50,14 +49,12 @@ class EventsProvider extends ChangeNotifier {
 
   bool eventIsVisible(Event event) {
     return _calendars.any(
-      (calendar) => event.calendarId == calendar.id && calendar.visible
+      (calendar) => event.calendarId == calendar.id && calendar.visible,
     );
   }
 
   Event? getEvent(int id, {bool strict = true}) {
-    Event? event = _events
-      .where((event) => event.id == id)
-      .singleOrNull;
+    Event? event = _events.where((event) => event.id == id).singleOrNull;
 
     if (event == null && strict) {
       logger.e('Could not find Event #$id');
@@ -67,9 +64,9 @@ class EventsProvider extends ChangeNotifier {
   }
 
   Calendar? getCalendar(int id, {bool strict = true}) {
-    Calendar? calendar =_calendars
-      .where((calendar) => calendar.id == id)
-      .singleOrNull;
+    Calendar? calendar = _calendars
+        .where((calendar) => calendar.id == id)
+        .singleOrNull;
 
     if (calendar == null && strict) {
       logger.e('Could not find Calendar #$id');
@@ -80,7 +77,7 @@ class EventsProvider extends ChangeNotifier {
 
   void addCalendar(Calendar calendar) async {
     logger.i('Adding Calendar: $calendar');
-    
+
     Calendar? createdCalendar = await database.createCalendar(calendar);
 
     if (createdCalendar != null) {
@@ -116,11 +113,9 @@ class EventsProvider extends ChangeNotifier {
     controller.removeWhere((element) => true);
 
     controller.addAll(
-      visibleEvents.map(
-        (event) => event.toCalendarEvent(
-          getCalendar(event.calendarId)!
-        )
-      ).toList(),
+      visibleEvents
+          .map((event) => event.toCalendarEvent(getCalendar(event.calendarId)!))
+          .toList(),
     );
   }
 }

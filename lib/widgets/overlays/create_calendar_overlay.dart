@@ -48,9 +48,7 @@ class _CreateCalendarOverlayState extends State<CreateCalendarOverlay> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-              ),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
 
             const SizedBox(height: 20),

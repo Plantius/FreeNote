@@ -47,9 +47,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
         children: [
           Text(event!.start.toIso8601String()),
           Text(event!.end.toIso8601String()),
-          Text(
-            'In ${provider.getCalendar(event!.calendarId)}'
-          ),
+          Text('In ${provider.getCalendar(event!.calendarId)}'),
         ],
       ),
     );

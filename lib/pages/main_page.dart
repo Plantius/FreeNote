@@ -53,14 +53,14 @@ class _MainPageState extends State<MainPage> {
           IconButton(
             onPressed: () {
               showModalBottomSheet(
-                context: context, 
+                context: context,
                 builder: (context) => CalendarListOverlay(),
               );
-            }, 
+            },
             icon: Icon(
-              Icons.calendar_view_month
-            ) // This is not ideal, but I don't know where else to put the button
-          )
+              Icons.calendar_view_month,
+            ), // This is not ideal, but I don't know where else to put the button
+          ),
         ],
       ),
       body: Column(
@@ -379,7 +379,8 @@ class AddMenuItems extends StatelessWidget {
         ),
 
         TextButton(
-          onPressed: () { // FIXME: replace me
+          onPressed: () {
+            // FIXME: replace me
             final provider = context.read<EventsProvider>();
             final Event event = Event.random(provider.calendars);
             provider.addEvent(event);

@@ -10,13 +10,8 @@ class BottomOverlayAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: action, 
-      child: Text(
-        text, 
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      )
+      onPressed: action,
+      child: Text(text, style: TextStyle(color: Colors.white)),
     );
   }
 }
@@ -27,7 +22,7 @@ class BottomOverlay<T> extends StatelessWidget {
   final BottomOverlayAction? action;
 
   const BottomOverlay({
-    super.key, 
+    super.key,
     required this.child,
     this.onDone,
     this.action,
@@ -50,22 +45,18 @@ class BottomOverlay<T> extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
-              action == null 
-                ? Container() 
-                : action!,
+              action == null ? Container() : action!,
 
               BottomOverlayAction(
-                'Done', 
+                'Done',
                 action: () {
                   context.pop((onDone ?? _defaultOnDone).call());
-                }
-              )
+                },
+              ),
             ],
           ),
 
-          Flexible(
-            child: child
-          )
+          Flexible(child: child),
         ],
       ),
     );

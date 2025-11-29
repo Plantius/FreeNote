@@ -28,11 +28,7 @@ class _CalendarDayPageState extends State<CalendarDayPage> {
         headerStyle: HeaderStyle(
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
-            border: BoxBorder.fromLTRB(
-              bottom: BorderSide(
-                color: Colors.white
-              ),
-            ),
+            border: BoxBorder.fromLTRB(bottom: BorderSide(color: Colors.white)),
           ),
         ),
         onEventTap: (events, date) {

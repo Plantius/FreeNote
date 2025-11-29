@@ -26,7 +26,7 @@ class Note {
   Map<String, dynamic> toJson() => {
     'title': title,
     'content': content,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
   };
 }

@@ -17,14 +17,14 @@ class CalendarListOverlay extends StatelessWidget {
 
     return BottomOverlay(
       action: BottomOverlayAction(
-        'Add', 
+        'Add',
         action: () => _onAddCalendar(context, provider),
       ),
       child: Column(
         children: [
-          for (Calendar calendar in provider.calendars) 
+          for (Calendar calendar in provider.calendars)
             SwitchListTile(
-              value: calendar.visible, 
+              value: calendar.visible,
               title: Row(
                 children: [
                   IconButton(
@@ -34,24 +34,21 @@ class CalendarListOverlay extends StatelessWidget {
 
                   SizedBox(width: 8),
 
-                  Text(calendar.name)
+                  Text(calendar.name),
                 ],
               ),
               onChanged: (value) {
                 provider.updateCalendarVisibility(calendar, value);
-              }
+              },
             ),
         ],
-      )
+      ),
     );
   }
 
-  void _onAddCalendar(
-    BuildContext context, 
-    EventsProvider provider
-  ) async {
+  void _onAddCalendar(BuildContext context, EventsProvider provider) async {
     Calendar? calendar = await showModalBottomSheet<Calendar>(
-      context: context, 
+      context: context,
       builder: (context) => CreateCalendarOverlay(),
     );
 
@@ -61,12 +58,12 @@ class CalendarListOverlay extends StatelessWidget {
   }
 
   void _onShare(
-    BuildContext context, 
-    EventsProvider provider, 
-    Calendar calendar
+    BuildContext context,
+    EventsProvider provider,
+    Calendar calendar,
   ) async {
     Profile? profile = await showModalBottomSheet(
-      context: context, 
+      context: context,
       builder: (context) => FriendsOverlay(),
     );
 

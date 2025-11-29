@@ -125,21 +125,6 @@ class DatabaseService {
     return Note.fromJson(response);
   }
 
-  @Deprecated('What does this fetch? Notes are now distinct from Events')
-  Future<List<Note>> fetchCalendar() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return [];
-
-    final response = await supabase
-        .from('calendar')
-        .select('id, timestamp, notes(*), user_notes!inner(user_id, note_id)')
-        .eq('user_notes.user_id', userId)
-        .order('timestamp', ascending: false);
-
-    logger.i('Successfully fetched calender entries for user $userId');
-    return (response as List).map((note) => Note.fromJson(note)).toList();
-  }
-
   Future<Note?> createNote(Note note) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;
@@ -159,31 +144,73 @@ class DatabaseService {
     }
   }
 
-  // FIXME: implement
   Future<Calendar?> createCalendar(Calendar calendar) async {
-    return Calendar(
-      id: Random().nextInt(1_000_000_000), // This is nice and secure
-      name: calendar.name, 
-      visible: calendar.visible, 
-      color: calendar.color
-    );
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return null;
+
+      final response = await supabase
+          .rpc(
+            'create_calendar_with_user',
+            params: {
+              'p_name': calendar.name,
+              'p_color': calendar.color,
+              'p_visible': calendar.visible,
+            },
+          )
+          .select()
+          .single();
+
+      logger.i('Successfully created calendar for user $userId');
+
+      return Calendar.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to create calendar: $e');
+    }
+
+    return null;
   }
 
-  // FIXME: implement
   Future<void> shareCalendar(Calendar calendar, Profile profile) async {
+    try {
+      await supabase.from('user_calendars').insert({
+        'calendar_id': calendar.id,
+        'user_id': profile.uid,
+      });
 
+      logger.i(
+        'Successfully shared calendar ${calendar.id} with user ${profile.uid}',
+      );
+    } catch (e) {
+      logger.e(
+        'Failed to share calendar ${calendar.id} with user ${profile.uid}: $e',
+      );
+    }
   }
 
   Future<List<Event>> fetchEvents() async {
     return [];
   }
 
-  // FIXME: implement
   Future<List<Calendar>> fetchCalendars() async {
-    return [
-      Calendar(id: 1, name: 'Work', visible: true, color: 0xFFFF00FF),
-      Calendar(id: 2, name: 'Private', visible: false, color: 0xFFFF0000),
-    ];
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await supabase
+          .from('calendars')
+          .select('*, user_calendars(*)')
+          .eq('user_calendars.user_id', userId);
+
+      logger.i('Successfully fetched calendars for user $userId');
+
+      return (response as List)
+          .map((calendar) => Calendar.fromJson(calendar))
+          .toList();
+    } catch (e) {
+      logger.e('Failed to fetch calendars: $e');
+    }
+    return [];
   }
 
   Future<void> updateNote(Note note) async {

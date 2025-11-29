@@ -56,4 +56,14 @@ class Event {
       event: this,
     );
   }
+
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
+      id: json['id'] as int,
+      calendarId: json['calendar_id'] as int,
+      title: json['title'] as String,
+      start: DateTime.parse(json['start'] as String),
+      end: DateTime.parse(json['end'] as String),
+    );
+  }
 }
