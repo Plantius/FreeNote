@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:free_note/models/calendar.dart';
+import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
@@ -123,6 +125,7 @@ class DatabaseService {
     return Note.fromJson(response);
   }
 
+  @Deprecated('What does this fetch? Notes are now distinct from Events')
   Future<List<Note>> fetchCalendar() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return [];
@@ -164,6 +167,23 @@ class DatabaseService {
       visible: calendar.visible, 
       color: calendar.color
     );
+  }
+
+  // FIXME: implement
+  Future<void> shareCalendar(Calendar calendar, Profile profile) async {
+
+  }
+
+  Future<List<Event>> fetchEvents() async {
+    return [];
+  }
+
+  // FIXME: implement
+  Future<List<Calendar>> fetchCalendars() async {
+    return [
+      Calendar(id: 1, name: 'Work', visible: true, color: 0xFFFF00FF),
+      Calendar(id: 2, name: 'Private', visible: false, color: 0xFFFF0000),
+    ];
   }
 
   Future<void> updateNote(Note note) async {
