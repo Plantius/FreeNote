@@ -46,7 +46,6 @@ class Event {
 
   CalendarEventData<Event> toCalendarEvent(Calendar calendar) {
     final color = Color(calendar.color);
-    logger.d('With $color [=${calendar.color}] in $calendar');
 
     return CalendarEventData<Event>(
       date: start,

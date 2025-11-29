@@ -11,8 +11,8 @@ class EventsProvider extends ChangeNotifier {
 
   final _events = <Event>[];
   final _calendars = <Calendar>[
-    Calendar(id: 0, name: 'Work', visible: true, color: 0xFFFF00FF),
-    Calendar(id: 1, name: 'Private', visible: false, color: 0xFFFF0000),
+    Calendar(id: 1, name: 'Work', visible: true, color: 0xFFFF00FF),
+    Calendar(id: 2, name: 'Private', visible: false, color: 0xFFFF0000),
   ];
 
   EventsProvider(this.database);
@@ -43,16 +43,40 @@ class EventsProvider extends ChangeNotifier {
     );
   }
 
-  Event? getEvent(int id) { // TODO: maybe improve
-    return _events
+  Event? getEvent(int id) {
+    Event? event = _events
       .where((event) => event.id == id)
       .singleOrNull;
+
+    if (event == null) {
+      logger.e('Could not find Event #$id');
+    }
+
+    return event;
   }
 
   Calendar? getCalendar(int id) {
-    return _calendars
+    Calendar? calendar =_calendars
       .where((calendar) => calendar.id == id)
       .singleOrNull;
+
+    if (calendar == null) {
+      logger.e('Could not find Calendar #$id');
+    }
+
+    return calendar;
+  }
+
+  void addCalendar(Calendar calendar) async {
+    logger.i('Adding Calendar: $calendar');
+    
+    Calendar? createdCalendar = await database.createCalendar(calendar);
+
+    if (createdCalendar != null) {
+      _calendars.add(createdCalendar);
+    }
+
+    notifyListeners();
   }
 
   void updateCalendarVisibility(Calendar calendar, bool visible) {
@@ -62,6 +86,9 @@ class EventsProvider extends ChangeNotifier {
 
     calendar.visible = visible;
     _repopulateCalendar(); // TODO: More granular repopulation
+
+    logger.i('Updated to $calendar');
+
     notifyListeners();
   }
 

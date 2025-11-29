@@ -5,7 +5,7 @@ import 'package:free_note/providers/events_provider.dart';
 import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
-import 'package:free_note/widgets/overlays/calendar_overlay.dart';
+import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -54,7 +54,7 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               showModalBottomSheet(
                 context: context, 
-                builder: (context) => CalendarOverlay(),
+                builder: (context) => CalendarListOverlay(),
               );
             }, 
             icon: Icon(
