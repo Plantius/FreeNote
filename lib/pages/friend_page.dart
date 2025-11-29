@@ -66,9 +66,6 @@ class _FriendPageState extends State<FriendPage> {
                     ),
                   ),
                   title: Text(provider.friends[index].username),
-                  subtitle: Text(provider.friends[index].email),
-                  trailing: Text(''),
-                  onLongPress: () {},
                 );
               },
             ),

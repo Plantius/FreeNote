@@ -26,4 +26,9 @@ class Profile {
     'user_name': username,
     'email': email,
   };
+
+  @override
+  String toString() {
+    return 'Profile(#$id ~ $uid, "$username")';
+  }
 }

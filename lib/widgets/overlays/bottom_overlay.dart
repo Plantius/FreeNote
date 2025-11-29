@@ -63,7 +63,9 @@ class BottomOverlay<T> extends StatelessWidget {
             ],
           ),
 
-          child
+          Flexible(
+            child: child
+          )
         ],
       ),
     );
