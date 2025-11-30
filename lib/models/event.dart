@@ -54,6 +54,11 @@ class Event {
       title: title,
       description: null, // Do not use description: instead use Notes.
       event: this,
+      color: color,
+      titleStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+      )
     );
   }
 

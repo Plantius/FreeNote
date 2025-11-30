@@ -22,9 +22,11 @@ class _CalendarDayPageState extends State<CalendarDayPage> {
     return MainPage(
       currentLocation: '/calendar',
       child: DayView(
+        heightPerMinute: 0.8,
         controller: provider.controller,
         initialDay: widget.date,
         backgroundColor: Theme.of(context).primaryColor,
+        startHour: 8,
         headerStyle: HeaderStyle(
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
