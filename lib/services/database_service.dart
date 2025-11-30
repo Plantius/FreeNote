@@ -171,6 +171,17 @@ class DatabaseService {
     return null;
   }
 
+  // FIXME: implement
+  Future<Event> createEvent(Event event) async {
+    return Event(
+      id: Random().nextInt(1_000_000_000),
+      calendarId: event.calendarId,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+    );
+  }
+
   Future<void> shareCalendar(Calendar calendar, Profile profile) async {
     try {
       await supabase.from('user_calendars').insert({
@@ -188,6 +199,7 @@ class DatabaseService {
     }
   }
 
+  // FIXME: implement
   Future<List<Event>> fetchEvents() async {
     return [];
   }
@@ -211,6 +223,11 @@ class DatabaseService {
       logger.e('Failed to fetch calendars: $e');
     }
     return [];
+  }
+
+  // FIXME: implement
+  Future<void> shareNote(Note note, Profile profile) async {
+    logger.d('Shared $note with $profile');
   }
 
   Future<void> updateNote(Note note) async {

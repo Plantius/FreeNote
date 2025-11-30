@@ -21,10 +21,26 @@ class EventsProvider extends ChangeNotifier {
   }
 
   List<Event> get visibleEvents {
-    return _events.where(eventIsVisible).toList();
+    return _events
+      .where(eventIsVisible)
+      .toList();
   }
 
   List<Calendar> get calendars => _calendars;
+
+  Calendar? get defaultCalendar {
+    if (_calendars.isEmpty) {
+      return null;
+    }
+
+    return _calendars
+      .reduce((value, element) {
+        if (value.id < element.id) {
+          return value;
+        } 
+        return element;
+      });
+  }
 
   Future<void> loadEventsAndCalendars() async {
     try {
@@ -33,18 +49,6 @@ class EventsProvider extends ChangeNotifier {
     } catch (e) {
       logger.e(e);
     }
-  }
-
-  void addEvent(Event event) {
-    logger.i('Adding event: $event');
-    _events.add(event);
-
-    Calendar calendar = getCalendar(event.calendarId)!;
-    if (calendar.visible) {
-      controller.add(event.toCalendarEvent(calendar));
-    }
-
-    notifyListeners();
   }
 
   bool eventIsVisible(Event event) {
@@ -75,13 +79,37 @@ class EventsProvider extends ChangeNotifier {
     return calendar;
   }
 
+  void addEvent(Event event) async {
+    logger.i('Adding event: $event');
+
+    try {
+      Event createdEvent = await database.createEvent(event);
+      _events.add(createdEvent);
+
+      Calendar calendar = getCalendar(createdEvent.calendarId)!;
+      if (calendar.visible) {
+        controller.add(createdEvent.toCalendarEvent(calendar));
+      }
+    } catch (e) {
+      logger.e(e);
+    }
+
+    notifyListeners();
+  }
+
   void addCalendar(Calendar calendar) async {
     logger.i('Adding Calendar: $calendar');
 
-    Calendar? createdCalendar = await database.createCalendar(calendar);
+    try {
+      Calendar? createdCalendar = await database.createCalendar(calendar);
 
-    if (createdCalendar != null) {
-      _calendars.add(createdCalendar);
+      if (createdCalendar != null) {
+        _calendars.add(createdCalendar);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      logger.e(e);
     }
 
     notifyListeners();

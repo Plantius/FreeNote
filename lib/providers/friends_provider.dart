@@ -31,8 +31,6 @@ class FriendsProvider with ChangeNotifier {
 
     try {
       final friends = await database.fetchFriends();
-      _isLoading = false;
-      notifyListeners();
       if (friends != null) {
         _friends = friends;
       } else {
@@ -40,9 +38,10 @@ class FriendsProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Failed to fetch friends: $e';
-      _isLoading = false;
-      notifyListeners();
     }
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<bool> sendFriendRequest(String username) async {

@@ -54,6 +54,11 @@ class Event {
       title: title,
       description: null, // Do not use description: instead use Notes.
       event: this,
+      color: color,
+      titleStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+      )
     );
   }
 
@@ -65,5 +70,10 @@ class Event {
       start: DateTime.parse(json['start'] as String),
       end: DateTime.parse(json['end'] as String),
     );
+  }
+
+  @override
+  String toString() {
+    return 'Event(#$id, "$title" at $start to $end)';
   }
 }

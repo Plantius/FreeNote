@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:free_note/widgets/option_button.dart';
 import 'package:free_note/widgets/confirm_dialog.dart';
+import 'package:free_note/widgets/overlays/friends_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +21,8 @@ class NoteOptionsPage extends StatefulWidget {
 class _NoteOptionsPageState extends State<NoteOptionsPage> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<NotesProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Options', style: Theme.of(context).textTheme.titleLarge),
@@ -27,7 +32,13 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
         child: Column(
           children: [
             OptionButton(
-              action: _onDeleteNote,
+              action: () => _onShareNote(provider),
+              icon: Icons.share, 
+              text: 'Share note'
+            ),
+            
+            OptionButton(
+              action: () => _onDeleteNote(provider),
               icon: Icons.delete,
               text: 'Delete Note',
               danger: true,
@@ -38,7 +49,18 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
     );
   }
 
-  Future<void> _onDeleteNote() async {
+  Future<void> _onShareNote(NotesProvider provider) async {
+    Profile? profile = await showModalBottomSheet(
+      context: context, 
+      builder: (context) => FriendsOverlay(),
+    );
+
+    if (profile != null && mounted) {
+      provider.shareNote(widget.note, profile);
+    }
+  }
+
+  Future<void> _onDeleteNote(NotesProvider provider) async {
     bool? delete = await showDialog<bool?>(
       context: context,
       builder: (context) {
@@ -49,7 +71,7 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
     );
 
     if ((delete ?? false) && mounted) {
-      context.read<NotesProvider>().deleteNote(widget.note);
+      provider.deleteNote(widget.note);
       context.go('/notes');
     }
   }

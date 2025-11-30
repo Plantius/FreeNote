@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.logout,
               text: 'Log out',
             ),
-            SizedBox(height: 8),
+
             OptionButton(
               action: () {
                 logger.w('TODO: implement Delete Account');
