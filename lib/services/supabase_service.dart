@@ -5,7 +5,7 @@ class SupabaseService {
   static final SupabaseClient client = Supabase.instance.client;
 
   static Future<void> init() async {
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: '.env');
 
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL']!,

@@ -1,9 +1,9 @@
 class Note {
   final int id;
-  final String title;
-  final String content;
+  String title;
+  String content;
   final DateTime createdAt;
-  final DateTime updatedAt;
+  DateTime updatedAt;
 
   Note({
     required this.id,
@@ -23,5 +23,15 @@ class Note {
     );
   }
 
-  Map<String, dynamic> toJson() => {'title': title, 'content': content};
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'content': content,
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
+  };
+
+  @override
+  String toString() {
+    return 'Note(#$id, "$title")';
+  }
 }
