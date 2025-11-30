@@ -29,4 +29,9 @@ class Note {
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
   };
+
+  @override
+  String toString() {
+    return 'Note(#$id, "$title")';
+  }
 }

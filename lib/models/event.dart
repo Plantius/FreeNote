@@ -66,4 +66,9 @@ class Event {
       end: DateTime.parse(json['end'] as String),
     );
   }
+
+  @override
+  String toString() {
+    return 'Event(#$id, "$title" at $start to $end)';
+  }
 }

@@ -188,6 +188,7 @@ class DatabaseService {
     }
   }
 
+  // FIXME: implement
   Future<List<Event>> fetchEvents() async {
     return [];
   }
@@ -211,6 +212,11 @@ class DatabaseService {
       logger.e('Failed to fetch calendars: $e');
     }
     return [];
+  }
+
+  // FIXME: implement
+  Future<void> shareNote(Note note, Profile profile) async {
+    logger.d('TODO: Share $note with $profile');
   }
 
   Future<void> updateNote(Note note) async {

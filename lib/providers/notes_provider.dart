@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/auth_service.dart';
 import 'package:free_note/services/cache_service.dart';
 import 'package:free_note/event_logger.dart';
@@ -113,8 +114,13 @@ class NotesProvider with ChangeNotifier {
     }
   }
 
+  Future<void> shareNote(Note note, Profile profile) async {
+    database.shareNote(note, profile);
+    notifyListeners(); // Nothing to notify but anyway
+  }
+
   Future<void> deleteNote(Note note) async {
-    DatabaseService.instance.deleteNote(note.id);
+    database.deleteNote(note.id);
 
     assert(_notes != null);
     if (!_notes!.remove(note)) {
