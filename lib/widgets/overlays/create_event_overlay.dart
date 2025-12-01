@@ -89,7 +89,7 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
     );
 
     if (_isEndValid(newEnd, _start)) {
-      setState(() => _end = newEnd);    
+      setState(() => _end = newEnd);
     }
   }
 
@@ -126,9 +126,7 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
   Future<void> _selectCalendar(BuildContext context) async {
     final calendar = await showModalBottomSheet<Calendar>(
       context: context,
-      builder: (context) => const CalendarListOverlay(
-        allowSelection: true,
-      ),
+      builder: (context) => const CalendarListOverlay(allowSelection: true),
     );
 
     if (calendar != null) {
@@ -218,15 +216,11 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
                   children: [
                     TextButton(
                       onPressed: () => _pickEndDate(context),
-                      child: Text(
-                        '${_end.year}-${_end.month}-${_end.day}',
-                      ),
+                      child: Text('${_end.year}-${_end.month}-${_end.day}'),
                     ),
                     TextButton(
                       onPressed: () => _pickEndTime(context),
-                      child: Text(
-                        TimeOfDay.fromDateTime(_end).format(context),
-                      ),
+                      child: Text(TimeOfDay.fromDateTime(_end).format(context)),
                     ),
                   ],
                 ),

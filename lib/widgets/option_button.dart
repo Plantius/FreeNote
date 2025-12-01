@@ -19,10 +19,7 @@ class OptionButton extends StatelessWidget {
     Color color = danger ?? false ? Colors.red : Colors.white;
 
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 4,
-        bottom: 4
-      ),
+      padding: const EdgeInsets.only(top: 4, bottom: 4),
       child: TextButton(
         onPressed: action,
         child: Container(

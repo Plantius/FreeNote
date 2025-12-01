@@ -55,9 +55,8 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => CalendarListOverlay(
-                  allowSelection: false,
-                ),
+                builder: (context) =>
+                    CalendarListOverlay(allowSelection: false),
               );
             },
             icon: Icon(
@@ -383,7 +382,7 @@ class AddMenuItems extends StatelessWidget {
         TextButton(
           onPressed: () async {
             final Event? event = await showModalBottomSheet(
-              context: context, 
+              context: context,
               builder: (context) => CreateEventOverlay(),
             );
 

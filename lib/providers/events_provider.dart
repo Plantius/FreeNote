@@ -21,9 +21,7 @@ class EventsProvider extends ChangeNotifier {
   }
 
   List<Event> get visibleEvents {
-    return _events
-      .where(eventIsVisible)
-      .toList();
+    return _events.where(eventIsVisible).toList();
   }
 
   List<Calendar> get calendars => _calendars;
@@ -33,13 +31,12 @@ class EventsProvider extends ChangeNotifier {
       return null;
     }
 
-    return _calendars
-      .reduce((value, element) {
-        if (value.id < element.id) {
-          return value;
-        } 
-        return element;
-      });
+    return _calendars.reduce((value, element) {
+      if (value.id < element.id) {
+        return value;
+      }
+      return element;
+    });
   }
 
   Future<void> loadEventsAndCalendars() async {

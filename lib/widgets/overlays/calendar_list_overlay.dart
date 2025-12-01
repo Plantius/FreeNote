@@ -33,9 +33,9 @@ class CalendarListOverlay extends StatelessWidget {
   }
 
   Widget _buildCalendarEntry(
-    BuildContext context, 
-    Calendar calendar, 
-    EventsProvider provider
+    BuildContext context,
+    Calendar calendar,
+    EventsProvider provider,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,7 +52,7 @@ class CalendarListOverlay extends StatelessWidget {
             TextButton(
               onPressed: () {
                 context.pop(calendar);
-              }, 
+              },
               child: Text(
                 calendar.name,
                 style: Theme.of(context).textTheme.labelLarge,
@@ -60,7 +60,7 @@ class CalendarListOverlay extends StatelessWidget {
             ),
           ],
         ),
-        
+
         Switch(
           value: calendar.visible,
           onChanged: (value) {
