@@ -6,6 +6,7 @@ import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
+import 'package:free_note/widgets/overlays/create_event_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -54,7 +55,9 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => CalendarListOverlay(),
+                builder: (context) => CalendarListOverlay(
+                  allowSelection: false,
+                ),
               );
             },
             icon: Icon(
@@ -102,7 +105,6 @@ class _MainPageState extends State<MainPage> {
         },
         backgroundColor: colors.primary,
 
-        // TODO: possibly use different colors for highlighting.
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
       ),
@@ -379,12 +381,16 @@ class AddMenuItems extends StatelessWidget {
         ),
 
         TextButton(
-          onPressed: () {
-            // FIXME: replace me
-            final provider = context.read<EventsProvider>();
-            final Event event = Event.random(provider.calendars);
-            provider.addEvent(event);
-            context.pop();
+          onPressed: () async {
+            final Event? event = await showModalBottomSheet(
+              context: context, 
+              builder: (context) => CreateEventOverlay(),
+            );
+
+            if (event != null && context.mounted) {
+              context.read<EventsProvider>().addEvent(event);
+              context.pop();
+            }
           },
           child: Icon(Icons.event, size: 30, color: Colors.white),
         ),

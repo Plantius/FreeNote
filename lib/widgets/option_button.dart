@@ -18,30 +18,36 @@ class OptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color = danger ?? false ? Colors.red : Colors.white;
 
-    return TextButton(
-      onPressed: action,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: Icon(icon, size: 30, color: color),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(color: color),
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 4,
+        bottom: 4
+      ),
+      child: TextButton(
+        onPressed: action,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: Icon(icon, size: 30, color: color),
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  text,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: color),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
