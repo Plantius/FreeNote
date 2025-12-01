@@ -189,6 +189,20 @@ class DatabaseService {
   }
 
   Future<List<Event>> fetchEvents() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await supabase
+          .from('calendar_events')
+          .select('*, calendars(*)');
+
+      logger.i('Successfully fetched events for user $userId');
+
+      return (response as List).map((event) => Event.fromJson(event)).toList();
+    } catch (e) {
+      logger.e('Failed to fetch events: $e');
+    }
     return [];
   }
 
