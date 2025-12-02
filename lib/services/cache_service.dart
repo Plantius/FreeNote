@@ -35,6 +35,7 @@ class CacheService {
       'title': note.title,
       'created_at': note.createdAt.toIso8601String(),
       'updated_at': note.updatedAt.toIso8601String(),
+      'is_nested': note.isNested,
     };
     await metaFile.writeAsString(jsonEncode(metaData));
 
@@ -73,12 +74,14 @@ class CacheService {
     String title = 'Note $id';
     DateTime createdAt = DateTime.now();
     DateTime updatedAt = DateTime.now();
+    bool isNested = false;
 
     try {
       final metaData = jsonDecode(await metaFile.readAsString());
       title = metaData['title'] ?? title;
       createdAt = DateTime.tryParse(metaData['created_at']) ?? createdAt;
       updatedAt = DateTime.tryParse(metaData['updated_at']) ?? updatedAt;
+      isNested = metaData['is_nested'] ?? false;
     } catch (e) {
       logger.w('Failed to parse meta for note $id: $e');
     }
@@ -89,6 +92,7 @@ class CacheService {
       content: content,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      isNested: isNested,
     );
   }
 

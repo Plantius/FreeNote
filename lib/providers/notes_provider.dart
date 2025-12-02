@@ -47,6 +47,7 @@ class NotesProvider with ChangeNotifier {
           content: note.content,
           createdAt: note.createdAt,
           updatedAt: note.updatedAt,
+          isNested: note.isNested,
         );
       }
     } catch (e) {

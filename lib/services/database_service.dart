@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
@@ -133,7 +134,7 @@ class DatabaseService {
       final inserted = await supabase
           .rpc(
             'create_note_with_user',
-            params: {'p_title': note.title, 'p_content': note.content},
+            params: {'p_title': note.title, 'p_content': note.content, 'p_is_nested': note.isNested},
           )
           .select()
           .single();
@@ -347,6 +348,28 @@ class DatabaseService {
     } catch (e) {
       logger.e('Failed to accept friend request from user ${user.uid}: $e');
       rethrow;
+    }
+  }
+
+  Future<List<CustomNotification>> fetchNotifications() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await supabase
+          .from('friend_requests')
+          .select('*, profiles!from_uid(*)')
+          .eq('to_uid', userId)
+          .order('created_at', ascending: false);
+
+      logger.i('Successfully fetched notifications for user $userId');
+
+      return (response as List)
+          .map((notification) => CustomNotification.fromJson(notification))
+          .toList();
+    } catch (e) {
+      logger.e('Failed to fetch notifications: $e');
+      return [];
     }
   }
 }

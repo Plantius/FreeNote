@@ -7,7 +7,6 @@ class CustomNotification {
   String content;
   Profile? sender;
   final DateTime createdAt;
-  bool read;
   final NotificationType type;
 
   CustomNotification({
@@ -15,7 +14,6 @@ class CustomNotification {
     required this.content,
     this.sender,
     required this.createdAt,
-    required this.read,
     required this.type,
   });
 
@@ -23,10 +21,11 @@ class CustomNotification {
     return CustomNotification(
       id: json['id'] as int,
       content: json['content'] ?? '',
-      sender: json['sender'] != null ? Profile.fromJson(json['sender']) : null,
+      sender: json['profiles'] != null
+          ? Profile.fromJson(json['profiles'])
+          : null,
       createdAt: DateTime.parse(json['created_at']),
-      type: json['type'] as NotificationType,
-      read: json['read'] as bool,
+      type: NotificationType.fRequest,
     );
   }
 
@@ -36,6 +35,10 @@ class CustomNotification {
     'sender': sender?.toJson(),
     'created_at': createdAt.toIso8601String(),
     'type': type.toString(),
-    'read': read,
   };
+
+  @override
+  String toString() {
+    return 'Notification(#$id, "$content", from: ${sender?.username ?? "System"})';
+  }
 }

@@ -234,7 +234,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       focusNode: _focusNode,
       config: QuillEditorConfig(
         checkBoxReadOnly: false,
-        onLaunchUrl: (href) => _onLaunhUrl(context, href),
+        onLaunchUrl: (href) => _onLaunchUrl(context, href),
         customLinkPrefixes: ['freenote'],
         autoFocus: true,
       ),
@@ -259,7 +259,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
     FocusScope.of(context).requestFocus(_focusNode);
   }
 
-  void _onLaunhUrl(BuildContext context, String href) async {
+  void _onLaunchUrl(BuildContext context, String href) async {
     logger.i('Attempting to navigate to `$href`...');
 
     final Uri url = Uri.parse(href);

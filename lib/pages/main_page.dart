@@ -5,6 +5,7 @@ import 'package:free_note/providers/events_provider.dart';
 import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
+import 'package:free_note/providers/notifications_provider.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
 import 'package:free_note/widgets/overlays/create_event_overlay.dart';
 import 'package:go_router/go_router.dart';
@@ -206,54 +207,30 @@ class AddNotifications extends StatefulWidget {
 }
 
 class _AddNotificationsState extends State<AddNotifications> {
-  final List<CustomNotification> notifications = [
-    CustomNotification(
-      id: 1,
-      content: 'Alette',
-      createdAt: DateTime(2025),
-      type: NotificationType.fRequest,
-      read: false,
-    ),
-    CustomNotification(
-      id: 2,
-      content: 'Alette',
-      createdAt: DateTime(2024),
-      type: NotificationType.fAccept,
-      read: true,
-    ),
-    CustomNotification(
-      id: 3,
-      content: 'Alette says hi this is the best system message ever',
-      createdAt: DateTime(2025),
-      type: NotificationType.systemMessage,
-      read: false,
-    ),
-  ];
-
   //TODO: Add changing icons if new notifications
   //TODO: Add Mark as read button
 
-  //TODO: Ideally this should be grabbed from backend
   @override
   Widget build(BuildContext context) {
-    //TODO:: Some calculations in here?
+    List<CustomNotification> notifications = context
+        .watch<NotificationsProvider>()
+        .notifications;
+
     return ListView.builder(
       itemCount: notifications.length,
       itemBuilder: (context, index) {
-        var selectedNotification = notifications[index].content;
+        CustomNotification selectedNotification = notifications[index];
         var notificationType = notifications[index].type;
         var title = Text('Empty');
-        var concat = selectedNotification;
+        String concat = selectedNotification.content;
         var tileColor = Colors.blueGrey;
-        if (notifications[index].read == false) {
-          tileColor = Colors.amber; //TODO: Change colours
-        }
         if (notificationType == NotificationType.fRequest) {
           concat =
-              '$selectedNotification has sent you a friendship request. Confirm?';
+              '${selectedNotification.sender?.username ?? "Someone"} has sent you a friendship request. Confirm?';
         }
         if (notificationType == NotificationType.fAccept) {
-          concat = '$selectedNotification has accepted your friend request.';
+          concat =
+              '${selectedNotification.sender?.username ?? "Someone"} has accepted your friend request.';
         }
         if (notificationType == NotificationType.systemMessage) {
           concat = 'System notification. Click to open!';
@@ -265,11 +242,14 @@ class _AddNotificationsState extends State<AddNotifications> {
           textColor: Colors.black,
           onTap: () {
             if (notificationType == NotificationType.fRequest) {
-              openConfirmFriend(notifications[index].sender!);
+              openConfirmFriend(
+                selectedNotification.sender!,
+                selectedNotification.id,
+              );
             } else if (notificationType == NotificationType.fAccept) {
-              openAcceptFriend(notifications[index].sender!);
+              openAcceptFriend(selectedNotification.sender!);
             } else if (notificationType == NotificationType.systemMessage) {
-              openSystemMessage(selectedNotification);
+              openSystemMessage(selectedNotification.content);
             }
           },
           //TODO: On tap make sure the tile gets returned to the backend as read
@@ -278,7 +258,7 @@ class _AddNotificationsState extends State<AddNotifications> {
     );
   }
 
-  Future openConfirmFriend(Profile user) => showDialog(
+  Future openConfirmFriend(Profile user, int notificationId) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text('${user.username} has requested to be friends!'),
@@ -287,10 +267,21 @@ class _AddNotificationsState extends State<AddNotifications> {
           child: Text('ACCEPT'),
           onPressed: () {
             context.read<FriendsProvider>().acceptFriendRequest(user);
+            context.read<NotificationsProvider>().removeNotification(
+              notificationId,
+            );
             Navigator.of(context).pop();
           },
         ),
-        TextButton(child: Text('DENY'), onPressed: () {}),
+        TextButton(
+          child: Text('DENY'),
+          onPressed: () {
+            context.read<NotificationsProvider>().removeNotification(
+              notificationId,
+            );
+            Navigator.of(context).pop();
+          },
+        ),
       ],
     ),
   );
@@ -373,6 +364,7 @@ class AddMenuItems extends StatelessWidget {
               content: '',
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
+              isNested: false,
             );
             context.push('/note/${note.id}', extra: note);
           },
