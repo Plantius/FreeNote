@@ -171,8 +171,29 @@ class DatabaseService {
     return null;
   }
 
-  // FIXME: implement
   Future<Event> createEvent(Event event) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception('User not logged in');
+
+      final response = await supabase
+          .from('calendar_events')
+          .insert({
+            'calendar_id': event.calendarId,
+            'title': event.title,
+            'starts_at': event.start.toIso8601String(),
+            'ends_at': event.end.toIso8601String(),
+          })
+          .select()
+          .single();
+
+      logger.i('Successfully created event for user $userId');
+
+      return Event.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to create event: $e');
+    }
+
     return Event(
       id: Random().nextInt(1_000_000_000),
       calendarId: event.calendarId,
@@ -208,7 +229,6 @@ class DatabaseService {
       final response = await supabase
           .from('calendar_events')
           .select('*, calendars(*)');
-
       logger.d('Successfully fetched events for user $userId');
 
       return (response as List).map((event) => Event.fromJson(event)).toList();
