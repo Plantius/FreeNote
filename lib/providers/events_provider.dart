@@ -43,6 +43,8 @@ class EventsProvider extends ChangeNotifier {
     try {
       _events = await database.fetchEvents();
       _calendars = await database.fetchCalendars();
+
+      notifyListeners();
     } catch (e) {
       logger.e(e);
     }
