@@ -209,7 +209,7 @@ class DatabaseService {
           .from('calendar_events')
           .select('*, calendars(*)');
 
-      logger.i('Successfully fetched events for user $userId');
+      logger.d('Successfully fetched events for user $userId');
 
       return (response as List).map((event) => Event.fromJson(event)).toList();
     } catch (e) {
@@ -228,7 +228,7 @@ class DatabaseService {
           .select('*, user_calendars(*)')
           .eq('user_calendars.user_id', userId);
 
-      logger.i('Successfully fetched calendars for user $userId');
+      logger.d('Successfully fetched calendars for user $userId');
 
       return (response as List)
           .map((calendar) => Calendar.fromJson(calendar))
@@ -239,9 +239,18 @@ class DatabaseService {
     return [];
   }
 
-  // FIXME: implement
   Future<void> shareNote(Note note, Profile profile) async {
-    logger.d('Shared $note with $profile');
+    try {
+      await supabase.from('user_notes').insert({
+        'note_id': note.id,
+        'user_id': profile.uid,
+      });
+
+      logger.i('Shared $note with $profile');
+    } catch (e) {
+      logger.e('Failed to share note $note with user $profile: $e');
+      return;
+    }
   }
 
   Future<void> updateNote(Note note) async {

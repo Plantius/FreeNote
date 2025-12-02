@@ -10,7 +10,7 @@ class FriendsOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FriendsProvider provider = context.read<FriendsProvider>();
+    FriendsProvider provider = context.watch<FriendsProvider>();
 
     return BottomOverlay<Profile>(
       child: ListView.builder(
