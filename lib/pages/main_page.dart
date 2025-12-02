@@ -267,18 +267,13 @@ class _AddNotificationsState extends State<AddNotifications> {
           child: Text('ACCEPT'),
           onPressed: () {
             context.read<FriendsProvider>().acceptFriendRequest(user);
-            context.read<NotificationsProvider>().removeNotification(
-              notificationId,
-            );
             Navigator.of(context).pop();
           },
         ),
         TextButton(
           child: Text('DENY'),
           onPressed: () {
-            context.read<NotificationsProvider>().removeNotification(
-              notificationId,
-            );
+            context.read<FriendsProvider>().denyFriendRequest(user);
             Navigator.of(context).pop();
           },
         ),

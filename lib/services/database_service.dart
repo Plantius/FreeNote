@@ -8,6 +8,7 @@ import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DatabaseService {
   final supabase = SupabaseService.client;
@@ -18,6 +19,21 @@ class DatabaseService {
 
   static DatabaseService get instance {
     return _instance;
+  }
+
+  RealtimeChannel getChannel(
+    String table,
+    void Function(PostgresChangePayload) func,
+  ) {
+    return supabase
+        .channel('public:$table')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: table,
+          callback: func,
+        )
+        .subscribe();
   }
 
   Future<List<Note>> fetchNotes() async {
@@ -134,7 +150,11 @@ class DatabaseService {
       final inserted = await supabase
           .rpc(
             'create_note_with_user',
-            params: {'p_title': note.title, 'p_content': note.content, 'p_is_nested': note.isNested},
+            params: {
+              'p_title': note.title,
+              'p_content': note.content,
+              'p_is_nested': note.isNested,
+            },
           )
           .select()
           .single();
@@ -347,6 +367,24 @@ class DatabaseService {
       logger.i('Successfully accepted friend request from user ${user.uid}');
     } catch (e) {
       logger.e('Failed to accept friend request from user ${user.uid}: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> denyFriendRequest(Profile user) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      await supabase
+          .from('friend_requests')
+          .delete()
+          .eq('to_uid', userId)
+          .eq('from_uid', user.uid);
+
+      logger.i('Successfully denied friend request from user ${user.uid}');
+    } catch (e) {
+      logger.e('Failed to deny friend request from user ${user.uid}: $e');
       rethrow;
     }
   }

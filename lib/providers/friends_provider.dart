@@ -60,4 +60,13 @@ class FriendsProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> denyFriendRequest(Profile user) async {
+    try {
+      await database.denyFriendRequest(user);
+    } catch (e) {
+      _errorMessage = 'Failed to deny friend request: $e';
+      notifyListeners();
+    }
+  }
 }
