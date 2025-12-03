@@ -7,16 +7,21 @@ class NoteEntry extends StatelessWidget {
   final Note? note;
   final int noteId;
 
-  const NoteEntry({super.key, required this.note, required this.noteId});
+  final void Function()? onTap;
+
+  const NoteEntry({
+    super.key, 
+    required this.note, 
+    required this.noteId, 
+    this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: note == null 
         ? null 
-        : () {
-          context.push('/note/${note!.id}', extra: note);
-        },
+        : () => _onTap(context),
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         foregroundColor: Colors.white,
@@ -85,6 +90,16 @@ class NoteEntry extends StatelessWidget {
       return '$time - ${t.day} $month';
     } else {
       return '${t.day} $month, ${t.year}';
+    }
+  }
+
+  void _onTap(BuildContext context) {
+    assert(note != null);
+
+    if (onTap == null) {
+      context.push('/note/${note!.id}', extra: note);
+    } else {
+      onTap!();
     }
   }
 }
