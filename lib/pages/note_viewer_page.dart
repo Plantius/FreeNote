@@ -246,11 +246,20 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   void _insertNoteLink() async {
+    final index = _controller.selection.baseOffset;
+
     _controller.document.insert(
-      _controller.selection.baseOffset,
+      index,
       BlockEmbed.custom(
         NoteEmbed.fromId(34)
       )
+    );
+
+    _controller.document.insert(index + 1, '\n');
+
+    _controller.updateSelection(
+      TextSelection.collapsed(offset: index + 2),
+      ChangeSource.local,
     );
 
     FocusScope.of(context).requestFocus(_focusNode);
@@ -299,12 +308,27 @@ class NoteEmbedBuilder extends EmbedBuilder {
   Widget build(BuildContext context, EmbedContext embedContext) {
     final embed = embedContext.node.value;
     final text = embed.data as String;
-    final noteId = int.tryParse(text) ?? 0;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-      child: Text('Note #$noteId not found!'),
+    return LayoutBuilder(
+      builder: (context, _) {
+        final noteId = int.tryParse(text) ?? 0;
+        final note = context.read<NotesProvider>().rootNotes.firstOrNull;
+
+        if (note == null) {
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+            child: Text(
+              'Note #$noteId not found!',
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          );
+        }
+
+        return NoteEntry(note: note);
+      }
     );
   }
 }

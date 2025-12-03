@@ -86,7 +86,7 @@ class NotesProvider with ChangeNotifier {
   }
 
   Note? getNote(int id, {bool strict = true}) {
-    Note? note = _notes ?? []
+    Note? note = (_notes ?? [])
       .where((note) => note.id == id)
       .singleOrNull;
 
