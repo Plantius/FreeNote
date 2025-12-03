@@ -18,8 +18,14 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     if (AuthService.instance.user == null) {
-      logger.e('Invalid state: no logged in user');
-      context.go('/login');
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Loading...', 
+            style: Theme.of(context).textTheme.titleLarge
+          ),
+        ),
+      );
     }
 
     User user = AuthService.instance.user!;
@@ -27,7 +33,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: Theme.of(context).textTheme.titleLarge),
+        title: Text(
+          'Settings', 
+          style: Theme.of(context).textTheme.titleLarge
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
