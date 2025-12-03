@@ -97,7 +97,7 @@ class NotesProvider with ChangeNotifier {
     return note;
   }
 
-  Future<void> saveNote(Note note) async {
+  Future<Note> saveNote(Note note) async {
     try {
       if (note.id == 0) {
         final createdNote = await database.createNote(note);
@@ -114,8 +114,6 @@ class NotesProvider with ChangeNotifier {
 
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
-
-      notifyListeners();
     } catch (e) {
       logger.w('Failed to save note ${note.id} to database: $e');
       try {
@@ -129,6 +127,14 @@ class NotesProvider with ChangeNotifier {
         logger.e('Failed to save note ${note.id} to cache: $e');
       }
     }
+
+    if (_notes != null) { // kinda keep it sorted
+      _notes!.remove(note);
+      _notes!.add(note);
+    }
+    notifyListeners();
+
+    return note;
   }
 
   Future<void> shareNote(Note note, Profile profile) async {

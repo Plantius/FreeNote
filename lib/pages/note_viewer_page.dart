@@ -9,6 +9,7 @@ import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:free_note/widgets/confirm_dialog.dart';
 import 'package:free_note/widgets/note_entry.dart';
+import 'package:free_note/widgets/overlays/creators/create_note_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -70,7 +71,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         _controller.document = Document.fromJson(json);
       });
     } on FormatException {
-      logger.e(
+      logger.w(
         'Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...',
       );
 
@@ -246,13 +247,26 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   void _insertNoteLink() async {
+    final note = await showModalBottomSheet(
+      context: context, 
+      builder: (context) => CreateNoteOverlay(),
+    ) as Note?;
+
+    if (note == null) {
+      logger.i('Cancelled nested note creation');
+      return;
+    }
+    assert(note.id != 0);
+
+    logger.i('Adding nested: $note');
+
     final index = _controller.selection.baseOffset;
 
     _controller.document.insert(
       index,
       BlockEmbed.custom(
-        NoteEmbed.fromId(34)
-      )
+        NoteEmbed.fromNote(note),
+      ),
     );
 
     _controller.document.insert(index + 1, '\n');
@@ -262,7 +276,9 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       ChangeSource.local,
     );
 
-    FocusScope.of(context).requestFocus(_focusNode);
+    if (mounted) {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }
   }
 
   void _onLaunchUrl(BuildContext context, String href) async {
@@ -312,7 +328,7 @@ class NoteEmbedBuilder extends EmbedBuilder {
     return LayoutBuilder(
       builder: (context, _) {
         final noteId = int.tryParse(text) ?? 0;
-        final note = context.read<NotesProvider>().rootNotes.firstOrNull;
+        final note = context.read<NotesProvider>().getNote(noteId);
 
         if (note == null) {
           return Container(

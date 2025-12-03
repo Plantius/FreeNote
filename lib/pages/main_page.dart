@@ -7,7 +7,7 @@ import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notifications_provider.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
-import 'package:free_note/widgets/overlays/create_event_overlay.dart';
+import 'package:free_note/widgets/overlays/creators/create_event_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';

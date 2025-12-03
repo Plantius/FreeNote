@@ -3,7 +3,7 @@ import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/events_provider.dart';
 import 'package:free_note/widgets/overlays/bottom_overlay.dart';
-import 'package:free_note/widgets/overlays/create_calendar_overlay.dart';
+import 'package:free_note/widgets/overlays/creators/create_calendar_overlay.dart';
 import 'package:free_note/widgets/overlays/friends_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
