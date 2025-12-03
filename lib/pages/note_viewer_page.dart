@@ -237,23 +237,19 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         onLaunchUrl: (href) => _onLaunchUrl(context, href),
         customLinkPrefixes: ['freenote'],
         autoFocus: true,
+        embedBuilders: [
+          NoteEmbedBuilder(),
+        ],
       ),
     );
   }
 
   void _insertNoteLink() async {
-    final delta = Delta()..insert('(link)', {'link': 'freenote:///note/34'});
-
-    final selection = TextSelection(
-      baseOffset: _controller.selection.baseOffset,
-      extentOffset: _controller.selection.extentOffset,
-    );
-
-    _controller.replaceText(
-      selection.baseOffset,
-      selection.extentOffset - selection.baseOffset,
-      delta,
-      selection,
+    _controller.document.insert(
+      _controller.selection.baseOffset,
+      BlockEmbed.custom(
+        NoteEmbed.fromId(34)
+      )
     );
 
     FocusScope.of(context).requestFocus(_focusNode);
@@ -281,5 +277,39 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         });
       }
     }
+  }
+}
+
+class NoteEmbed extends CustomBlockEmbed {
+  NoteEmbed(String text) : super('note', text);
+
+  static const String embedType = 'note';
+
+  static NoteEmbed fromText(String text) => NoteEmbed(text);
+  static NoteEmbed fromId(int noteId) => NoteEmbed(noteId.toString());
+  static NoteEmbed fromNote(Note note) => NoteEmbed(note.id.toString());
+}
+
+class NoteEmbedBuilder extends EmbedBuilder {
+  @override
+  String get key => NoteEmbed.embedType;
+
+  @override
+  Widget build(BuildContext context, EmbedContext embedContext) {
+    final embed = embedContext.node.value;
+    final text = embed.data as String;
+    final noteId = int.tryParse(text) ?? 0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+      child: Text(
+        '[[ $noteId ]]',
+        style: const TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }
