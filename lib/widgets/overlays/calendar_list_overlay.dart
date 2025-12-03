@@ -16,7 +16,7 @@ class CalendarListOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<EventsProvider>();
+    final provider = context.watch<EventsProvider>();
 
     return BottomOverlay(
       action: BottomOverlayAction(
