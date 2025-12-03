@@ -72,7 +72,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       });
     } on FormatException {
       logger.w(
-        'Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...',
+        'Unconverted $note, recovering as plaintext...',
       );
 
       setState(() {
@@ -249,23 +249,30 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   void _insertNoteLink() async {
     final note = await showModalBottomSheet(
       context: context, 
-      builder: (context) => CreateNoteOverlay(),
+      builder: (context) => CreateNoteOverlay(
+        isNested: true,
+      ),
     ) as Note?;
 
     if (note == null) {
       logger.i('Cancelled nested note creation');
       return;
     }
-    assert(note.id != 0);
+    assert(note.id == 0);
 
-    logger.i('Adding nested: $note');
+    late Note createdNote;
+    if (mounted) {
+      createdNote = await context.read<NotesProvider>().saveNote(note);
+    }
+
+    logger.i('Adding nested: $createdNote');
 
     final index = _controller.selection.baseOffset;
 
     _controller.document.insert(
       index,
       BlockEmbed.custom(
-        NoteEmbed.fromNote(note),
+        NoteEmbed.fromNote(createdNote),
       ),
     );
 
@@ -330,20 +337,10 @@ class NoteEmbedBuilder extends EmbedBuilder {
         final noteId = int.tryParse(text) ?? 0;
         final note = context.read<NotesProvider>().getNote(noteId);
 
-        if (note == null) {
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-            child: Text(
-              'Note #$noteId not found!',
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-          );
-        }
-
-        return NoteEntry(note: note);
+        return NoteEntry(
+          note: note,
+          noteId: noteId,
+        );
       }
     );
   }

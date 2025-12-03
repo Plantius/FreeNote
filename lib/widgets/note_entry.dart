@@ -4,16 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class NoteEntry extends StatelessWidget {
-  final Note note;
+  final Note? note;
+  final int noteId;
 
-  const NoteEntry({super.key, required this.note});
+  const NoteEntry({super.key, required this.note, required this.noteId});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {
-        context.push('/note/${note.id}', extra: note);
-      },
+      onPressed: note == null 
+        ? null 
+        : () {
+          context.push('/note/${note!.id}', extra: note);
+        },
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         foregroundColor: Colors.white,
@@ -21,20 +24,31 @@ class NoteEntry extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(child: Icon(Icons.note, size: 24)),
+          SizedBox(
+            child: Icon(
+              note == null 
+                ? Icons.warning
+                : Icons.note, 
+              size: 24
+            ),
+          ),
+
           const SizedBox(width: 16),
+          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  note.title,
+                  note?.title ?? 'Not Found!',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  _formatTimeStamp(note.updatedAt.toLocal()),
+                  note == null 
+                    ? 'Note $noteId is deleted or inaccessible'
+                    : _formatTimeStamp(note!.updatedAt.toLocal()),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 16, color: Colors.purple),

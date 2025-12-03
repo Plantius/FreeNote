@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
-import 'package:free_note/providers/notes_provider.dart';
 import 'package:free_note/widgets/overlays/bottom_overlay.dart';
-import 'package:provider/provider.dart';
 
 class CreateNoteOverlay extends StatefulWidget {
+  final bool isNested;
 
-  const CreateNoteOverlay({super.key});
+  const CreateNoteOverlay({super.key, required this.isNested});
 
   @override
   State<CreateNoteOverlay> createState() => _CreateNoteOverlayState();
@@ -17,20 +16,18 @@ class _CreateNoteOverlayState extends State<CreateNoteOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return BottomOverlay(
+    return BottomOverlay<Note>(
       onDone: () {
         final name = _nameController.text.trim();
         if (name.isEmpty) return null;
 
-        return context.read<NotesProvider>().saveNote(
-          Note(
-            id: 0,
-            title: name,
-            content: '',
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-            isNested: true,
-          )
+        return Note(
+          id: 0,
+          title: name,
+          content: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isNested: widget.isNested,
         );
       },
       child: Padding(

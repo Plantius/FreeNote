@@ -8,6 +8,7 @@ import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notifications_provider.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
 import 'package:free_note/widgets/overlays/creators/create_event_overlay.dart';
+import 'package:free_note/widgets/overlays/creators/create_note_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -352,16 +353,18 @@ class AddMenuItems extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TextButton(
-          onPressed: () {
-            final note = Note(
-              id: 0,
-              title: 'New Note',
-              content: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              isNested: false,
+          onPressed: () async {
+            final Note? note = await showModalBottomSheet(
+              context: context, 
+              builder: (context) => CreateNoteOverlay(
+                isNested: false,
+              ),
             );
-            context.push('/note/${note.id}', extra: note);
+
+            if (note != null && context.mounted) {
+              context.read<NotesProvider>().saveNote(note);
+              context.pop();
+            }
           },
           child: Icon(Icons.note, size: 30, color: Colors.white),
         ),
