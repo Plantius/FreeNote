@@ -10,26 +10,36 @@ class NotificationsProvider with ChangeNotifier {
   final DatabaseService database;
   final supabase = SupabaseService.client;
 
-  late final RealtimeChannel _channel;
+  late RealtimeChannel _channel;
 
   List<CustomNotification> _notifications = [];
 
   NotificationsProvider(this.database) {
+    _channel = database.getChannel('friend_requests', handlePayload);
+
     AuthService.instance.userStream.listen((state) {
       loadNotifications();
-      _channel = database.getChannel('friend_requests', (payload) {
-        logger.i('Received notification payload: ${payload.toString()}');
-        // CHECK IF THE NOTIFICATION IS FOR THE CURRENT USER
-        logger.i(
-          'Current user id: ${supabase.auth.currentUser?.id}, to_uid in payload: ${payload.newRecord['to_uid'] ?? payload.oldRecord['to_uid']}',
-        );
-        if (payload.newRecord['to_uid'] ??
-            payload.oldRecord['to_uid'] == supabase.auth.currentUser?.id) {
-          logger.i('Notification is for the current user, reloading.');
-          loadNotifications();
-        }
-      });
+      _channel = database.getChannel('friend_requests', handlePayload);
     });
+  }
+
+  void handlePayload(PostgresChangePayload payload) {
+    logger.i('Received notification payload: $payload');
+
+    final current = supabase.auth.currentUser?.id;
+    final toUid = payload.newRecord['to_uid'] as String?;
+
+    if ((payload.eventType == PostgresChangeEvent.insert ||
+            payload.eventType == PostgresChangeEvent.update) &&
+        toUid == current) {
+      logger.i('Notification is for the current user, reloading.');
+      loadNotifications();
+    } else if (payload.eventType == PostgresChangeEvent.delete) {
+      final id = payload.oldRecord['id'] as int?;
+      if (id != null) {
+        removeNotification(id);
+      }
+    }
   }
 
   @override
@@ -42,9 +52,11 @@ class NotificationsProvider with ChangeNotifier {
 
   Future<void> loadNotifications() async {
     try {
-      _notifications = await database.fetchNotifications();
-
-      notifyListeners();
+      final notifications = await database.fetchNotifications();
+      if (notifications.isNotEmpty && notifications != _notifications) {
+        _notifications = notifications;
+        notifyListeners();
+      }
     } catch (e) {
       logger.e('Failed to load notifications: $e');
     }
