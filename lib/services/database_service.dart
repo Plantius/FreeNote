@@ -239,7 +239,6 @@ class DatabaseService {
     }
   }
 
-  // FIXME: implement
   Future<List<Event>> fetchEvents() async {
     try {
       final userId = supabase.auth.currentUser?.id;

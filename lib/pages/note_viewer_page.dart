@@ -8,6 +8,7 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:free_note/widgets/confirm_dialog.dart';
+import 'package:free_note/widgets/note_entry.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -303,13 +304,7 @@ class NoteEmbedBuilder extends EmbedBuilder {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-      child: Text(
-        '[[ $noteId ]]',
-        style: const TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      child: Text('Note #$noteId not found!'),
     );
   }
 }
