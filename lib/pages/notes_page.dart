@@ -37,7 +37,7 @@ class _NotesPageState extends State<NotesPage> {
         },
       ),
       onRefresh: () async {
-        await provider.loadNotes(forceRefresh: true);
+        await provider.loadNotes();
       },
     );
   }
