@@ -62,6 +62,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'FreeNote',
         theme: ThemeData(
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: Color.fromRGBO(0xDB, 0x91, 0xEF, 1)
+            )
+          ),
           colorScheme: ColorScheme.fromSeed(
             seedColor: Color.fromRGBO(109, 33, 134, 1),
             surface: Color.fromRGBO(40, 43, 48, 1),

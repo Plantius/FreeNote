@@ -51,7 +51,13 @@ class CalendarListOverlay extends StatelessWidget {
 
             TextButton(
               onPressed: () {
-                context.pop(calendar);
+                if (allowSelection) {
+                  context.pop(calendar);
+                } else {
+                  provider.updateCalendarVisibility(
+                    calendar, !calendar.visible
+                  );
+                }
               },
               child: Text(
                 calendar.name,
