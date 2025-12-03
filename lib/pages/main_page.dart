@@ -135,7 +135,7 @@ class SearchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<NotesProvider>();
+    final provider = context.watch<NotesProvider>();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
