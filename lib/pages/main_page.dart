@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SearchButton(searchTerms: notesProvider.notes),
+              SearchButton(searchTerms: notesProvider.rootNotes),
               AddButton(),
             ],
           ),

@@ -23,7 +23,7 @@ class NoteViewerPage extends StatefulWidget {
 }
 
 class _NoteViewerPageState extends State<NoteViewerPage> {
-  late TextEditingController _titleController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   final QuillController _controller = QuillController.basic();
   final _focusNode = FocusNode();
   Note? note;
@@ -51,7 +51,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   void _loadDocument() async {
     if (widget.note == null) {
       final notes = context.read<NotesProvider>();
-      Note? loadedNote = await notes.loadNote(widget.noteId);
+      Note? loadedNote = notes.getNote(widget.noteId);
       if (loadedNote != null) {
         note = loadedNote;
       } else {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/notes_provider.dart';

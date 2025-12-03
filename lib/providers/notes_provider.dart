@@ -19,7 +19,10 @@ class NotesProvider with ChangeNotifier {
     });
   }
 
-  List<Note> get notes => _notes == null ? [] : _notes!;
+  List<Note> get rootNotes => (_notes ?? [])
+    .where((note) => !note.isNested)
+    .toList();
+  
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -69,6 +72,7 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  @Deprecated('Use getNote(int id)')
   Future<Note?> loadNote(int id) async {
     var note = await CacheService.loadNoteFromCache(id);
     note ??= await database.fetchNote(id);
@@ -76,6 +80,18 @@ class NotesProvider with ChangeNotifier {
     if (note == null) {
       logger.e('No note found with id $id, locally or in the cloud.');
       return null;
+    }
+
+    return note;
+  }
+
+  Note? getNote(int id, {bool strict = true}) {
+    Note? note = _notes ?? []
+      .where((note) => note.id == id)
+      .singleOrNull;
+
+    if (note == null && strict) {
+      logger.e('Could not find Note #$id');
     }
 
     return note;
@@ -133,8 +149,8 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  @Deprecated('Use updateNote(Note note), creation is handled if id == 0')
   Future<void> createNote() async {
-    //TODO: Add note creation here
-    debugPrint('Do we reach here?');
+    
   }
 }

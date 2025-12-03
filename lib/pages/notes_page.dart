@@ -29,9 +29,9 @@ class _NotesPageState extends State<NotesPage> {
         } else {
           return RefreshIndicator(
             child: ListView.builder(
-              itemCount: provider.notes.length,
+              itemCount: provider.rootNotes.length,
               itemBuilder: (context, index) {
-                return _buildNoteEntry(context, provider.notes[index]);
+                return _buildNoteEntry(context, provider.rootNotes[index]);
               },
             ),
             onRefresh: () async {

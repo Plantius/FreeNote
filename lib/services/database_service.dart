@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
 import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
@@ -9,6 +6,7 @@ import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:math';
 
 class DatabaseService {
   final supabase = SupabaseService.client;

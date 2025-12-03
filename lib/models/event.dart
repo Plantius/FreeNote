@@ -1,7 +1,6 @@
 import 'dart:math' show Random;
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
-import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/calendar.dart';
 
 class Event {
