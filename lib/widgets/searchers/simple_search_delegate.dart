@@ -1,12 +1,14 @@
 
 import 'package:flutter/material.dart';
-import 'package:free_note/models/note.dart';
-import 'package:free_note/widgets/note_entry.dart';
 
-class NoteSearchDelegate extends SearchDelegate<Note?> {
-  List<Note> notes;
+abstract class SimpleSearchDelegate<T> extends SearchDelegate<T?> {
+  List<T> entries;
 
-  NoteSearchDelegate({required this.notes});
+  SimpleSearchDelegate({required this.entries});
+
+  bool matches(String query, T entry);
+
+  Widget buildEntry(BuildContext context, T entry);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -41,23 +43,17 @@ class NoteSearchDelegate extends SearchDelegate<Note?> {
   }
 
   Widget _buildMatches(BuildContext context) {
-    final results = notes
-      .where((note) {
-        return note.title.toLowerCase().contains(query.toLowerCase())
-          || note.content.toLowerCase().contains(query.toLowerCase());
-      })
-      .map((note) => NoteEntry(
-        note: note, 
-        noteId: note.id,
-        onTap: () {
-          close(context, note);
-        },
-      ))
+    final results = entries
+      .where((entry) => matches(query, entry))
+      .map((entry) => buildEntry(context, entry))
       .toList();
 
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) => results[index]
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: ListView.builder(
+        itemCount: results.length,
+        itemBuilder: (context, index) => results[index]
+      ),
     );
   }
 }

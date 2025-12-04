@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/widgets/create_button.dart';
-import 'package:free_note/widgets/note_search_delegate.dart';
+import 'package:free_note/widgets/searchers/note_search_delegate.dart';
 import 'package:free_note/widgets/notification_button.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +29,6 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
         backgroundColor: colors.primary,
         actions: [
           IconButton(
@@ -38,13 +37,16 @@ class _MainPageState extends State<MainPage> {
             },
             icon: Icon(Icons.people),
           ),
+
           NotificationButton(),
+          
           IconButton(
             onPressed: () {
               context.push('/profile');
             },
             icon: Icon(Icons.settings),
           ),
+          
           IconButton(
             onPressed: () {
               showModalBottomSheet(
@@ -141,7 +143,7 @@ class SearchButton extends StatelessWidget {
             final note = await showSearch<Note?>(
               context: context,
               delegate: NoteSearchDelegate(
-                notes: provider.rootNotes
+                entries: provider.rootNotes
               ),
             );
 
