@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notifications_provider.dart';
@@ -22,9 +23,7 @@ class NotificationButton extends StatelessWidget {
         ),
         onPressed: () => showPopover(
           context: context,
-          bodyBuilder: (context) => NotificationPopOver(
-            provider: provider,
-          ),
+          bodyBuilder: (context) => NotificationPopOver(),
           height: 420,
           width: 300,
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -36,9 +35,7 @@ class NotificationButton extends StatelessWidget {
 }
 
 class NotificationPopOver extends StatefulWidget {
-  final NotificationsProvider provider;
-
-  const NotificationPopOver({super.key, required this.provider});
+  const NotificationPopOver({super.key});
 
   @override
   State<NotificationPopOver> createState() => _NotificationPopOverState();
@@ -47,7 +44,8 @@ class NotificationPopOver extends StatefulWidget {
 class _NotificationPopOverState extends State<NotificationPopOver> {
   @override
   Widget build(BuildContext context) {
-    final notifications = widget.provider.notifications;
+    final provider = context.watch<NotificationsProvider>();
+    final notifications = provider.notifications;
 
     return ListView.builder(
       itemCount: notifications.length,
@@ -71,6 +69,7 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
 
           onTap: () {
             _openConfirmFriend(
+              provider,
               notification.sender!,
               notification.id,
             );
@@ -80,8 +79,12 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
     );
   }
 
-  Future<void> _openConfirmFriend(Profile user, int notificationId) {
-    return showDialog(
+  Future<void> _openConfirmFriend(
+    NotificationsProvider provider, 
+    Profile user, 
+    int notificationId
+  ) async {
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Accept friend request from "${user.username}"?'),

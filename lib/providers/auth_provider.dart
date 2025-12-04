@@ -12,8 +12,31 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   bool _loading = false;
 
+  String _username = '';
+
   User? get user => _user;
-  Profile? get profile => _profile;
+  Profile? get profile {
+    if (_authService.user == null) {
+      return null;
+    } 
+
+    if (_profile != null) {
+      return _profile;
+    }
+
+    if (_profile == null) {
+      _profile ??= Profile(
+        uid: _authService.user!.id, 
+        username: _username, 
+        email: _authService.user!.email ?? '',
+      );
+
+      logger.i('Created local profile: $_profile');
+    }
+
+    return _profile;
+  }
+
   String? get error => _error;
   bool get loading => _loading;
 
@@ -42,14 +65,8 @@ class AuthProvider extends ChangeNotifier {
       (email, password) => _authService.signUp(email, username, password),
     );
 
-    if (success && _authService.user != null) {
-      _profile = Profile(
-        uid: _authService.user!.id, 
-        username: username, 
-        email: email
-      );
-
-      logger.i('Created local profile: $_profile');
+    if (success) {
+      _username = username;
     }
 
     return success;
