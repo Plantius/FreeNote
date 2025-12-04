@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
@@ -11,25 +10,24 @@ import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
 
-class AddNotePopupMenu extends StatelessWidget {
-  const AddNotePopupMenu({super.key});
+class CreateButton extends StatelessWidget {
+  const CreateButton({super.key});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        dynamic added = await showPopover<dynamic>(
+        dynamic created = await showPopover<dynamic>(
           context: context,
-          bodyBuilder: (context) => AddMenuItems(),
-          // width: 50,
+          bodyBuilder: (context) => CreatePopOver(),
           height: 140,
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           direction: PopoverDirection.top,
         );
 
-        logger.i('Added $added');
+        logger.i('Created $created');
 
-        if (added is Note && context.mounted) {
-          context.push('/note/${added.id}');
+        if (created is Note && context.mounted) {
+          context.push('/note/${created.id}');
         }
       },
       child: Icon(Icons.add),
@@ -37,8 +35,8 @@ class AddNotePopupMenu extends StatelessWidget {
   }
 }
 
-class AddMenuItems extends StatelessWidget {
-  const AddMenuItems({super.key});
+class CreatePopOver extends StatelessWidget {
+  const CreatePopOver({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +44,12 @@ class AddMenuItems extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TextButton(
-          onPressed: () => _onAddNote(context),
+          onPressed: () => _onCreateNote(context),
           child: Icon(Icons.note, size: 30, color: Colors.white),
         ),
 
         TextButton(
-          onPressed: () => _onAddEvent(context),
+          onPressed: () => _onCreateEvent(context),
           child: Icon(Icons.event, size: 30, color: Colors.white),
         ),
 
@@ -68,7 +66,7 @@ class AddMenuItems extends StatelessWidget {
     );
   }
 
-  Future<void> _onAddNote(BuildContext context) async {
+  Future<void> _onCreateNote(BuildContext context) async {
     final Note? note = await showModalBottomSheet(
       context: context, 
       builder: (context) => CreateNoteOverlay(
@@ -89,7 +87,7 @@ class AddMenuItems extends StatelessWidget {
     }
   }
 
-  Future<void> _onAddEvent(BuildContext context) async {
+  Future<void> _onCreateEvent(BuildContext context) async {
     final Event? event = await showModalBottomSheet(
       context: context,
       builder: (context) => CreateEventOverlay(),
