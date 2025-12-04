@@ -81,11 +81,12 @@ class EventsProvider extends ChangeNotifier {
     return calendar;
   }
 
-  void addEvent(Event event) async {
+  Future<Event?> addEvent(Event event) async {
     logger.i('Adding event: $event');
 
+    Event? createdEvent;
     try {
-      Event createdEvent = await database.createEvent(event);
+      createdEvent = await database.createEvent(event);
       _events.add(createdEvent);
 
       Calendar calendar = getCalendar(createdEvent.calendarId)!;
@@ -97,6 +98,7 @@ class EventsProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    return createdEvent;
   }
 
   void addCalendar(Calendar calendar) async {

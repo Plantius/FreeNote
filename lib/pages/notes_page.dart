@@ -31,13 +31,16 @@ class _NotesPageState extends State<NotesPage> {
       child: ListView.builder(
         itemCount: notes.length,
         itemBuilder: (context, index) {
+          final note = notes[notes.length - index - 1];
+
           return NoteEntry(
-            note: notes[index],
+            note: note,
+            noteId: note.id,
           );
         },
       ),
       onRefresh: () async {
-        await provider.loadNotes(forceRefresh: true);
+        await provider.loadNotes();
       },
     );
   }

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
-import 'package:free_note/providers/events_provider.dart';
 import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notifications_provider.dart';
+import 'package:free_note/widgets/add_button.dart';
+import 'package:free_note/widgets/note_search_delegate.dart';
 import 'package:free_note/widgets/overlays/calendar_list_overlay.dart';
-import 'package:free_note/widgets/overlays/create_event_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popover/popover.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -68,12 +67,14 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Column(
         children: [
-          Expanded(child: widget.child),
+          Expanded(
+            child: widget.child
+          ),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SearchButton(searchTerms: notesProvider.rootNotes),
+              SearchButton(),
               AddButton(),
             ],
           ),
@@ -129,33 +130,46 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class SearchButton extends StatefulWidget {
-  final List<Note> searchTerms;
+class SearchButton extends StatelessWidget {
+  const SearchButton({super.key});
 
-  const SearchButton({super.key, required this.searchTerms});
-
-  @override
-  State<SearchButton> createState() => _SearchButtonState();
-}
-
-class _SearchButtonState extends State<SearchButton> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<NotesProvider>();
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: SizedBox(
         height: 45,
         width: 45,
         child: IconButton(
-          onPressed: () {
-            showSearch(
+          onPressed: () async {
+            final note = await showSearch<Note?>(
               context: context,
-              delegate: CustomSearchDelegate(searchTerms: widget.searchTerms),
+              delegate: NoteSearchDelegate(
+                notes: provider.rootNotes
+              ),
             );
+
+            if (context.mounted && note != null) {
+              context.push('/note/${note.id}');
+            }
           },
           icon: const Icon(Icons.search),
         ),
       ),
+    );
+  }
+}
+
+class AddButton extends StatelessWidget {
+  const AddButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: SizedBox(height: 45, width: 45, child: AddNotePopupMenu()),
     );
   }
 }
@@ -311,229 +325,4 @@ class _AddNotificationsState extends State<AddNotifications> {
       ],
     ),
   );
-}
-
-class AddButton extends StatelessWidget {
-  const AddButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: SizedBox(height: 45, width: 45, child: AddNotePopupMenu()),
-    );
-  }
-}
-
-class AddNotePopupMenu extends StatelessWidget {
-  const AddNotePopupMenu({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showPopover(
-        context: context,
-        bodyBuilder: (context) => AddMenuItems(),
-        // width: 50,
-        height: 140,
-        backgroundColor: Colors.deepPurple,
-        direction: PopoverDirection.top,
-      ),
-      child: Icon(Icons.add),
-    );
-  }
-}
-
-class AddMenuItems extends StatelessWidget {
-  const AddMenuItems({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        TextButton(
-          onPressed: () {
-            final note = Note(
-              id: 0,
-              title: 'New Note',
-              content: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              isNested: false,
-            );
-            context.push('/note/${note.id}', extra: note);
-          },
-          child: Icon(Icons.note, size: 30, color: Colors.white),
-        ),
-
-        TextButton(
-          onPressed: () async {
-            final Event? event = await showModalBottomSheet(
-              context: context,
-              builder: (context) => CreateEventOverlay(),
-            );
-
-            if (event != null && context.mounted) {
-              context.read<EventsProvider>().addEvent(event);
-              context.pop();
-            }
-          },
-          child: Icon(Icons.event, size: 30, color: Colors.white),
-        ),
-
-        TextButton(
-          onPressed: () {
-            //TODO: Write code here
-          },
-          child: Icon(Icons.music_note, size: 30, color: Colors.white),
-        ),
-
-        TextButton(
-          onPressed: () {
-            //TODO: Write code here
-          },
-          child: Icon(Icons.image, size: 30, color: Colors.white),
-        ),
-      ],
-    );
-  }
-}
-
-class CustomSearchDelegate extends SearchDelegate {
-  List<Note> searchTerms;
-  List<String> noteTitles = [];
-  List<String> noteBodies = [];
-
-  bool titlesPopulated = false;
-
-  void populateTitles() {
-    if (!titlesPopulated) {
-      titlesPopulated = true;
-      noteTitles = [];
-      for (var terms in searchTerms) {
-        noteTitles.add(terms.title);
-        noteBodies.add(terms.content);
-      }
-    }
-  }
-
-  CustomSearchDelegate({required this.searchTerms});
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    populateTitles();
-    List<String> bodyBuilding = [];
-    List<Note> matchedNote = [];
-    for (var fruit in searchTerms) {
-      bool addMatch = false;
-      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
-        addMatch = true;
-      } else if (fruit.content.toLowerCase().contains(query.toLowerCase())) {
-        addMatch = true;
-      }
-      if (addMatch) {
-        matchedNote.add(fruit);
-        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
-        if (fruit.content.length > 256) {
-          bodyBuilding.add(fruit.content.substring(0, 256));
-        } else {
-          bodyBuilding.add(
-            fruit.content,
-          ); //TODO: Test case where body is empty string? does it still get added?
-        }
-      }
-    }
-    return ListView.builder(
-      itemCount: matchedNote.length,
-      itemBuilder: (context, index) {
-        var result = matchedNote[index].title;
-        var resultbody = bodyBuilding[index];
-        var resultid = matchedNote[index].id;
-        var resultfruit = matchedNote[index];
-        return ListTile(
-          leading: Icon(
-            Icons.note,
-          ), //TODO: Should be corresponding to the note type
-          subtitle: Text(resultbody), //TODO: Text should be the first
-          onTap: () {
-            context.push('/note/$resultid', extra: resultfruit);
-          },
-          title: Text(
-            result,
-          ), //returns the name as fruit as index tile on the found search answers
-          //TODO: Potentially change what it shows, maybe show the context of the note too?
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    populateTitles();
-    List<String> bodyBuilding = [];
-    List<Note> matchedNote = [];
-    for (var fruit in searchTerms) {
-      bool addMatch = false;
-      if (fruit.title.toLowerCase().contains(query.toLowerCase())) {
-        addMatch = true;
-      } else if (fruit.content.toLowerCase().contains(query.toLowerCase())) {
-        addMatch = true;
-      }
-      if (addMatch) {
-        matchedNote.add(fruit);
-        //TODO: Ideally grab the part where it matches the query.. and remove newlines?
-        if (fruit.content.length > 256) {
-          bodyBuilding.add(fruit.content.substring(0, 256));
-        } else {
-          bodyBuilding.add(
-            fruit.content,
-          ); //TODO: Test case where body is empty string? does it still get added?
-        }
-      }
-    }
-    return ListView.builder(
-      itemCount: matchedNote.length,
-      itemBuilder: (context, index) {
-        var result = matchedNote[index].title;
-        var resultbody = bodyBuilding[index];
-        var resultid = matchedNote[index].id;
-        var resultfruit = matchedNote[index];
-        return ListTile(
-          leading: Icon(
-            Icons.note,
-          ), //TODO: Should be corresponding to the note type
-          subtitle: Text(resultbody), //TODO: Text should be the first
-          onTap: () {
-            context.push('/note/$resultid', extra: resultfruit);
-          },
-          title: Text(
-            result,
-          ), //returns the name as fruit as index tile on the found search answers
-          //TODO: Potentially change what it shows, maybe show the context of the note too?
-        );
-      },
-    );
-  }
 }

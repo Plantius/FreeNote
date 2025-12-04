@@ -42,7 +42,7 @@ class DatabaseService {
         .from('notes')
         .select('*, user_notes(*)')
         .eq('user_notes.user_id', userId)
-        .order('updated_at', ascending: false);
+        .order('updated_at', ascending: true);
 
     logger.i(
       'Successfully fetched notes for user ${supabase.auth.currentUser?.email}',
