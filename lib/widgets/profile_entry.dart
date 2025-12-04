@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:free_note/models/profile.dart';
+import 'package:free_note/widgets/profile_picture.dart';
 
 class ProfileEntry extends StatelessWidget {
   final Profile profile;
@@ -9,15 +10,12 @@ class ProfileEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: CircleAvatar(
-        child: Text(
-          profile.username
-            .substring(0, 1)
-            .toUpperCase(),
-        ),
+      leading: ProfilePicture(
+        profile: profile
       ),
-
-      title: Text(profile.username),
+      title: Text(
+        profile.username
+      ),
     );
   }
 }

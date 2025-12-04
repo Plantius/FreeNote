@@ -53,7 +53,10 @@ class _FriendPageState extends State<FriendPage> {
           ),
         ],
       ),
-      body: _buildFriendsList(context),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: _buildFriendsList(context),
+      ),
     );
   }
 

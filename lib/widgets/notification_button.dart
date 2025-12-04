@@ -15,7 +15,11 @@ class NotificationButton extends StatelessWidget {
 
     return GestureDetector(
       child: IconButton(
-        icon: Icon(Icons.notifications),
+        icon: Icon(
+          provider.notifications.isEmpty
+          ? Icons.notifications_none
+          : Icons.notifications_active
+        ),
         onPressed: () => showPopover(
           context: context,
           bodyBuilder: (context) => NotificationPopOver(
@@ -83,17 +87,17 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
         title: Text('Accept friend request from "${user.username}"?'),
         actions: [
           TextButton(
-            child: Text('Accept'),
+            child: Text('Deny'),
             onPressed: () {
-              context.read<FriendsProvider>().acceptFriendRequest(user);
+              context.read<FriendsProvider>().denyFriendRequest(user);
               context.pop();
             },
           ),
 
           TextButton(
-            child: Text('Deny'),
+            child: Text('Accept'),
             onPressed: () {
-              context.read<FriendsProvider>().denyFriendRequest(user);
+              context.read<FriendsProvider>().acceptFriendRequest(user);
               context.pop();
             },
           ),

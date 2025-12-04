@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (_user == null) {
         _profile = null;
-      } else {
+      } else if (_profile == null || _profile!.uid != _user!.id) {
         _profile = await DatabaseService.instance.fetchProfile();
       }
 
@@ -36,11 +36,23 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signUp(String email, String username, String password) async {
-    return _authenticate(
+    bool success = await _authenticate(
       email,
       password,
       (email, password) => _authService.signUp(email, username, password),
     );
+
+    if (success && _authService.user != null) {
+      _profile = Profile(
+        uid: _authService.user!.id, 
+        username: username, 
+        email: email
+      );
+
+      logger.i('Created local profile: $_profile');
+    }
+
+    return success;
   }
 
   Future<bool> _authenticate(
