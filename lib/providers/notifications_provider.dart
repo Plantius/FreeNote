@@ -10,7 +10,7 @@ class NotificationsProvider with ChangeNotifier {
   final DatabaseService database;
   final supabase = SupabaseService.client;
 
-  late RealtimeChannel _channel;
+  late final RealtimeChannel _channel;
 
   List<CustomNotification> _notifications = [];
 
@@ -19,7 +19,6 @@ class NotificationsProvider with ChangeNotifier {
 
     AuthService.instance.userStream.listen((state) {
       loadNotifications();
-      _channel = database.getChannel('friend_requests', handlePayload);
     });
   }
 

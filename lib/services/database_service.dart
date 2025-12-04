@@ -24,7 +24,7 @@ class DatabaseService {
     void Function(PostgresChangePayload) func,
   ) {
     return supabase
-        .channel('public:$table')
+        .channel('$table-db-changes')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
