@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
@@ -21,7 +22,7 @@ class AddNotePopupMenu extends StatelessWidget {
           bodyBuilder: (context) => AddMenuItems(),
           // width: 50,
           height: 140,
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Theme.of(context).primaryColor,
           direction: PopoverDirection.top,
         );
 
@@ -75,11 +76,15 @@ class AddMenuItems extends StatelessWidget {
       ),
     );
 
-    if (note != null && context.mounted) {
-      Note? created = await context.read<NotesProvider>().saveNote(note);
+    if (context.mounted) {
+      if (note == null) {
+        context.pop(null);
+      } else {
+        Note? created = await context.read<NotesProvider>().saveNote(note);
 
-      if (context.mounted) {
-        context.pop(created);
+        if (context.mounted) {
+          context.pop(created);
+        }
       }
     }
   }
@@ -90,11 +95,15 @@ class AddMenuItems extends StatelessWidget {
       builder: (context) => CreateEventOverlay(),
     );
 
-    if (event != null && context.mounted) {
-      Event? created = await context.read<EventsProvider>().addEvent(event);
+    if (context.mounted) {
+      if (event == null) {
+        context.pop(null);
+      } else {
+        Event? created = await context.read<EventsProvider>().addEvent(event);
 
-      if (context.mounted) {
-        context.pop(created);
+        if (context.mounted) {
+          context.pop(created);
+        }
       }
     }
   }
