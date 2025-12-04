@@ -1,6 +1,8 @@
 import 'package:free_note/models/profile.dart';
 
-enum NotificationType { fRequest, fAccept, systemMessage }
+enum NotificationType { 
+  friendRequest,
+}
 
 class CustomNotification {
   final int id;
@@ -25,7 +27,7 @@ class CustomNotification {
           ? Profile.fromJson(json['profiles'])
           : null,
       createdAt: DateTime.parse(json['created_at']),
-      type: NotificationType.fRequest,
+      type: NotificationType.friendRequest,
     );
   }
 
