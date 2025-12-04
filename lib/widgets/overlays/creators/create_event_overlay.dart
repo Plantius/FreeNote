@@ -136,7 +136,7 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    _selectedCalendar = context.read<EventsProvider>().defaultCalendar;
+    _selectedCalendar ??= context.read<EventsProvider>().defaultCalendar;
 
     return BottomOverlay<Event>(
       onDone: () {
