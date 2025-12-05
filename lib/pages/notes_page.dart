@@ -31,7 +31,7 @@ class _NotesPageState extends State<NotesPage> {
       child: ListView.builder(
         itemCount: notes.length,
         itemBuilder: (context, index) {
-          final note = notes[notes.length - index - 1];
+          final note = notes[index];
 
           return NoteEntry(note: note, noteId: note.id);
         },

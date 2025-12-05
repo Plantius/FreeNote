@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/pages/error_page.dart';
 import 'package:free_note/providers/events_provider.dart';
@@ -23,13 +24,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _loadEvent() {
-    // TODO: look up event by widget.event.id. Or don't.
     event = widget.event;
   }
 
@@ -40,15 +35,60 @@ class _EventViewerPageState extends State<EventViewerPage> {
     }
 
     final provider = context.read<EventsProvider>();
+    final calendar = provider.getCalendar(event!.calendarId);
 
     return Scaffold(
-      appBar: AppBar(title: Text(event!.title)),
-      body: Column(
-        children: [
-          Text(event!.start.toIso8601String()),
-          Text(event!.end.toIso8601String()),
-          Text('In ${provider.getCalendar(event!.calendarId)}'),
-        ],
+      appBar: AppBar(
+        title: Text(event!.title),
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event!.title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${DateFormat('y MMM d H:m').format(event!.start)}"
+                      " - ${DateFormat('y MMM d H:m').format(event!.end)}",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_month,
+                      color: Color(calendar?.color ?? 0xFFFFFFFF),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Calendar: ${calendar?.name ?? ''}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -55,7 +55,14 @@ class NotesProvider with ChangeNotifier {
     super.dispose();
   }
 
-  List<Note> get rootNotes => _notes.where((note) => !note.isNested).toList();
+  List<Note> get rootNotes => _notes
+      .reversed
+      .where((note) => !note.isNested)
+      .toList();
+      
+  List<Note> get allNotes => _notes
+      .reversed
+      .toList();
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
