@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/event_logger.dart';
+import 'package:free_note/models/note.dart';
+import 'package:free_note/providers/notes_provider.dart';
+import 'package:free_note/widgets/note_entry.dart';
+import 'package:free_note/widgets/overlays/creators/create_note_overlay.dart';
 import 'package:intl/intl.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/pages/error_page.dart';
@@ -37,6 +42,13 @@ class _EventViewerPageState extends State<EventViewerPage> {
     final provider = context.read<EventsProvider>();
     final calendar = provider.getCalendar(event!.calendarId);
 
+    Note? note = context.watch<NotesProvider>().getNote(
+      event!.noteId, 
+      strict: false
+    );
+
+    logger.i(event);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(event!.title),
@@ -69,14 +81,18 @@ class _EventViewerPageState extends State<EventViewerPage> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 10),
+
                 Row(
                   children: [
                     Icon(
                       Icons.calendar_month,
                       color: Color(calendar?.color ?? 0xFFFFFFFF),
                     ),
+
                     const SizedBox(width: 8),
+
                     Text(
                       'Calendar: ${calendar?.name ?? ''}',
                       style: const TextStyle(
@@ -87,9 +103,48 @@ class _EventViewerPageState extends State<EventViewerPage> {
                 ),
               ],
             ),
+
+            SizedBox(height: 12),
+
+            _buildAttachedNote(
+              context, 
+              note,
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAttachedNote(BuildContext context, Note? note) {
+    if (note == null) {
+      return TextButton(
+        onPressed: () async {
+          final note = await showModalBottomSheet(
+            context: context, 
+            builder: (context) => CreateNoteOverlay(
+              isNested: true
+            ),
+          );
+
+          logger.d(note);
+
+          if (note != null && context.mounted) {
+            Note? created = await context.read<NotesProvider>().saveNote(note);
+            logger.d(created);
+
+            if (context.mounted) {
+              context.read<EventsProvider>().addNoteToEvent(widget.event!, created);
+            }
+          }
+        }, 
+        child: const Text('Add Note to Event'),
+      );
+    }
+
+    return NoteEntry(
+      note: note, 
+      noteId: 0,
     );
   }
 }

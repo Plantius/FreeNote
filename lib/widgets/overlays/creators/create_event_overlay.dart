@@ -154,6 +154,7 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
           title: title,
           start: _start,
           end: _end,
+          noteId: 0,
         );
       },
 
