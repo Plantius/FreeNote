@@ -16,42 +16,67 @@ class NotesProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  late final RealtimeChannel _channel;
+  RealtimeChannel? _channel;
 
   NotesProvider(this.database) {
-    _channel = database.getChannel(
-      'user_notes',
-      PostgresChangeFilter(
-        type: PostgresChangeFilterType.eq,
-        column: 'user_id',
-        value: supabase.auth.currentUser?.id,
-      ),
-      handlePayload,
-    );
-
     AuthService.instance.userStream.listen((state) {
+      _reloadChannel();
       loadNotes();
     });
+
+    _reloadChannel();
+  }
+
+  void _reloadChannel() {
+    logger.d('Reloading notes channel for ${supabase.auth.currentUser?.id}.');
+    final userId = supabase.auth.currentUser?.id;
+
+    _unsubscribeChannel();
+
+    if (userId == null) return;
+
+    final filter = PostgresChangeFilter(
+      type: PostgresChangeFilterType.eq,
+      column: 'user_id',
+      value: supabase.auth.currentUser?.id,
+    );
+
+    _channel = database.getChannel('user_notes', filter, handlePayload);
+  }
+
+  void _unsubscribeChannel() {
+    if (_channel != null) {
+      _channel!.unsubscribe();
+      _channel = null;
+    }
   }
 
   void handlePayload(PostgresChangePayload payload) {
     logger.d('Received notification payload: $payload');
 
-    if (payload.eventType == PostgresChangeEvent.update &&
+    if ((payload.eventType == PostgresChangeEvent.update ||
+            payload.eventType == PostgresChangeEvent.insert) &&
         payload.newRecord.isNotEmpty) {
-      logger.d('Updating note ${payload.newRecord['id']}.');
-      // updateNote(Note.fromJson(payload.newRecord));
+      logger.d('Updating note ${payload.newRecord['note_id']}.');
+
+      database.fetchNote(payload.newRecord['note_id']).then((note) {
+        if (note != null) {
+          updateNote(note);
+        }
+      });
     } else if (payload.eventType == PostgresChangeEvent.delete) {
-      // final id = payload.oldRecord['id'] as int?;
-      // if (id != null) {
-      // removeNote(id);
-      // }
+      logger.d('Removing note ${payload.oldRecord['note_id']}.');
+
+      final id = payload.oldRecord['note_id'] as int?;
+      if (id != null) {
+        removeNote(id);
+      }
     }
   }
 
   @override
   void dispose() {
-    _channel.unsubscribe();
+    _channel!.unsubscribe();
     super.dispose();
   }
 

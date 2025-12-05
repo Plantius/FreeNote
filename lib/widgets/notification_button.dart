@@ -85,6 +85,7 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
             child: Text('Deny'),
             onPressed: () {
               context.read<FriendsProvider>().denyFriendRequest(user);
+              context.read<NotificationsProvider>().removeNotification(notificationId);
               context.pop();
             },
           ),
@@ -93,6 +94,7 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
             child: Text('Accept'),
             onPressed: () {
               context.read<FriendsProvider>().acceptFriendRequest(user);
+              context.read<NotificationsProvider>().removeNotification(notificationId);
               context.pop();
             },
           ),
