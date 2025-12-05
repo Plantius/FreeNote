@@ -19,7 +19,7 @@ class CreateButton extends StatelessWidget {
         dynamic created = await showPopover<dynamic>(
           context: context,
           bodyBuilder: (context) => CreatePopOver(),
-          height: 140,
+          height: 120,
           backgroundColor: Theme.of(context).colorScheme.surface,
           direction: PopoverDirection.top,
         );
@@ -53,15 +53,15 @@ class CreatePopOver extends StatelessWidget {
           child: Icon(Icons.event, size: 30, color: Colors.white),
         ),
 
-        TextButton(
-          onPressed: null,
-          child: Icon(Icons.music_note, size: 30, color: Colors.white),
-        ),
+        // TextButton(
+        //   onPressed: null,
+        //   child: Icon(Icons.music_note, size: 30, color: Colors.white),
+        // ),
 
-        TextButton(
-          onPressed: null,
-          child: Icon(Icons.image, size: 30, color: Colors.white),
-        ),
+        // TextButton(
+        //   onPressed: null,
+        //   child: Icon(Icons.image, size: 30, color: Colors.white),
+        // ),
       ],
     );
   }
