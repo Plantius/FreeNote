@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
+import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/auth_service.dart';
 import 'package:free_note/services/database_service.dart';
@@ -97,6 +98,20 @@ class EventsProvider extends ChangeNotifier {
 
     notifyListeners();
     return createdEvent;
+  }
+
+  Future<void> addNoteToEvent(Event event, Note note) async {
+    if (event.noteId != 0) {
+      logger.e('$event already has a note attached');
+      return;
+    }
+
+    event.noteId = note.id;
+    // FIXME COMMIT CHANGES
+
+    logger.i('Attached $note to $event');
+
+    notifyListeners();
   }
 
   void addCalendar(Calendar calendar) async {

@@ -221,6 +221,7 @@ class DatabaseService {
       title: event.title,
       start: event.start,
       end: event.end,
+      noteId: event.noteId,
     );
   }
 
