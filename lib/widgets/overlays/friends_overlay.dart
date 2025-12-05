@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/widgets/overlays/bottom_overlay.dart';
+import 'package:free_note/widgets/profile_entry.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -10,19 +11,15 @@ class FriendsOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FriendsProvider provider = context.watch<FriendsProvider>();
+    final provider = context.watch<FriendsProvider>();
+    final friends = provider.friends;
 
     return BottomOverlay<Profile>(
       child: ListView.builder(
-        itemCount: provider.friends.length,
+        itemCount: friends.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            leading: CircleAvatar(
-              child: Text(
-                provider.friends[index].username.substring(0, 1).toUpperCase(),
-              ),
-            ),
-            title: Text(provider.friends[index].username),
+          return ProfileEntry(
+            profile: friends[index],
             onTap: () {
               context.pop(provider.friends[index]);
             },
