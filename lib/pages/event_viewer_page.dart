@@ -43,17 +43,14 @@ class _EventViewerPageState extends State<EventViewerPage> {
     final calendar = provider.getCalendar(event!.calendarId);
 
     Note? note = context.watch<NotesProvider>().getNote(
-      event!.noteId, 
-      strict: false
+      event!.noteId,
+      strict: false,
     );
 
     logger.i(event);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(event!.title),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(event!.title), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -62,13 +59,6 @@ class _EventViewerPageState extends State<EventViewerPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  event!.title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -95,9 +85,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
 
                     Text(
                       'Calendar: ${calendar?.name ?? ''}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -106,10 +94,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
 
             SizedBox(height: 12),
 
-            _buildAttachedNote(
-              context, 
-              note,
-            ),
+            _buildAttachedNote(context, note),
           ],
         ),
       ),
@@ -121,10 +106,8 @@ class _EventViewerPageState extends State<EventViewerPage> {
       return TextButton(
         onPressed: () async {
           final note = await showModalBottomSheet(
-            context: context, 
-            builder: (context) => CreateNoteOverlay(
-              isNested: true
-            ),
+            context: context,
+            builder: (context) => CreateNoteOverlay(isNested: true),
           );
 
           logger.d(note);
@@ -134,17 +117,17 @@ class _EventViewerPageState extends State<EventViewerPage> {
             logger.d(created);
 
             if (context.mounted) {
-              context.read<EventsProvider>().addNoteToEvent(widget.event!, created);
+              context.read<EventsProvider>().addNoteToEvent(
+                widget.event!,
+                created,
+              );
             }
           }
-        }, 
+        },
         child: const Text('Add Note to Event'),
       );
     }
 
-    return NoteEntry(
-      note: note, 
-      noteId: 0,
-    );
+    return NoteEntry(note: note, noteId: 0);
   }
 }

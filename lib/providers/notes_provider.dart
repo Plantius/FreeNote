@@ -16,39 +16,79 @@ class NotesProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  RealtimeChannel? _channel;
+  RealtimeChannel? _userNotesChannel;
+  RealtimeChannel? _notesChannel;
 
   NotesProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      _reloadChannel();
       loadNotes();
+      _reloadChannels();
     });
-
-    _reloadChannel();
   }
 
-  void _reloadChannel() {
-    logger.d('Reloading notes channel for ${supabase.auth.currentUser?.id}.');
+  void _reloadChannels() async {
     final userId = supabase.auth.currentUser?.id;
-
-    _unsubscribeChannel();
-
     if (userId == null) return;
 
-    final filter = PostgresChangeFilter(
-      type: PostgresChangeFilterType.eq,
-      column: 'user_id',
-      value: supabase.auth.currentUser?.id,
+    logger.d('Reloading notes channels for user $userId.');
+
+    _unsubscribeChannels();
+
+    _userNotesChannel = database.getChannel(
+      'user_notes',
+      PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: userId,
+      ),
+      _handleUserNotesChange,
     );
 
-    _channel = database.getChannel('user_notes', filter, handlePayload);
+    if (_notes.isNotEmpty) {
+      final filter = PostgresChangeFilter(
+        type: PostgresChangeFilterType.inFilter,
+        column: 'id',
+        value: '(${_notes.map((note) => note.id).join(',')})',
+      );
+
+      _notesChannel = database.getChannel('notes', filter, _handleNotesChange);
+    }
   }
 
-  void _unsubscribeChannel() {
-    if (_channel != null) {
-      _channel!.unsubscribe();
-      _channel = null;
+  void _handleNotesChange(PostgresChangePayload payload) async {
+    logger.d('Received notes change payload: $payload');
+    if (payload.newRecord.isNotEmpty) {
+      final id = payload.newRecord['id'];
+      final updated = await database.fetchNote(id);
+      if (updated != null) updateNote(updated);
     }
+  }
+
+  void _handleUserNotesChange(PostgresChangePayload payload) async {
+    logger.d('Received user notes change payload: $payload');
+    if (payload.eventType == PostgresChangeEvent.insert) {
+      final noteId = payload.newRecord['note_id'];
+
+      final note = await database.fetchNote(noteId);
+      if (note != null) updateNote(note);
+    }
+
+    if (payload.eventType == PostgresChangeEvent.delete) {
+      removeNote(payload.oldRecord['note_id']);
+    }
+  }
+
+  void _unsubscribeChannels() {
+    _userNotesChannel?.unsubscribe();
+    _notesChannel?.unsubscribe();
+    _userNotesChannel = null;
+    _notesChannel = null;
+  }
+
+  @override
+  void dispose() {
+    _unsubscribeChannels();
+    super.dispose();
   }
 
   void handlePayload(PostgresChangePayload payload) {
@@ -74,20 +114,10 @@ class NotesProvider with ChangeNotifier {
     }
   }
 
-  @override
-  void dispose() {
-    _channel!.unsubscribe();
-    super.dispose();
-  }
+  List<Note> get rootNotes =>
+      _notes.reversed.where((note) => !note.isNested).toList();
 
-  List<Note> get rootNotes => _notes
-      .reversed
-      .where((note) => !note.isNested)
-      .toList();
-      
-  List<Note> get allNotes => _notes
-      .reversed
-      .toList();
+  List<Note> get allNotes => _notes.reversed.toList();
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;

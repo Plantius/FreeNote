@@ -26,4 +26,5 @@ class ProfilePicture extends StatelessWidget {
     return hslColor.toColor();
   }
 }
+
 // // Create a stable hash
