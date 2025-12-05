@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';

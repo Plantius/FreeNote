@@ -155,6 +155,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
                   decoration: const InputDecoration.collapsed(
                     hintText: 'Title',
                   ),
+                  cursorColor: Colors.white,
                   style: Theme.of(context).textTheme.titleLarge,
                   inputFormatters: [
                     FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
