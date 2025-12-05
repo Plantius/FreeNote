@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:free_note/providers/events_provider.dart';
+import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notes_provider.dart';
+import 'package:free_note/providers/notifications_provider.dart';
 import 'package:free_note/widgets/note_entry.dart';
 import 'package:provider/provider.dart';
 
@@ -20,10 +23,13 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNotesList(BuildContext context) {
-    final provider = context.watch<NotesProvider>();
-    final notes = provider.rootNotes;
+    final noteProvider = context.watch<NotesProvider>();
+    final notificationsProvider = context.watch<NotificationsProvider>();
+    final eventsProvider = context.watch<EventsProvider>();
+    final friendsProvider = context.watch<FriendsProvider>();
+    final notes = noteProvider.rootNotes;
 
-    if (provider.isLoading) {
+    if (noteProvider.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -37,7 +43,10 @@ class _NotesPageState extends State<NotesPage> {
         },
       ),
       onRefresh: () async {
-        await provider.loadNotes();
+        await noteProvider.loadNotes();
+        await notificationsProvider.loadNotifications();
+        await eventsProvider.loadEventsAndCalendars();
+        await friendsProvider.loadFriends();
       },
     );
   }
