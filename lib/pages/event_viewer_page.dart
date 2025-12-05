@@ -109,7 +109,10 @@ class _EventViewerPageState extends State<EventViewerPage> {
         action: () async {
           final note = await showModalBottomSheet(
             context: context,
-            builder: (context) => CreateNoteOverlay(isNested: true),
+            builder: (context) => CreateNoteOverlay(
+              isNested: true
+            ),
+            isScrollControlled: true,
           );
 
           logger.d(note);

@@ -244,12 +244,11 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   }
 
   void _insertNoteLink() async {
-    final note =
-        await showModalBottomSheet(
-              context: context,
-              builder: (context) => CreateNoteOverlay(isNested: true),
-            )
-            as Note?;
+    final note = await showModalBottomSheet(
+      context: context,
+      builder: (context) => CreateNoteOverlay(isNested: true),
+      isScrollControlled: true,
+    ) as Note?;
 
     if (note == null) {
       logger.i('Cancelled nested note creation');

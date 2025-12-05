@@ -51,8 +51,10 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) =>
-                    CalendarListOverlay(allowSelection: false),
+                builder: (context) => CalendarListOverlay(
+                  allowSelection: false
+                ),
+                isScrollControlled: true,
               );
             },
             icon: Icon(

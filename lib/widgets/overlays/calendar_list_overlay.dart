@@ -82,6 +82,7 @@ class CalendarListOverlay extends StatelessWidget {
     Calendar? calendar = await showModalBottomSheet<Calendar>(
       context: context,
       builder: (context) => CreateCalendarOverlay(),
+      isScrollControlled: true,
     );
 
     if (calendar != null && context.mounted) {
@@ -97,6 +98,7 @@ class CalendarListOverlay extends StatelessWidget {
     Profile? profile = await showModalBottomSheet(
       context: context,
       builder: (context) => FriendsOverlay(),
+      isScrollControlled: true,
     );
 
     if (profile != null && context.mounted) {

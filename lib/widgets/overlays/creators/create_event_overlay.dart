@@ -127,6 +127,7 @@ class _CreateEventOverlayState extends State<CreateEventOverlay> {
     final calendar = await showModalBottomSheet<Calendar>(
       context: context,
       builder: (context) => const CalendarListOverlay(allowSelection: true),
+      isScrollControlled: true,
     );
 
     if (calendar != null) {
