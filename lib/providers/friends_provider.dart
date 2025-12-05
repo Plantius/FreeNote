@@ -43,13 +43,16 @@ class FriendsProvider with ChangeNotifier {
   Future<bool> sendFriendRequest(String username) async {
     final profile = await database.userExists(username);
     if (profile == null) return false;
+    if (_friends.contains(profile)) return false;
 
     return await database.sendFriendRequest(profile.uid);
   }
 
   Future<void> acceptFriendRequest(Profile user) async {
     try {
+      if (_friends.contains(user)) return;
       await database.acceptFriendRequest(user);
+
       await loadFriends();
     } catch (e) {
       _errorMessage = 'Failed to accept friend request: $e';

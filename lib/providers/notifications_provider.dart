@@ -10,24 +10,43 @@ class NotificationsProvider with ChangeNotifier {
   final DatabaseService database;
   final supabase = SupabaseService.client;
 
-  late final RealtimeChannel _channel;
+  RealtimeChannel? _channel;
 
   List<CustomNotification> _notifications = [];
 
   NotificationsProvider(this.database) {
-    _channel = database.getChannel(
-      'friend_requests',
-      PostgresChangeFilter(
-        type: PostgresChangeFilterType.eq,
-        column: 'to_uid',
-        value: supabase.auth.currentUser?.id,
-      ),
-      handlePayload,
-    );
-
     AuthService.instance.userStream.listen((state) {
+      _reloadChannel();
       loadNotifications();
     });
+
+    _reloadChannel();
+  }
+
+  void _reloadChannel() {
+    logger.d(
+      'Reloading notifications channel for ${supabase.auth.currentUser?.id}.',
+    );
+    final userId = supabase.auth.currentUser?.id;
+
+    _unsubscribeChannel();
+
+    if (userId == null) return;
+
+    final filter = PostgresChangeFilter(
+      type: PostgresChangeFilterType.eq,
+      column: 'to_uid',
+      value: userId,
+    );
+
+    _channel = database.getChannel('friend_requests', filter, handlePayload);
+  }
+
+  void _unsubscribeChannel() {
+    if (_channel != null) {
+      _channel!.unsubscribe();
+      _channel = null;
+    }
   }
 
   void handlePayload(PostgresChangePayload payload) {
@@ -48,7 +67,7 @@ class NotificationsProvider with ChangeNotifier {
 
   @override
   void dispose() {
-    _channel.unsubscribe();
+    _channel!.unsubscribe();
     super.dispose();
   }
 
