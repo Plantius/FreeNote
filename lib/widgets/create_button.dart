@@ -70,6 +70,7 @@ class CreatePopOver extends StatelessWidget {
     final Note? note = await showModalBottomSheet(
       context: context,
       builder: (context) => CreateNoteOverlay(isNested: false),
+      isScrollControlled: true,
     );
 
     if (context.mounted) {
@@ -89,6 +90,7 @@ class CreatePopOver extends StatelessWidget {
     final Event? event = await showModalBottomSheet(
       context: context,
       builder: (context) => CreateEventOverlay(),
+      isScrollControlled: true,
     );
 
     if (context.mounted) {

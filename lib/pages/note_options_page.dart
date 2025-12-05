@@ -52,6 +52,7 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
     Profile? profile = await showModalBottomSheet(
       context: context,
       builder: (context) => FriendsOverlay(),
+      isScrollControlled: true,
     );
 
     if (profile != null && mounted) {
