@@ -19,19 +19,16 @@ class NotificationsProvider with ChangeNotifier {
       _reloadChannel();
       loadNotifications();
     });
-
-    _reloadChannel();
   }
 
   void _reloadChannel() {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
     logger.d(
       'Reloading notifications channel for ${supabase.auth.currentUser?.id}.',
     );
-    final userId = supabase.auth.currentUser?.id;
 
     _unsubscribeChannel();
-
-    if (userId == null) return;
 
     final filter = PostgresChangeFilter(
       type: PostgresChangeFilterType.eq,

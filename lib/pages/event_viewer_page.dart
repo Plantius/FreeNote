@@ -38,10 +38,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
     final calendar = provider.getCalendar(event!.calendarId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(event!.title),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(event!.title), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -50,13 +47,6 @@ class _EventViewerPageState extends State<EventViewerPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  event!.title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -79,9 +69,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
                     const SizedBox(width: 8),
                     Text(
                       'Calendar: ${calendar?.name ?? ''}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
