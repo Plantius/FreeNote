@@ -64,8 +64,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-              foregroundColor: Color.fromRGBO(0xDB, 0x91, 0xEF, 1)
-            )
+              foregroundColor: Color.fromRGBO(0xDB, 0x91, 0xEF, 1),
+            ),
           ),
           colorScheme: ColorScheme.fromSeed(
             seedColor: Color.fromRGBO(109, 33, 134, 1),

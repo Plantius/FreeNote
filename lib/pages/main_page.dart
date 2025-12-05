@@ -39,14 +39,14 @@ class _MainPageState extends State<MainPage> {
           ),
 
           NotificationButton(),
-          
+
           IconButton(
             onPressed: () {
               context.push('/profile');
             },
             icon: Icon(Icons.settings),
           ),
-          
+
           IconButton(
             onPressed: () {
               showModalBottomSheet(
@@ -63,16 +63,11 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: widget.child
-          ),
+          Expanded(child: widget.child),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SearchButton(),
-              AddButton(),
-            ],
+            children: [SearchButton(), AddButton()],
           ),
         ],
       ),
@@ -142,9 +137,7 @@ class SearchButton extends StatelessWidget {
           onPressed: () async {
             final note = await showSearch<Note?>(
               context: context,
-              delegate: NoteSearchDelegate(
-                entries: provider.rootNotes
-              ),
+              delegate: NoteSearchDelegate(entries: provider.rootNotes),
             );
 
             if (context.mounted && note != null) {
@@ -165,11 +158,7 @@ class AddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: SizedBox(
-        height: 45, 
-        width: 45, 
-        child: CreateButton()
-      ),
+      child: SizedBox(height: 45, width: 45, child: CreateButton()),
     );
   }
 }

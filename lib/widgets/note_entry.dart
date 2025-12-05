@@ -10,18 +10,16 @@ class NoteEntry extends StatelessWidget {
   final void Function()? onTap;
 
   const NoteEntry({
-    super.key, 
-    required this.note, 
-    required this.noteId, 
-    this.onTap
+    super.key,
+    required this.note,
+    required this.noteId,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: note == null 
-        ? null 
-        : () => _onTap(context),
+      onPressed: note == null ? null : () => _onTap(context),
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         foregroundColor: Colors.white,
@@ -30,16 +28,11 @@ class NoteEntry extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            child: Icon(
-              note == null 
-                ? Icons.warning
-                : Icons.note, 
-              size: 24
-            ),
+            child: Icon(note == null ? Icons.warning : Icons.note, size: 24),
           ),
 
           const SizedBox(width: 16),
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,9 +44,9 @@ class NoteEntry extends StatelessWidget {
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  note == null 
-                    ? 'Note $noteId is deleted or inaccessible'
-                    : _formatTimeStamp(note!.updatedAt.toLocal()),
+                  note == null
+                      ? 'Note $noteId is deleted or inaccessible'
+                      : _formatTimeStamp(note!.updatedAt.toLocal()),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 16, color: Colors.purple),

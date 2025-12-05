@@ -15,7 +15,15 @@ class NotificationsProvider with ChangeNotifier {
   List<CustomNotification> _notifications = [];
 
   NotificationsProvider(this.database) {
-    _channel = database.getChannel('friend_requests', handlePayload);
+    _channel = database.getChannel(
+      'friend_requests',
+      PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'to_uid',
+        value: supabase.auth.currentUser?.id,
+      ),
+      handlePayload,
+    );
 
     AuthService.instance.userStream.listen((state) {
       loadNotifications();
@@ -23,19 +31,16 @@ class NotificationsProvider with ChangeNotifier {
   }
 
   void handlePayload(PostgresChangePayload payload) {
-    logger.i('Received notification payload: $payload');
+    logger.d('Received notification payload: $payload');
 
-    final current = supabase.auth.currentUser?.id;
-    final toUid = payload.newRecord['to_uid'] as String?;
-
-    if ((payload.eventType == PostgresChangeEvent.insert ||
-            payload.eventType == PostgresChangeEvent.update) &&
-        toUid == current) {
-      logger.i('Notification is for the current user, reloading.');
+    if (payload.eventType == PostgresChangeEvent.insert ||
+        payload.eventType == PostgresChangeEvent.update) {
+      logger.d('Reloading notifications.');
       loadNotifications();
     } else if (payload.eventType == PostgresChangeEvent.delete) {
       final id = payload.oldRecord['id'] as int?;
       if (id != null) {
+        logger.d('Removing notification with id $id');
         removeNotification(id);
       }
     }

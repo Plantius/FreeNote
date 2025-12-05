@@ -58,9 +58,7 @@ class EventsProvider extends ChangeNotifier {
   }
 
   Event? getEvent(int id, {bool strict = true}) {
-    Event? event = _events
-        .where((event) => event.id == id)
-        .singleOrNull;
+    Event? event = _events.where((event) => event.id == id).singleOrNull;
 
     if (event == null && strict) {
       logger.e('Could not find Event #$id');

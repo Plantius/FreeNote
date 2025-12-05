@@ -28,18 +28,13 @@ class _FriendPageState extends State<FriendPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          'Friends', 
-          style: Theme.of(context).textTheme.titleLarge
-        ),
+        title: Text('Friends', style: Theme.of(context).textTheme.titleLarge),
         actions: [
           IconButton(
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: FriendSearchDelegate(
-                  entries: provider.friends
-                ),
+                delegate: FriendSearchDelegate(entries: provider.friends),
               );
             },
             icon: Icon(Icons.search),
@@ -70,9 +65,7 @@ class _FriendPageState extends State<FriendPage> {
             child: ListView.builder(
               itemCount: provider.friends.length,
               itemBuilder: (context, index) {
-                return ProfileEntry(
-                  profile: provider.friends[index],
-                );
+                return ProfileEntry(profile: provider.friends[index]);
               },
             ),
             onRefresh: () async {

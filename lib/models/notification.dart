@@ -1,8 +1,6 @@
 import 'package:free_note/models/profile.dart';
 
-enum NotificationType { 
-  friendRequest,
-}
+enum NotificationType { friendRequest }
 
 class CustomNotification {
   final int id;

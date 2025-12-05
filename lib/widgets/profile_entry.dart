@@ -10,12 +10,8 @@ class ProfileEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: ProfilePicture(
-        profile: profile
-      ),
-      title: Text(
-        profile.username
-      ),
+      leading: ProfilePicture(profile: profile),
+      title: Text(profile.username),
     );
   }
 }

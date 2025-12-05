@@ -18,7 +18,7 @@ class AuthProvider extends ChangeNotifier {
   Profile? get profile {
     if (_authService.user == null) {
       return null;
-    } 
+    }
 
     if (_profile != null) {
       return _profile;
@@ -26,8 +26,8 @@ class AuthProvider extends ChangeNotifier {
 
     if (_profile == null) {
       _profile ??= Profile(
-        uid: _authService.user!.id, 
-        username: _username, 
+        uid: _authService.user!.id,
+        username: _username,
         email: _authService.user!.email ?? '',
       );
 

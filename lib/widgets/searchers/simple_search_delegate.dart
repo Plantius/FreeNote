@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 abstract class SimpleSearchDelegate<T> extends SearchDelegate<T?> {
@@ -44,15 +43,15 @@ abstract class SimpleSearchDelegate<T> extends SearchDelegate<T?> {
 
   Widget _buildMatches(BuildContext context) {
     final results = entries
-      .where((entry) => matches(query, entry))
-      .map((entry) => buildEntry(context, entry))
-      .toList();
+        .where((entry) => matches(query, entry))
+        .map((entry) => buildEntry(context, entry))
+        .toList();
 
     return Padding(
       padding: const EdgeInsets.all(8),
       child: ListView.builder(
         itemCount: results.length,
-        itemBuilder: (context, index) => results[index]
+        itemBuilder: (context, index) => results[index],
       ),
     );
   }

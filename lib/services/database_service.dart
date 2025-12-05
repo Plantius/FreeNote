@@ -21,6 +21,7 @@ class DatabaseService {
 
   RealtimeChannel getChannel(
     String table,
+    PostgresChangeFilter filter,
     void Function(PostgresChangePayload) func,
   ) {
     return supabase
@@ -29,6 +30,7 @@ class DatabaseService {
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: table,
+          filter: filter,
           callback: func,
         )
         .subscribe();
@@ -263,7 +265,7 @@ class DatabaseService {
 
       final response = await supabase
           .from('calendars')
-          .select('*, user_calendars(*)')
+          .select('*, user_calendars!inner(*)')
           .eq('user_calendars.user_id', userId);
 
       logger.d('Successfully fetched calendars for user $userId');

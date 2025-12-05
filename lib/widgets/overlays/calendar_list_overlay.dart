@@ -55,7 +55,8 @@ class CalendarListOverlay extends StatelessWidget {
                   context.pop(calendar);
                 } else {
                   provider.updateCalendarVisibility(
-                    calendar, !calendar.visible
+                    calendar,
+                    !calendar.visible,
                   );
                 }
               },

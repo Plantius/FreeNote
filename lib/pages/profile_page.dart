@@ -24,8 +24,8 @@ class _ProfilePageState extends State<ProfilePage> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Loading...', 
-            style: Theme.of(context).textTheme.titleLarge
+            'Loading...',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
       );
@@ -35,10 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Settings', 
-          style: Theme.of(context).textTheme.titleLarge
-        ),
+        title: Text('Settings', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

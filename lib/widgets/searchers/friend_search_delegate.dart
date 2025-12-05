@@ -14,5 +14,5 @@ class FriendSearchDelegate extends SimpleSearchDelegate<Profile> {
   @override
   bool matches(String query, Profile profile) {
     return profile.username.contains(query.toLowerCase());
-  } 
+  }
 }

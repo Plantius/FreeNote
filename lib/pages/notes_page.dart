@@ -33,10 +33,7 @@ class _NotesPageState extends State<NotesPage> {
         itemBuilder: (context, index) {
           final note = notes[notes.length - index - 1];
 
-          return NoteEntry(
-            note: note,
-            noteId: note.id,
-          );
+          return NoteEntry(note: note, noteId: note.id);
         },
       ),
       onRefresh: () async {

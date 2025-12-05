@@ -71,9 +71,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         _controller.document = Document.fromJson(json);
       });
     } on FormatException {
-      logger.w(
-        'Unconverted $note, recovering as plaintext...',
-      );
+      logger.w('Unconverted $note, recovering as plaintext...');
 
       setState(() {
         final delta = Delta();
@@ -239,20 +237,18 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         onLaunchUrl: (href) => _onLaunchUrl(context, href),
         customLinkPrefixes: ['freenote'],
         autoFocus: true,
-        embedBuilders: [
-          NoteEmbedBuilder(),
-        ],
+        embedBuilders: [NoteEmbedBuilder()],
       ),
     );
   }
 
   void _insertNoteLink() async {
-    final note = await showModalBottomSheet(
-      context: context, 
-      builder: (context) => CreateNoteOverlay(
-        isNested: true,
-      ),
-    ) as Note?;
+    final note =
+        await showModalBottomSheet(
+              context: context,
+              builder: (context) => CreateNoteOverlay(isNested: true),
+            )
+            as Note?;
 
     if (note == null) {
       logger.i('Cancelled nested note creation');
@@ -271,9 +267,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
 
     _controller.document.insert(
       index,
-      BlockEmbed.custom(
-        NoteEmbed.fromNote(createdNote),
-      ),
+      BlockEmbed.custom(NoteEmbed.fromNote(createdNote)),
     );
 
     _controller.document.insert(index + 1, '\n');
@@ -337,11 +331,8 @@ class NoteEmbedBuilder extends EmbedBuilder {
         final noteId = int.tryParse(text) ?? 0;
         final note = context.read<NotesProvider>().getNote(noteId);
 
-        return NoteEntry(
-          note: note,
-          noteId: noteId,
-        );
-      }
+        return NoteEntry(note: note, noteId: noteId);
+      },
     );
   }
 }

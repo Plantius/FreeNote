@@ -68,10 +68,8 @@ class CreatePopOver extends StatelessWidget {
 
   Future<void> _onCreateNote(BuildContext context) async {
     final Note? note = await showModalBottomSheet(
-      context: context, 
-      builder: (context) => CreateNoteOverlay(
-        isNested: false,
-      ),
+      context: context,
+      builder: (context) => CreateNoteOverlay(isNested: false),
     );
 
     if (context.mounted) {

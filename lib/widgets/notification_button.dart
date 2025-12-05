@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 class NotificationButton extends StatelessWidget {
   const NotificationButton({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationsProvider>();
@@ -18,8 +18,8 @@ class NotificationButton extends StatelessWidget {
       child: IconButton(
         icon: Icon(
           provider.notifications.isEmpty
-          ? Icons.notifications_none
-          : Icons.notifications_active
+              ? Icons.notifications_none
+              : Icons.notifications_active,
         ),
         onPressed: () => showPopover(
           context: context,
@@ -55,24 +55,16 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
 
         return ListTile(
           title: Text('"$sender" has sent you a friend request. Confirm?'),
-          
+
           shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: Colors.white,
-            ),
-            borderRadius: BorderRadiusGeometry.all(
-              Radius.circular(10)
-            ),
+            side: BorderSide(color: Colors.white),
+            borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
           ),
 
           textColor: Colors.white,
 
           onTap: () {
-            _openConfirmFriend(
-              provider,
-              notification.sender!,
-              notification.id,
-            );
+            _openConfirmFriend(provider, notification.sender!, notification.id);
           },
         );
       },
@@ -80,9 +72,9 @@ class _NotificationPopOverState extends State<NotificationPopOver> {
   }
 
   Future<void> _openConfirmFriend(
-    NotificationsProvider provider, 
-    Profile user, 
-    int notificationId
+    NotificationsProvider provider,
+    Profile user,
+    int notificationId,
   ) async {
     await showDialog(
       context: context,

@@ -5,24 +5,58 @@ import 'package:free_note/services/cache_service.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/services/database_service.dart';
+import 'package:free_note/services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotesProvider with ChangeNotifier {
   final DatabaseService database;
+  final supabase = SupabaseService.client;
 
   List<Note> _notes = [];
   bool _isLoading = false;
   String? _errorMessage;
 
+  late final RealtimeChannel _channel;
+
   NotesProvider(this.database) {
+    _channel = database.getChannel(
+      'user_notes',
+      PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: supabase.auth.currentUser?.id,
+      ),
+      handlePayload,
+    );
+
     AuthService.instance.userStream.listen((state) {
       loadNotes();
     });
   }
 
-  List<Note> get rootNotes => _notes
-    .where((note) => !note.isNested)
-    .toList();
-  
+  void handlePayload(PostgresChangePayload payload) {
+    logger.d('Received notification payload: $payload');
+
+    if (payload.eventType == PostgresChangeEvent.update &&
+        payload.newRecord.isNotEmpty) {
+      logger.d('Updating note ${payload.newRecord['id']}.');
+      // updateNote(Note.fromJson(payload.newRecord));
+    } else if (payload.eventType == PostgresChangeEvent.delete) {
+      // final id = payload.oldRecord['id'] as int?;
+      // if (id != null) {
+      // removeNote(id);
+      // }
+    }
+  }
+
+  @override
+  void dispose() {
+    _channel.unsubscribe();
+    super.dispose();
+  }
+
+  List<Note> get rootNotes => _notes.where((note) => !note.isNested).toList();
+
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -80,15 +114,28 @@ class NotesProvider with ChangeNotifier {
   }
 
   Note? getNote(int id, {bool strict = true}) {
-    Note? note = _notes
-      .where((note) => note.id == id)
-      .singleOrNull;
+    Note? note = _notes.where((note) => note.id == id).singleOrNull;
 
     if (note == null && strict) {
       logger.e('Could not find Note #$id');
     }
 
     return note;
+  }
+
+  void updateNote(Note updatedNote) {
+    int index = _notes.indexWhere((note) => note.id == updatedNote.id);
+    if (index >= 0) {
+      _notes[index] = updatedNote;
+      notifyListeners();
+    } else {
+      logger.e('Could not find Note #${updatedNote.id} to update');
+    }
+  }
+
+  void removeNote(int id) {
+    _notes.removeWhere((note) => note.id == id);
+    notifyListeners();
   }
 
   Future<Note> saveNote(Note note) async {
@@ -148,7 +195,5 @@ class NotesProvider with ChangeNotifier {
   }
 
   @Deprecated('Use updateNote(Note note), creation is handled if id == 0')
-  Future<void> createNote() async {
-    
-  }
+  Future<void> createNote() async {}
 }
