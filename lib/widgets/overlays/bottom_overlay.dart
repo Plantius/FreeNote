@@ -37,7 +37,10 @@ class BottomOverlay<T> extends StatelessWidget {
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(12),
       ),
+      
       width: size.width - 40,
+      height: size.height - 50,
+
       padding: const EdgeInsets.all(8),
       child: Column(
         children: [
