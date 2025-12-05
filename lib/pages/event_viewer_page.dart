@@ -43,8 +43,8 @@ class _EventViewerPageState extends State<EventViewerPage> {
     final calendar = provider.getCalendar(event!.calendarId);
 
     Note? note = context.watch<NotesProvider>().getNote(
-      event!.noteId, 
-      strict: false
+      event!.noteId,
+      strict: false,
     );
 
     logger.i(event);
@@ -94,10 +94,7 @@ class _EventViewerPageState extends State<EventViewerPage> {
 
             SizedBox(height: 12),
 
-            _buildAttachedNote(
-              context, 
-              note,
-            ),
+            _buildAttachedNote(context, note),
           ],
         ),
       ),
@@ -109,10 +106,8 @@ class _EventViewerPageState extends State<EventViewerPage> {
       return TextButton(
         onPressed: () async {
           final note = await showModalBottomSheet(
-            context: context, 
-            builder: (context) => CreateNoteOverlay(
-              isNested: true
-            ),
+            context: context,
+            builder: (context) => CreateNoteOverlay(isNested: true),
           );
 
           logger.d(note);
@@ -122,17 +117,17 @@ class _EventViewerPageState extends State<EventViewerPage> {
             logger.d(created);
 
             if (context.mounted) {
-              context.read<EventsProvider>().addNoteToEvent(widget.event!, created);
+              context.read<EventsProvider>().addNoteToEvent(
+                widget.event!,
+                created,
+              );
             }
           }
-        }, 
+        },
         child: const Text('Add Note to Event'),
       );
     }
 
-    return NoteEntry(
-      note: note, 
-      noteId: 0,
-    );
+    return NoteEntry(note: note, noteId: 0);
   }
 }
