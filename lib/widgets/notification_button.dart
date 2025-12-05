@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/friends_provider.dart';
 import 'package:free_note/providers/notifications_provider.dart';

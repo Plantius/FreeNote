@@ -137,7 +137,7 @@ class SearchButton extends StatelessWidget {
           onPressed: () async {
             final note = await showSearch<Note?>(
               context: context,
-              delegate: NoteSearchDelegate(entries: provider.rootNotes),
+              delegate: NoteSearchDelegate(entries: provider.allNotes),
             );
 
             if (context.mounted && note != null) {
