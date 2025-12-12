@@ -23,10 +23,10 @@ class NotificationButton extends StatelessWidget {
         onPressed: () => showPopover(
           context: context,
           bodyBuilder: (context) => NotificationPopOver(),
-          height: 420,
-          width: 300,
+          height: 300,
+          width: 170,
           backgroundColor: Theme.of(context).colorScheme.surface,
-          direction: PopoverDirection.left,
+          direction: PopoverDirection.bottom,
         ),
       ),
     );
