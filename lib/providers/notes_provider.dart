@@ -114,10 +114,15 @@ class NotesProvider with ChangeNotifier {
     }
   }
 
-  List<Note> get rootNotes =>
-      _notes.reversed.where((note) => !note.isNested).toList();
+  List<Note> get rootNotes => allNotes
+      .where((note) => !note.isNested)
+      .toList();
 
-  List<Note> get allNotes => _notes.reversed.toList();
+  List<Note> get allNotes => _notes
+      .toSet()
+      .toList()
+      .reversed
+      .toList();
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -218,17 +223,7 @@ class NotesProvider with ChangeNotifier {
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
     } catch (e) {
-      logger.w('Failed to save note ${note.id} to database: $e');
-      try {
-        final index = _notes.indexWhere((n) => n.id == note.id);
-        if (index >= 0) {
-          _notes[index] = note;
-        } else {
-          _notes = [..._notes, note];
-        }
-      } catch (e) {
-        logger.e('Failed to save note ${note.id} to cache: $e');
-      }
+      logger.e(e);
     }
 
     // kinda keep it sorted
