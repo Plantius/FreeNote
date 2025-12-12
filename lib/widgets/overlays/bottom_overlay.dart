@@ -39,7 +39,7 @@ class BottomOverlay<T> extends StatelessWidget {
       ),
       
       width: size.width - 40,
-      height: size.height - 50,
+      height: size.height - 100,
 
       padding: const EdgeInsets.all(8),
       child: Column(
