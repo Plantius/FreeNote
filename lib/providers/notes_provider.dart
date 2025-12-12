@@ -181,7 +181,7 @@ class NotesProvider with ChangeNotifier {
   }
 
   Note? getNote(int id, {bool strict = true}) {
-    Note? note = _notes.where((note) => note.id == id).singleOrNull;
+    Note? note = _notes.where((note) => note.id == id).firstOrNull;
 
     if (note == null && strict) {
       logger.e('Could not find Note #$id');
@@ -220,7 +220,7 @@ class NotesProvider with ChangeNotifier {
         await CacheService.saveNote(note);
       }
 
-      logger.i('Saving note ${note.id} to database.');
+      logger.i('Saving $note to database.');
       await database.updateNote(note);
     } catch (e) {
       logger.e(e);
@@ -229,6 +229,8 @@ class NotesProvider with ChangeNotifier {
     // kinda keep it sorted
     _notes.remove(note);
     _notes.add(note);
+
+    logger.i('$note is updated');
     notifyListeners();
 
     return note;

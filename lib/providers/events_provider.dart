@@ -59,7 +59,7 @@ class EventsProvider extends ChangeNotifier {
   }
 
   Event? getEvent(int id, {bool strict = true}) {
-    Event? event = _events.where((event) => event.id == id).singleOrNull;
+    Event? event = _events.where((event) => event.id == id).firstOrNull;
 
     if (event == null && strict) {
       logger.e('Could not find Event #$id');
@@ -71,7 +71,7 @@ class EventsProvider extends ChangeNotifier {
   Calendar? getCalendar(int id, {bool strict = true}) {
     Calendar? calendar = _calendars
         .where((calendar) => calendar.id == id)
-        .singleOrNull;
+        .firstOrNull;
 
     if (calendar == null && strict) {
       logger.e('Could not find Calendar #$id');
