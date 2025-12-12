@@ -5,26 +5,22 @@ import 'package:free_note/services/database_service.dart';
 
 class FriendsProvider with ChangeNotifier {
   final DatabaseService database;
-  List<Profile>? _friends;
+  List<Profile> _friends = [];
 
   bool _isLoading = false;
   String? _errorMessage;
 
   FriendsProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      loadFriends(forceRefresh: true);
+      loadFriends();
     });
   }
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  List<Profile> get friends => _friends == null ? [] : _friends!;
+  List<Profile> get friends => _friends;
 
-  Future<void> loadFriends({bool forceRefresh = false}) async {
-    if (_friends != null && !forceRefresh) {
-      return;
-    }
-
+  Future<void> loadFriends() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -47,16 +43,28 @@ class FriendsProvider with ChangeNotifier {
   Future<bool> sendFriendRequest(String username) async {
     final profile = await database.userExists(username);
     if (profile == null) return false;
+    if (_friends.contains(profile)) return false;
 
     return await database.sendFriendRequest(profile.uid);
   }
 
   Future<void> acceptFriendRequest(Profile user) async {
     try {
+      if (_friends.contains(user)) return;
       await database.acceptFriendRequest(user);
-      await loadFriends(forceRefresh: true);
+
+      await loadFriends();
     } catch (e) {
       _errorMessage = 'Failed to accept friend request: $e';
+      notifyListeners();
+    }
+  }
+
+  Future<void> denyFriendRequest(Profile user) async {
+    try {
+      await database.denyFriendRequest(user);
+    } catch (e) {
+      _errorMessage = 'Failed to deny friend request: $e';
       notifyListeners();
     }
   }

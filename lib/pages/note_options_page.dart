@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/providers/notes_provider.dart';
@@ -33,10 +32,10 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
           children: [
             OptionButton(
               action: () => _onShareNote(provider),
-              icon: Icons.share, 
-              text: 'Share note'
+              icon: Icons.share,
+              text: 'Share note',
             ),
-            
+
             OptionButton(
               action: () => _onDeleteNote(provider),
               icon: Icons.delete,
@@ -51,8 +50,9 @@ class _NoteOptionsPageState extends State<NoteOptionsPage> {
 
   Future<void> _onShareNote(NotesProvider provider) async {
     Profile? profile = await showModalBottomSheet(
-      context: context, 
+      context: context,
       builder: (context) => FriendsOverlay(),
+      isScrollControlled: true,
     );
 
     if (profile != null && mounted) {

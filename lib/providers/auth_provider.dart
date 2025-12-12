@@ -12,8 +12,31 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   bool _loading = false;
 
+  String _username = '';
+
   User? get user => _user;
-  Profile? get profile => _profile;
+  Profile? get profile {
+    if (_authService.user == null) {
+      return null;
+    }
+
+    if (_profile != null) {
+      return _profile;
+    }
+
+    if (_profile == null) {
+      _profile ??= Profile(
+        uid: _authService.user!.id,
+        username: _username,
+        email: _authService.user!.email ?? '',
+      );
+
+      logger.i('Created local profile: $_profile');
+    }
+
+    return _profile;
+  }
+
   String? get error => _error;
   bool get loading => _loading;
 
@@ -23,7 +46,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (_user == null) {
         _profile = null;
-      } else {
+      } else if (_profile == null || _profile!.uid != _user!.id) {
         _profile = await DatabaseService.instance.fetchProfile();
       }
 
@@ -36,11 +59,17 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signUp(String email, String username, String password) async {
-    return _authenticate(
+    bool success = await _authenticate(
       email,
       password,
       (email, password) => _authService.signUp(email, username, password),
     );
+
+    if (success) {
+      _username = username;
+    }
+
+    return success;
   }
 
   Future<bool> _authenticate(

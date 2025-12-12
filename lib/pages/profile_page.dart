@@ -3,6 +3,7 @@ import 'package:free_note/widgets/option_button.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/providers/auth_provider.dart';
 import 'package:free_note/services/auth_service.dart';
+import 'package:free_note/widgets/profile_picture.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,13 +18,20 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    if (AuthService.instance.user == null) {
-      logger.e('Invalid state: no logged in user');
-      context.go('/login');
+    final auth = context.watch<AuthProvider>();
+
+    if (auth.user == null || auth.profile == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Loading...',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+      );
     }
 
     User user = AuthService.instance.user!;
-    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -42,15 +50,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: SizedBox(
                     width: 80,
                     height: 80,
-                    child: CircleAvatar(
-                      child: Text(
-                        auth.profile?.username.substring(0, 1).toUpperCase() ??
-                            'X',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
+                    child: ProfilePicture(
+                      profile: auth.profile!,
+                      style: Theme.of(context).textTheme.displayMedium,
                     ),
                   ),
                 ),
+
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,

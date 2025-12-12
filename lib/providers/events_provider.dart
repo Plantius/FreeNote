@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
+import 'package:free_note/models/note.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/auth_service.dart';
 import 'package:free_note/services/database_service.dart';
@@ -26,25 +27,29 @@ class EventsProvider extends ChangeNotifier {
 
   List<Calendar> get calendars => _calendars;
 
+  Calendar? get defaultCalendar {
+    if (_calendars.isEmpty) {
+      return null;
+    }
+
+    return _calendars.reduce((value, element) {
+      if (value.id < element.id) {
+        return value;
+      }
+      return element;
+    });
+  }
+
   Future<void> loadEventsAndCalendars() async {
     try {
       _events = await database.fetchEvents();
       _calendars = await database.fetchCalendars();
+
+      _repopulateCalendar();
+      notifyListeners();
     } catch (e) {
       logger.e(e);
     }
-  }
-
-  void addEvent(Event event) {
-    logger.i('Adding event: $event');
-    _events.add(event);
-
-    Calendar calendar = getCalendar(event.calendarId)!;
-    if (calendar.visible) {
-      controller.add(event.toCalendarEvent(calendar));
-    }
-
-    notifyListeners();
   }
 
   bool eventIsVisible(Event event) {
@@ -75,13 +80,53 @@ class EventsProvider extends ChangeNotifier {
     return calendar;
   }
 
+  Future<Event?> addEvent(Event event) async {
+    logger.i('Adding event: $event');
+
+    Event? createdEvent;
+    try {
+      createdEvent = await database.createEvent(event);
+      _events.add(createdEvent);
+
+      Calendar calendar = getCalendar(createdEvent.calendarId)!;
+      if (calendar.visible) {
+        controller.add(createdEvent.toCalendarEvent(calendar));
+      }
+    } catch (e) {
+      logger.e(e);
+    }
+
+    notifyListeners();
+    return createdEvent;
+  }
+
+  Future<void> addNoteToEvent(Event event, Note note) async {
+    if (event.noteId != 0) {
+      logger.e('$event already has a note attached');
+      return;
+    }
+
+    event.noteId = note.id;
+    // FIXME COMMIT CHANGES
+
+    logger.i('Attached $note to $event');
+
+    notifyListeners();
+  }
+
   void addCalendar(Calendar calendar) async {
     logger.i('Adding Calendar: $calendar');
 
-    Calendar? createdCalendar = await database.createCalendar(calendar);
+    try {
+      Calendar? createdCalendar = await database.createCalendar(calendar);
 
-    if (createdCalendar != null) {
-      _calendars.add(createdCalendar);
+      if (createdCalendar != null) {
+        _calendars.add(createdCalendar);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      logger.e(e);
     }
 
     notifyListeners();
@@ -93,7 +138,7 @@ class EventsProvider extends ChangeNotifier {
     }
 
     calendar.visible = visible;
-    _repopulateCalendar(); // TODO: More granular repopulation
+    _repopulateCalendar();
 
     logger.i('Updated to $calendar');
 

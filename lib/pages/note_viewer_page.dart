@@ -8,6 +8,8 @@ import 'package:free_note/models/note.dart';
 import 'package:free_note/providers/notes_provider.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:free_note/widgets/confirm_dialog.dart';
+import 'package:free_note/widgets/note_entry.dart';
+import 'package:free_note/widgets/overlays/creators/create_note_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,7 +25,7 @@ class NoteViewerPage extends StatefulWidget {
 }
 
 class _NoteViewerPageState extends State<NoteViewerPage> {
-  late TextEditingController _titleController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   final QuillController _controller = QuillController.basic();
   final _focusNode = FocusNode();
   Note? note;
@@ -51,7 +53,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
   void _loadDocument() async {
     if (widget.note == null) {
       final notes = context.read<NotesProvider>();
-      Note? loadedNote = await notes.loadNote(widget.noteId);
+      Note? loadedNote = notes.getNote(widget.noteId);
       if (loadedNote != null) {
         note = loadedNote;
       } else {
@@ -69,9 +71,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         _controller.document = Document.fromJson(json);
       });
     } on FormatException {
-      logger.e(
-        'Unconverted note: "${note!.title}" (#${note!.id}), recovering as plaintext...',
-      );
+      logger.w('Unconverted $note, recovering as plaintext...');
 
       setState(() {
         final delta = Delta();
@@ -155,6 +155,7 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
                   decoration: const InputDecoration.collapsed(
                     hintText: 'Title',
                   ),
+                  cursorColor: Colors.white,
                   style: Theme.of(context).textTheme.titleLarge,
                   inputFormatters: [
                     FilteringTextInputFormatter.deny(RegExp(r'[\r\n]')),
@@ -234,32 +235,54 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
       focusNode: _focusNode,
       config: QuillEditorConfig(
         checkBoxReadOnly: false,
-        onLaunchUrl: (href) => _onLaunhUrl(context, href),
+        onLaunchUrl: (href) => _onLaunchUrl(context, href),
         customLinkPrefixes: ['freenote'],
         autoFocus: true,
+        embedBuilders: [NoteEmbedBuilder()],
       ),
     );
   }
 
   void _insertNoteLink() async {
-    final delta = Delta()..insert('(link)', {'link': 'freenote:///note/34'});
+    final note = await showModalBottomSheet(
+      context: context,
+      builder: (context) => CreateNoteOverlay(isNested: true),
+      isScrollControlled: true,
+    ) as Note?;
 
-    final selection = TextSelection(
-      baseOffset: _controller.selection.baseOffset,
-      extentOffset: _controller.selection.extentOffset,
+    if (note == null) {
+      logger.i('Cancelled nested note creation');
+      return;
+    }
+    assert(note.id == 0);
+
+    late Note createdNote;
+    if (mounted) {
+      createdNote = await context.read<NotesProvider>().saveNote(note);
+    }
+
+    logger.i('Adding nested: $createdNote');
+
+    final index = _controller.selection.baseOffset;
+
+    _controller.document.insert(
+      index,
+      BlockEmbed.custom(NoteEmbed.fromNote(createdNote)),
     );
 
-    _controller.replaceText(
-      selection.baseOffset,
-      selection.extentOffset - selection.baseOffset,
-      delta,
-      selection,
+    _controller.document.insert(index + 1, '\n');
+
+    _controller.updateSelection(
+      TextSelection.collapsed(offset: index + 2),
+      ChangeSource.local,
     );
 
-    FocusScope.of(context).requestFocus(_focusNode);
+    if (mounted) {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }
   }
 
-  void _onLaunhUrl(BuildContext context, String href) async {
+  void _onLaunchUrl(BuildContext context, String href) async {
     logger.i('Attempting to navigate to `$href`...');
 
     final Uri url = Uri.parse(href);
@@ -281,5 +304,35 @@ class _NoteViewerPageState extends State<NoteViewerPage> {
         });
       }
     }
+  }
+}
+
+class NoteEmbed extends CustomBlockEmbed {
+  NoteEmbed(String text) : super('note', text);
+
+  static const String embedType = 'note';
+
+  static NoteEmbed fromText(String text) => NoteEmbed(text);
+  static NoteEmbed fromId(int noteId) => NoteEmbed(noteId.toString());
+  static NoteEmbed fromNote(Note note) => NoteEmbed(note.id.toString());
+}
+
+class NoteEmbedBuilder extends EmbedBuilder {
+  @override
+  String get key => NoteEmbed.embedType;
+
+  @override
+  Widget build(BuildContext context, EmbedContext embedContext) {
+    final embed = embedContext.node.value;
+    final text = embed.data as String;
+
+    return LayoutBuilder(
+      builder: (context, _) {
+        final noteId = int.tryParse(text) ?? 0;
+        final note = context.read<NotesProvider>().getNote(noteId);
+
+        return NoteEntry(note: note, noteId: noteId);
+      },
+    );
   }
 }

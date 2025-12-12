@@ -1,12 +1,12 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
 import 'package:free_note/models/calendar.dart';
 import 'package:free_note/models/event.dart';
 import 'package:free_note/models/note.dart';
+import 'package:free_note/models/notification.dart';
 import 'package:free_note/models/profile.dart';
 import 'package:free_note/services/supabase_service.dart';
 import 'package:free_note/event_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:math';
 
 class DatabaseService {
   final supabase = SupabaseService.client;
@@ -19,6 +19,23 @@ class DatabaseService {
     return _instance;
   }
 
+  RealtimeChannel getChannel(
+    String table,
+    PostgresChangeFilter filter,
+    void Function(PostgresChangePayload) func,
+  ) {
+    return supabase
+        .channel('$table-db-changes')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: table,
+          filter: filter,
+          callback: func,
+        )
+        .subscribe();
+  }
+
   Future<List<Note>> fetchNotes() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return [];
@@ -27,7 +44,7 @@ class DatabaseService {
         .from('notes')
         .select('*, user_notes(*)')
         .eq('user_notes.user_id', userId)
-        .order('updated_at', ascending: false);
+        .order('updated_at', ascending: true);
 
     logger.i(
       'Successfully fetched notes for user ${supabase.auth.currentUser?.email}',
@@ -133,7 +150,11 @@ class DatabaseService {
       final inserted = await supabase
           .rpc(
             'create_note_with_user',
-            params: {'p_title': note.title, 'p_content': note.content},
+            params: {
+              'p_title': note.title,
+              'p_content': note.content,
+              'p_is_nested': note.isNested,
+            },
           )
           .select()
           .single();
@@ -171,6 +192,39 @@ class DatabaseService {
     return null;
   }
 
+  Future<Event> createEvent(Event event) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception('User not logged in');
+
+      final response = await supabase
+          .from('calendar_events')
+          .insert({
+            'calendar_id': event.calendarId,
+            'title': event.title,
+            'starts_at': event.start.toIso8601String(),
+            'ends_at': event.end.toIso8601String(),
+          })
+          .select()
+          .single();
+
+      logger.i('Successfully created event for user $userId');
+
+      return Event.fromJson(response);
+    } catch (e) {
+      logger.e('Failed to create event: $e');
+    }
+
+    return Event(
+      id: Random().nextInt(1_000_000_000),
+      calendarId: event.calendarId,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      noteId: event.noteId,
+    );
+  }
+
   Future<void> shareCalendar(Calendar calendar, Profile profile) async {
     try {
       await supabase.from('user_calendars').insert({
@@ -188,8 +242,20 @@ class DatabaseService {
     }
   }
 
-  // FIXME: implement
   Future<List<Event>> fetchEvents() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await supabase
+          .from('calendar_events')
+          .select('*, calendars(*)');
+      logger.d('Successfully fetched events for user $userId');
+
+      return (response as List).map((event) => Event.fromJson(event)).toList();
+    } catch (e) {
+      logger.e('Failed to fetch events: $e');
+    }
     return [];
   }
 
@@ -200,10 +266,10 @@ class DatabaseService {
 
       final response = await supabase
           .from('calendars')
-          .select('*, user_calendars(*)')
+          .select('*, user_calendars!inner(*)')
           .eq('user_calendars.user_id', userId);
 
-      logger.i('Successfully fetched calendars for user $userId');
+      logger.d('Successfully fetched calendars for user $userId');
 
       return (response as List)
           .map((calendar) => Calendar.fromJson(calendar))
@@ -214,9 +280,18 @@ class DatabaseService {
     return [];
   }
 
-  // FIXME: implement
   Future<void> shareNote(Note note, Profile profile) async {
-    logger.d('TODO: Share $note with $profile');
+    try {
+      await supabase.from('user_notes').insert({
+        'note_id': note.id,
+        'user_id': profile.uid,
+      });
+
+      logger.i('Shared $note with $profile');
+    } catch (e) {
+      logger.e('Failed to share note $note with user $profile: $e');
+      return;
+    }
   }
 
   Future<void> updateNote(Note note) async {
@@ -293,6 +368,46 @@ class DatabaseService {
     } catch (e) {
       logger.e('Failed to accept friend request from user ${user.uid}: $e');
       rethrow;
+    }
+  }
+
+  Future<void> denyFriendRequest(Profile user) async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      await supabase
+          .from('friend_requests')
+          .delete()
+          .eq('to_uid', userId)
+          .eq('from_uid', user.uid);
+
+      logger.i('Successfully denied friend request from user ${user.uid}');
+    } catch (e) {
+      logger.e('Failed to deny friend request from user ${user.uid}: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<CustomNotification>> fetchNotifications() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await supabase
+          .from('friend_requests')
+          .select('*, profiles!from_uid(*)')
+          .eq('to_uid', userId)
+          .order('created_at', ascending: false);
+
+      logger.i('Successfully fetched notifications for user $userId');
+
+      return (response as List)
+          .map((notification) => CustomNotification.fromJson(notification))
+          .toList();
+    } catch (e) {
+      logger.e('Failed to fetch notifications: $e');
+      return [];
     }
   }
 }

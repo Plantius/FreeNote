@@ -5,38 +5,131 @@ import 'package:free_note/services/cache_service.dart';
 import 'package:free_note/event_logger.dart';
 import 'package:free_note/models/note.dart';
 import 'package:free_note/services/database_service.dart';
+import 'package:free_note/services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotesProvider with ChangeNotifier {
   final DatabaseService database;
+  final supabase = SupabaseService.client;
 
-  List<Note>? _notes;
+  List<Note> _notes = [];
   bool _isLoading = false;
   String? _errorMessage;
 
+  RealtimeChannel? _userNotesChannel;
+  RealtimeChannel? _notesChannel;
+
   NotesProvider(this.database) {
     AuthService.instance.userStream.listen((state) {
-      loadNotes(forceRefresh: true);
+      loadNotes();
+      _reloadChannels();
     });
   }
 
-  List<Note> get notes => _notes == null ? [] : _notes!;
+  void _reloadChannels() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    logger.d('Reloading notes channels for user $userId.');
+
+    _unsubscribeChannels();
+
+    _userNotesChannel = database.getChannel(
+      'user_notes',
+      PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: userId,
+      ),
+      _handleUserNotesChange,
+    );
+
+    if (_notes.isNotEmpty) {
+      final filter = PostgresChangeFilter(
+        type: PostgresChangeFilterType.inFilter,
+        column: 'id',
+        value: '(${_notes.map((note) => note.id).join(',')})',
+      );
+
+      _notesChannel = database.getChannel('notes', filter, _handleNotesChange);
+    }
+  }
+
+  void _handleNotesChange(PostgresChangePayload payload) async {
+    logger.d('Received notes change payload: $payload');
+    if (payload.newRecord.isNotEmpty) {
+      final id = payload.newRecord['id'];
+      final updated = await database.fetchNote(id);
+      if (updated != null) updateNote(updated);
+    }
+  }
+
+  void _handleUserNotesChange(PostgresChangePayload payload) async {
+    logger.d('Received user notes change payload: $payload');
+    if (payload.eventType == PostgresChangeEvent.insert) {
+      final noteId = payload.newRecord['note_id'];
+
+      final note = await database.fetchNote(noteId);
+      if (note != null) updateNote(note);
+    }
+
+    if (payload.eventType == PostgresChangeEvent.delete) {
+      removeNote(payload.oldRecord['note_id']);
+    }
+  }
+
+  void _unsubscribeChannels() {
+    _userNotesChannel?.unsubscribe();
+    _notesChannel?.unsubscribe();
+    _userNotesChannel = null;
+    _notesChannel = null;
+  }
+
+  @override
+  void dispose() {
+    _unsubscribeChannels();
+    super.dispose();
+  }
+
+  void handlePayload(PostgresChangePayload payload) {
+    logger.d('Received notification payload: $payload');
+
+    if ((payload.eventType == PostgresChangeEvent.update ||
+            payload.eventType == PostgresChangeEvent.insert) &&
+        payload.newRecord.isNotEmpty) {
+      logger.d('Updating note ${payload.newRecord['note_id']}.');
+
+      database.fetchNote(payload.newRecord['note_id']).then((note) {
+        if (note != null) {
+          updateNote(note);
+        }
+      });
+    } else if (payload.eventType == PostgresChangeEvent.delete) {
+      logger.d('Removing note ${payload.oldRecord['note_id']}.');
+
+      final id = payload.oldRecord['note_id'] as int?;
+      if (id != null) {
+        removeNote(id);
+      }
+    }
+  }
+
+  List<Note> get rootNotes =>
+      _notes.reversed.where((note) => !note.isNested).toList();
+
+  List<Note> get allNotes => _notes.reversed.toList();
+
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> loadNotes({bool forceRefresh = false}) async {
-    logger.i('Triggered reload of notes list: refresh = $forceRefresh');
-
-    if (_notes != null && !forceRefresh) {
-      return;
-    }
-
+  Future<void> loadNotes() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
       _notes = await database.fetchNotes();
-      for (var note in _notes!) {
+      for (var note in _notes) {
         if (!await CacheService.isNoteUpToDate(note.id, note.updatedAt)) {
           logger.i('Note ${note.id} is behind, saving to cache.');
           await CacheService.saveNote(note);
@@ -47,6 +140,7 @@ class NotesProvider with ChangeNotifier {
           content: note.content,
           createdAt: note.createdAt,
           updatedAt: note.updatedAt,
+          isNested: note.isNested,
         );
       }
     } catch (e) {
@@ -68,6 +162,7 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  @Deprecated('Use getNote(int id)')
   Future<Note?> loadNote(int id) async {
     var note = await CacheService.loadNoteFromCache(id);
     note ??= await database.fetchNote(id);
@@ -80,7 +175,32 @@ class NotesProvider with ChangeNotifier {
     return note;
   }
 
-  Future<void> saveNote(Note note) async {
+  Note? getNote(int id, {bool strict = true}) {
+    Note? note = _notes.where((note) => note.id == id).singleOrNull;
+
+    if (note == null && strict) {
+      logger.e('Could not find Note #$id');
+    }
+
+    return note;
+  }
+
+  void updateNote(Note updatedNote) {
+    int index = _notes.indexWhere((note) => note.id == updatedNote.id);
+    if (index >= 0) {
+      _notes[index] = updatedNote;
+      notifyListeners();
+    } else {
+      logger.e('Could not find Note #${updatedNote.id} to update');
+    }
+  }
+
+  void removeNote(int id) {
+    _notes.removeWhere((note) => note.id == id);
+    notifyListeners();
+  }
+
+  Future<Note> saveNote(Note note) async {
     try {
       if (note.id == 0) {
         final createdNote = await database.createNote(note);
@@ -97,21 +217,26 @@ class NotesProvider with ChangeNotifier {
 
       logger.i('Saving note ${note.id} to database.');
       await database.updateNote(note);
-
-      notifyListeners();
     } catch (e) {
       logger.w('Failed to save note ${note.id} to database: $e');
       try {
-        final index = _notes?.indexWhere((n) => n.id == note.id);
-        if (index != null && index >= 0) {
-          _notes![index] = note;
+        final index = _notes.indexWhere((n) => n.id == note.id);
+        if (index >= 0) {
+          _notes[index] = note;
         } else {
-          _notes = [...?_notes, note];
+          _notes = [..._notes, note];
         }
       } catch (e) {
         logger.e('Failed to save note ${note.id} to cache: $e');
       }
     }
+
+    // kinda keep it sorted
+    _notes.remove(note);
+    _notes.add(note);
+    notifyListeners();
+
+    return note;
   }
 
   Future<void> shareNote(Note note, Profile profile) async {
@@ -122,8 +247,7 @@ class NotesProvider with ChangeNotifier {
   Future<void> deleteNote(Note note) async {
     database.deleteNote(note.id);
 
-    assert(_notes != null);
-    if (!_notes!.remove(note)) {
+    if (!_notes.remove(note)) {
       logger.w('Could not remove notes from list');
     }
 
@@ -132,8 +256,6 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createNote() async {
-    //TODO: Add note creation here
-    debugPrint('Do we reach here?');
-  }
+  @Deprecated('Use updateNote(Note note), creation is handled if id == 0')
+  Future<void> createNote() async {}
 }
